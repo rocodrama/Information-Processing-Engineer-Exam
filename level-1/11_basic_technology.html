@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>11. 응용 SW 기초 기술 활용 | 정보처리기사 실기</title>
+<style>
+:root {
+  --primary: #1d4ed8;
+  --primary-light: #dbeafe;
+  --secondary: #059669;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --dark: #1e293b;
+  --gray: #64748b;
+  --light: #f8fafc;
+  --border: #e2e8f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.6; }
+
+nav { position: sticky; top: 0; z-index: 100; background: var(--dark); padding: 0.6rem 1.5rem; display: flex; gap: 0.5rem; align-items: center; overflow-x: auto; scrollbar-width: none; }
+nav::-webkit-scrollbar { display: none; }
+nav .nav-title { color: #93c5fd; font-weight: 700; font-size: 0.82rem; white-space: nowrap; margin-right: 0.5rem; }
+nav a { color: #94a3b8; text-decoration: none; font-size: 0.78rem; white-space: nowrap; padding: 0.3rem 0.7rem; border-radius: 5px; transition: all 0.2s; }
+nav a:hover, nav a.active { color: white; background: #334155; }
+
+.hero { background: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%); color: white; padding: 2.5rem 2rem; text-align: center; }
+.hero h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.4rem; }
+.hero .subtitle { color: #93c5fd; font-size: 0.95rem; margin-bottom: 1rem; }
+.tags { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; }
+.tag { background: rgba(255,255,255,0.12); color: white; padding: 0.2rem 0.65rem; border-radius: 20px; font-size: 0.78rem; }
+
+.container { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem; }
+section { margin-bottom: 3rem; }
+.section-title { font-size: 1.3rem; font-weight: 700; color: var(--dark); margin-bottom: 1.25rem; padding-bottom: 0.6rem; border-bottom: 3px solid var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { width: 30px; height: 30px; background: var(--primary); color: white; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; flex-shrink: 0; }
+
+.card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-bottom: 1rem; }
+.card h3 { font-size: 0.95rem; margin-bottom: 0.75rem; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+.card-grid2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.85rem; }
+
+.tabs { display: flex; gap: 0.4rem; margin-bottom: 1.25rem; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+.tab-btn { padding: 0.45rem 1rem; background: none; border: none; color: var(--gray); cursor: pointer; font-size: 0.85rem; font-weight: 600; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+table.base { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+table.base th { background: var(--dark); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+table.base td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+table.base tr:hover td { background: #eff6ff; }
+
+.hl  { background: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid var(--primary); border-radius: 7px; padding: 0.8rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; }
+.hl.warn  { background: #fffbeb; border-color: #fde68a; border-left-color: var(--warning); }
+.hl.ok    { background: #f0fdf4; border-color: #bbf7d0; border-left-color: var(--secondary); }
+.hl.danger{ background: #fef2f2; border-color: #fecaca; border-left-color: var(--danger); }
+
+code.il { background: #f1f5f9; color: #1d4ed8; padding: 0.1rem 0.35rem; border-radius: 3px; font-family: monospace; font-size: 0.81rem; font-weight: 700; }
+
+.badge { display: inline-block; padding: 0.18rem 0.55rem; border-radius: 4px; font-size: 0.73rem; font-weight: 700; }
+.b-pre  { background: #fce7f3; color: #9d174d; }
+.b-npre { background: #dcfce7; color: #166534; }
+
+/* OSI 계층 시각화 */
+.osi-stack { display: flex; flex-direction: column; gap: 0.3rem; max-width: 520px; }
+.osi-layer { padding: 0.65rem 1.2rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; border: 2px solid transparent; }
+.osi-layer:hover { transform: translateX(5px); filter: brightness(1.08); }
+.osi-layer.active { border-color: var(--dark); transform: translateX(8px); box-shadow: 0 3px 10px rgba(0,0,0,0.2); }
+.osi-left { display: flex; align-items: center; gap: 0.65rem; }
+.osi-num { width: 24px; height: 24px; background: rgba(0,0,0,0.25); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 800; color: white; flex-shrink: 0; }
+.osi-name { font-weight: 700; font-size: 0.88rem; color: white; }
+.osi-en { font-size: 0.74rem; color: rgba(255,255,255,0.75); }
+.osi-arrow { color: rgba(255,255,255,0.7); font-size: 0.85rem; }
+.osi-detail { display: none; margin-top: 0.85rem; padding: 0.9rem 1.1rem; background: #eff6ff; border-left: 4px solid var(--primary); border-radius: 7px; font-size: 0.84rem; }
+.osi-detail.show { display: block; }
+.osi-detail-grid { display: grid; grid-template-columns: auto 1fr; gap: 0.3rem 0.75rem; }
+.osi-detail-grid dt { font-weight: 700; color: var(--primary); white-space: nowrap; }
+.osi-detail-grid dd { color: var(--dark); }
+.osi-note { margin-top: 0.5rem; padding: 0.45rem 0.7rem; background: white; border-radius: 5px; font-size: 0.8rem; color: var(--gray); }
+
+/* 스케줄링 */
+.sched-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0.75rem; }
+.sched-card { background: white; border: 2px solid var(--border); border-radius: 10px; padding: 0.9rem; cursor: pointer; transition: all 0.2s; }
+.sched-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+.sched-card.active { border-color: var(--primary); background: var(--primary-light); }
+.sched-name { font-size: 1rem; font-weight: 800; color: var(--primary); margin-bottom: 0.2rem; }
+.sched-full { font-size: 0.75rem; color: var(--gray); margin-bottom: 0.5rem; }
+.sched-detail { display: none; margin-top: 0.85rem; padding: 0.9rem; background: white; border-left: 4px solid var(--primary); border-radius: 7px; font-size: 0.84rem; }
+.sched-detail.show { display: block; }
+
+/* 교착상태 매칭 */
+.dl-items { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.dl-item { background: white; border: 2px solid var(--border); border-radius: 9px; padding: 0.8rem; text-align: center; cursor: pointer; transition: all 0.2s; font-size: 0.84rem; }
+.dl-item:hover { border-color: var(--primary); }
+.dl-item.picked { border-color: var(--primary); background: var(--primary-light); }
+.dl-item.correct { border-color: var(--secondary); background: #d1fae5; }
+.dl-item.wrong   { border-color: var(--danger); background: #fee2e2; }
+
+/* 플래시카드 */
+.fc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 0.75rem; }
+.flip-card { height: 130px; perspective: 1000px; cursor: pointer; }
+.flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.55s; transform-style: preserve-3d; }
+.flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+.fc-front, .fc-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0.75rem; text-align: center; }
+.fc-front { background: white; border: 2px solid var(--primary); color: var(--dark); font-weight: 600; font-size: 0.84rem; }
+.fc-back { background: var(--primary); color: white; transform: rotateY(180deg); font-size: 0.77rem; line-height: 1.55; }
+
+/* 포트 테이블 */
+.port-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.5rem; }
+.port-item { background: #f8fafc; border: 1px solid var(--border); border-radius: 7px; padding: 0.55rem 0.8rem; font-size: 0.82rem; }
+.port-num { font-family: monospace; font-weight: 700; color: var(--primary); font-size: 0.88rem; }
+.port-name { color: var(--gray); font-size: 0.78rem; }
+
+/* 퀴즈 */
+.quiz-item { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem; }
+.quiz-q { font-weight: 700; margin-bottom: 0.75rem; font-size: 0.9rem; }
+.opts { display: flex; flex-direction: column; gap: 0.4rem; }
+.opt { padding: 0.6rem 1rem; background: #f8fafc; border: 2px solid var(--border); border-radius: 7px; cursor: pointer; font-size: 0.84rem; transition: all 0.18s; }
+.opt:hover { border-color: var(--primary); background: var(--primary-light); }
+.opt.correct { border-color: var(--secondary); background: #d1fae5; color: #065f46; font-weight: 700; }
+.opt.wrong   { border-color: var(--danger); background: #fee2e2; color: #991b1b; }
+.exp { display: none; margin-top: 0.85rem; padding: 0.7rem 0.9rem; background: #eff6ff; border-left: 4px solid var(--primary); border-radius: 4px; font-size: 0.82rem; line-height: 1.7; }
+.exp.show { display: block; }
+
+.score-box { background: white; border: 2px solid var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; margin-top: 1.25rem; display: none; }
+.score-num { font-size: 2.2rem; font-weight: 800; color: var(--primary); }
+
+.btn { padding: 0.5rem 1.1rem; border: none; border-radius: 7px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: opacity 0.2s; }
+.btn:hover { opacity: 0.85; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-green { background: var(--secondary); color: white; }
+.btn-gray { background: var(--gray); color: white; }
+
+textarea.memo { width: 100%; min-height: 140px; padding: 0.9rem; border: 2px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.88rem; resize: vertical; background: #fffef7; }
+textarea.memo:focus { outline: none; border-color: var(--primary); }
+
+.scroll-top { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--primary); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; }
+.scroll-top.show { display: flex; }
+
+@media (max-width: 700px) {
+  .container { padding: 1rem; }
+  .hero h1 { font-size: 1.35rem; }
+  .card-grid, .card-grid2 { grid-template-columns: 1fr; }
+  .fc-grid { grid-template-columns: repeat(2, 1fr); }
+  .dl-items { grid-template-columns: 1fr; }
+  .sched-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">⚙️ 11. 응용SW기초</span>
+  <a href="#s1">출제기준</a>
+  <a href="#s2">핵심개념</a>
+  <a href="#s3">OSI계층</a>
+  <a href="#s4">키워드카드</a>
+  <a href="#s5">스케줄링</a>
+  <a href="#s6">교착상태</a>
+  <a href="#s7">문제풀이</a>
+  <a href="#s8">미니퀴즈</a>
+  <a href="#s9">오답노트</a>
+</nav>
+
+<div class="hero">
+  <h1>11. 응용 SW 기초 기술 활용</h1>
+  <p class="subtitle">운영체제 · 네트워크 · 데이터베이스 · 개발환경</p>
+  <div class="tags">
+    <span class="tag">OSI 7계층</span>
+    <span class="tag">TCP/UDP</span>
+    <span class="tag">프로세스 스케줄링</span>
+    <span class="tag">교착상태</span>
+    <span class="tag">DB 키</span>
+    <span class="tag">포트번호</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- S1 출제기준 -->
+<section id="s1">
+  <h2 class="section-title"><span class="sec-num">1</span> 출제기준 요약</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3 style="color:var(--primary)">💻 운영체제 기초 활용</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>OS 종류, 특징</li>
+        <li>프로세스 / 스레드</li>
+        <li>프로세스 스케줄링 알고리즘</li>
+        <li>교착상태(Deadlock) 4조건</li>
+        <li>메모리 관리 (페이징/세그멘테이션)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--secondary)">🌐 네트워크 기초 활용</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>OSI 7계층 (이름/PDU/프로토콜)</li>
+        <li>TCP/IP 4계층</li>
+        <li>TCP vs UDP</li>
+        <li>주요 프로토콜과 포트번호</li>
+        <li>IP 주소, 서브넷 마스크</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--warning)">🗄️ 데이터베이스 기초</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>DBMS 종류</li>
+        <li>키 종류 (후보키, 기본키 등)</li>
+        <li>E-R 다이어그램</li>
+        <li>관계대수</li>
+        <li>CRUD와 SQL 명령어 대응</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hl warn">
+    <strong>⚠️ 시험 핵심:</strong>
+    <strong>OSI 7계층 이름·순서·PDU</strong>와 <strong>교착상태 4필요조건</strong>,
+    <strong>스케줄링 알고리즘 선점/비선점 구분</strong>이 매회 출제됩니다.
+  </div>
+</section>
+
+<!-- S2 핵심 개념 -->
+<section id="s2">
+  <h2 class="section-title"><span class="sec-num">2</span> 핵심 개념</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="tab(this,'t-os')">운영체제</button>
+    <button class="tab-btn" onclick="tab(this,'t-sched')">스케줄링</button>
+    <button class="tab-btn" onclick="tab(this,'t-net')">네트워크</button>
+    <button class="tab-btn" onclick="tab(this,'t-proto')">프로토콜/포트</button>
+    <button class="tab-btn" onclick="tab(this,'t-db')">DB 기초</button>
+  </div>
+
+  <!-- OS -->
+  <div id="t-os" class="tab-content active">
+    <div class="card">
+      <h3>프로세스 vs 스레드</h3>
+      <table class="base">
+        <tr><th>구분</th><th>프로세스 (Process)</th><th>스레드 (Thread)</th></tr>
+        <tr><td>정의</td><td>실행 중인 프로그램</td><td>프로세스 내 실행 단위</td></tr>
+        <tr><td>자원</td><td>독립적인 메모리 공간</td><td>프로세스 자원 공유</td></tr>
+        <tr><td>통신</td><td>IPC(파이프, 소켓 등)</td><td>공유 메모리 직접 접근</td></tr>
+        <tr><td>생성 비용</td><td>높음</td><td>낮음 (경량 프로세스)</td></tr>
+        <tr><td>오류 영향</td><td>독립적</td><td>같은 프로세스 내 영향</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>교착상태(Deadlock) 4필요조건 (모두 충족해야 발생)</h3>
+      <table class="base">
+        <tr><th>조건</th><th>설명</th><th>해결책</th></tr>
+        <tr><td><strong>상호배제</strong><br><span style="font-size:0.75rem;color:var(--gray)">Mutual Exclusion</span></td><td>자원은 한 번에 하나의 프로세스만 사용 가능</td><td>자원 공유 허용</td></tr>
+        <tr><td><strong>점유대기</strong><br><span style="font-size:0.75rem;color:var(--gray)">Hold &amp; Wait</span></td><td>자원을 점유한 채 다른 자원을 기다림</td><td>자원 일괄 요청</td></tr>
+        <tr><td><strong>비선점</strong><br><span style="font-size:0.75rem;color:var(--gray)">No Preemption</span></td><td>타 프로세스가 자원을 강제로 빼앗을 수 없음</td><td>강제 자원 회수</td></tr>
+        <tr><td><strong>순환대기</strong><br><span style="font-size:0.75rem;color:var(--gray)">Circular Wait</span></td><td>자원 요청이 원형(사이클)으로 대기</td><td>자원 번호 순서 부여</td></tr>
+      </table>
+      <div class="hl warn" style="margin-top:0.75rem;">
+        암기: <strong>상점비순</strong> (상호배제 → 점유대기 → 비선점 → 순환대기)
+      </div>
+    </div>
+    <div class="card">
+      <h3>메모리 관리 기법</h3>
+      <table class="base">
+        <tr><th>기법</th><th>설명</th><th>특징</th></tr>
+        <tr><td><strong>페이징</strong></td><td>메모리를 고정 크기 페이지로 분할</td><td>외부 단편화 없음, 내부 단편화 발생</td></tr>
+        <tr><td><strong>세그멘테이션</strong></td><td>논리적 단위(세그먼트)로 분할</td><td>내부 단편화 없음, 외부 단편화 발생</td></tr>
+        <tr><td><strong>가상 메모리</strong></td><td>보조기억장치를 RAM처럼 사용</td><td>스왑(Swap), 페이지 폴트 발생</td></tr>
+        <tr><td><strong>스래싱</strong><br><span style="font-size:0.75rem;color:var(--gray)">Thrashing</span></td><td>페이지 교체가 너무 빈번해 성능 저하</td><td>워킹셋(Working Set)으로 예방</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 스케줄링 -->
+  <div id="t-sched" class="tab-content">
+    <div class="card">
+      <h3>프로세스 스케줄링 알고리즘 요약</h3>
+      <table class="base">
+        <tr><th>알고리즘</th><th>선점 여부</th><th>특징</th><th>단점</th></tr>
+        <tr>
+          <td><strong>FCFS</strong></td>
+          <td><span class="badge b-npre">비선점</span></td>
+          <td>도착 순서대로 처리 (선입선출)</td>
+          <td>Convoy Effect</td>
+        </tr>
+        <tr>
+          <td><strong>SJF</strong></td>
+          <td><span class="badge b-npre">비선점</span></td>
+          <td>실행 시간 짧은 작업 먼저, 평균 대기시간 최소</td>
+          <td>기아(Starvation)</td>
+        </tr>
+        <tr>
+          <td><strong>SRTF</strong></td>
+          <td><span class="badge b-pre">선점</span></td>
+          <td>SJF의 선점형, 잔여시간 짧은 작업 실행</td>
+          <td>기아, 잦은 문맥교환</td>
+        </tr>
+        <tr>
+          <td><strong>Priority</strong></td>
+          <td><span class="badge b-pre">선점/비선점</span></td>
+          <td>우선순위 높은 작업 먼저</td>
+          <td>기아 → 에이징으로 해결</td>
+        </tr>
+        <tr>
+          <td><strong>Round Robin</strong></td>
+          <td><span class="badge b-pre">선점</span></td>
+          <td>시간 할당량(Time Quantum) 순환</td>
+          <td>TQ 크면 FCFS와 유사</td>
+        </tr>
+        <tr>
+          <td><strong>HRN</strong></td>
+          <td><span class="badge b-npre">비선점</span></td>
+          <td>SJF의 기아 보완<br><strong>우선순위 = (대기+실행) / 실행</strong></td>
+          <td>계산 복잡</td>
+        </tr>
+        <tr>
+          <td><strong>MLQ</strong></td>
+          <td><span class="badge b-pre">선점</span></td>
+          <td>다단계 큐, 작업 유형별 큐 분리</td>
+          <td>큐 간 이동 불가</td>
+        </tr>
+      </table>
+      <div class="hl warn" style="margin-top:0.75rem;">
+        <strong>에이징(Aging)</strong>: 오래 기다린 작업의 우선순위를 점진적으로 높여 기아 방지<br>
+        <strong>HRN 공식</strong>: 우선순위 = (대기시간 + 실행시간) / 실행시간 → 값이 클수록 먼저
+      </div>
+    </div>
+  </div>
+
+  <!-- 네트워크 -->
+  <div id="t-net" class="tab-content">
+    <div class="card">
+      <h3>TCP vs UDP 핵심 비교 (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>구분</th><th>TCP</th><th>UDP</th></tr>
+        <tr><td>연결 방식</td><td><strong>연결 지향</strong> (3-way handshake)</td><td><strong>비연결</strong></td></tr>
+        <tr><td>신뢰성</td><td>데이터 전달 보장, 순서 보장</td><td>보장 없음</td></tr>
+        <tr><td>속도</td><td>느림</td><td>빠름</td></tr>
+        <tr><td>흐름 제어</td><td>있음</td><td>없음</td></tr>
+        <tr><td>혼잡 제어</td><td>있음</td><td>없음</td></tr>
+        <tr><td>PDU</td><td>세그먼트 (Segment)</td><td>데이터그램 (Datagram)</td></tr>
+        <tr><td>사용 예</td><td>HTTP, FTP, 이메일</td><td>DNS, 스트리밍, 게임</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>TCP/IP 4계층 vs OSI 7계층 대응</h3>
+      <table class="base">
+        <tr><th>TCP/IP 4계층</th><th>OSI 7계층</th><th>주요 프로토콜</th></tr>
+        <tr><td>응용 계층</td><td>응용 + 표현 + 세션 (5,6,7)</td><td>HTTP, FTP, DNS, SMTP</td></tr>
+        <tr><td>전송 계층</td><td>전송 (4)</td><td>TCP, UDP</td></tr>
+        <tr><td>인터넷 계층</td><td>네트워크 (3)</td><td>IP, ICMP, ARP</td></tr>
+        <tr><td>네트워크 액세스</td><td>데이터링크 + 물리 (1,2)</td><td>이더넷, MAC</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>IP 주소</h3>
+      <table class="base">
+        <tr><th>구분</th><th>IPv4</th><th>IPv6</th></tr>
+        <tr><td>길이</td><td>32비트</td><td>128비트</td></tr>
+        <tr><td>표기</td><td>192.168.1.1 (점-십진)</td><td>2001:db8::1 (콜론-16진)</td></tr>
+        <tr><td>주소 수</td><td>약 43억</td><td>약 340언데실리온</td></tr>
+        <tr><td>헤더</td><td>가변 (20~60 바이트)</td><td>고정 (40 바이트)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 프로토콜/포트 -->
+  <div id="t-proto" class="tab-content">
+    <div class="card">
+      <h3>주요 프로토콜 포트번호 (암기 필수!)</h3>
+      <div class="port-grid" id="port-grid"></div>
+    </div>
+    <div class="card" style="margin-top:1rem;">
+      <h3>주요 네트워크 프로토콜 역할</h3>
+      <table class="base">
+        <tr><th>프로토콜</th><th>역할</th><th>계층</th></tr>
+        <tr><td><strong>ARP</strong></td><td>IP → MAC 주소 변환</td><td>네트워크</td></tr>
+        <tr><td><strong>RARP</strong></td><td>MAC → IP 주소 변환</td><td>네트워크</td></tr>
+        <tr><td><strong>ICMP</strong></td><td>오류 보고 및 진단 (ping)</td><td>네트워크</td></tr>
+        <tr><td><strong>DHCP</strong></td><td>IP 주소 자동 할당</td><td>응용</td></tr>
+        <tr><td><strong>DNS</strong></td><td>도메인 → IP 주소 변환</td><td>응용</td></tr>
+        <tr><td><strong>SNMP</strong></td><td>네트워크 장비 관리 및 모니터링</td><td>응용</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- DB 기초 -->
+  <div id="t-db" class="tab-content">
+    <div class="card">
+      <h3>키(Key) 종류 정의 (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>키 종류</th><th>정의</th><th>유일성</th><th>최소성</th></tr>
+        <tr><td><strong>슈퍼키</strong><br><span style="font-size:0.75rem;color:var(--gray)">Super Key</span></td><td>유일하게 튜플을 식별할 수 있는 속성 집합</td><td>O</td><td>X</td></tr>
+        <tr><td><strong>후보키</strong><br><span style="font-size:0.75rem;color:var(--gray)">Candidate Key</span></td><td>유일성 + 최소성을 만족하는 속성</td><td>O</td><td>O</td></tr>
+        <tr><td><strong>기본키</strong><br><span style="font-size:0.75rem;color:var(--gray)">Primary Key</span></td><td>후보키 중 선택된 키, NULL 불허</td><td>O</td><td>O</td></tr>
+        <tr><td><strong>대체키</strong><br><span style="font-size:0.75rem;color:var(--gray)">Alternate Key</span></td><td>후보키 - 기본키 = 대체키</td><td>O</td><td>O</td></tr>
+        <tr><td><strong>외래키</strong><br><span style="font-size:0.75rem;color:var(--gray)">Foreign Key</span></td><td>다른 테이블의 기본키를 참조하는 속성</td><td>X</td><td>X</td></tr>
+      </table>
+      <div class="hl" style="margin-top:0.75rem;">
+        포함 관계: <strong>슈퍼키 ⊃ 후보키 ⊃ 기본키</strong><br>
+        후보키 - 기본키 = <strong>대체키</strong>
+      </div>
+    </div>
+    <div class="card">
+      <h3>CRUD와 SQL 명령어 대응</h3>
+      <table class="base">
+        <tr><th>CRUD</th><th>SQL</th><th>HTTP 메서드</th></tr>
+        <tr><td><strong>Create</strong> (생성)</td><td><code class="il">INSERT</code></td><td>POST</td></tr>
+        <tr><td><strong>Read</strong> (조회)</td><td><code class="il">SELECT</code></td><td>GET</td></tr>
+        <tr><td><strong>Update</strong> (수정)</td><td><code class="il">UPDATE</code></td><td>PUT / PATCH</td></tr>
+        <tr><td><strong>Delete</strong> (삭제)</td><td><code class="il">DELETE</code></td><td>DELETE</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>관계 데이터 무결성</h3>
+      <table class="base">
+        <tr><th>무결성</th><th>설명</th></tr>
+        <tr><td><strong>개체 무결성</strong></td><td>기본키는 NULL이거나 중복될 수 없음</td></tr>
+        <tr><td><strong>참조 무결성</strong></td><td>외래키 값은 참조 테이블의 기본키 값이거나 NULL</td></tr>
+        <tr><td><strong>도메인 무결성</strong></td><td>속성값은 정의된 도메인 내의 값이어야 함</td></tr>
+        <tr><td><strong>사용자 정의 무결성</strong></td><td>사용자가 정의한 제약 조건 만족</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- S3 OSI 7계층 시각화 -->
+<section id="s3">
+  <h2 class="section-title"><span class="sec-num">3</span> OSI 7계층 시각화</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:1rem;">각 계층을 클릭하면 PDU, 프로토콜, 장비 정보가 나타납니다.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:1.5rem;">
+      <div class="osi-stack" id="osi-stack"></div>
+      <div style="flex:1;min-width:220px;">
+        <div class="osi-detail show" id="osi-detail">
+          <p style="color:var(--gray);font-size:0.84rem;">← 계층을 클릭하세요</p>
+        </div>
+        <div class="hl" style="margin-top:0.85rem;">
+          <strong>암기법 (7→1):</strong> <strong>아파서 티내면 네데물</strong><br>
+          <strong>아</strong>응용 · <strong>파</strong>표현 · <strong>서</strong>세션 · <strong>티</strong>전송 · <strong>내</strong>네트워크 · <strong>데</strong>이터링크 · <strong>물</strong>리
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S4 키워드 카드 -->
+<section id="s4">
+  <h2 class="section-title"><span class="sec-num">4</span> 시험용 키워드 플래시카드</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:0.85rem;">카드를 클릭하면 정답이 나옵니다.</p>
+  <div class="fc-grid" id="fc-container"></div>
+</section>
+
+<!-- S5 스케줄링 -->
+<section id="s5">
+  <h2 class="section-title"><span class="sec-num">5</span> 스케줄링 알고리즘 인터랙션</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:1rem;">알고리즘 카드를 클릭하면 상세 설명이 나타납니다.</p>
+  <div class="sched-grid" id="sched-container"></div>
+  <div class="sched-detail" id="sched-detail"></div>
+</section>
+
+<!-- S6 교착상태 -->
+<section id="s6">
+  <h2 class="section-title"><span class="sec-num">6</span> 교착상태 4조건 매칭 퀴즈</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:1rem;">설명을 읽고 해당하는 교착상태 조건을 선택하세요.</p>
+    <div id="dl-quiz-container"></div>
+    <div style="display:flex;gap:0.75rem;margin-top:1rem;align-items:center;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="checkDL()">채점</button>
+      <button class="btn btn-gray" onclick="resetDL()">다시 시작</button>
+      <span id="dl-score" style="font-size:0.9rem;font-weight:700;color:var(--primary);"></span>
+    </div>
+  </div>
+</section>
+
+<!-- S7 문제풀이 -->
+<section id="s7">
+  <h2 class="section-title"><span class="sec-num">7</span> 대표 문제 유형</h2>
+  <div id="oq-container"></div>
+  <div class="score-box" id="oq-score">
+    <div class="score-num" id="oq-snum">0/0</div>
+    <p style="color:var(--gray);margin-top:0.4rem;" id="oq-smsg"></p>
+  </div>
+  <button class="btn btn-primary" style="margin-top:1rem;" onclick="resetOQ()">다시 풀기</button>
+</section>
+
+<!-- S8 미니 퀴즈 -->
+<section id="s8">
+  <h2 class="section-title"><span class="sec-num">8</span> 미니 퀴즈</h2>
+  <div id="mq-container"></div>
+  <button class="btn btn-green" style="margin-top:0.85rem;" onclick="checkMQ()">채점하기</button>
+  <div id="mq-result" style="display:none;margin-top:1rem;"></div>
+</section>
+
+<!-- S9 오답노트 -->
+<section id="s9">
+  <h2 class="section-title"><span class="sec-num">9</span> 오답 노트</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.7rem;">틀린 문제나 헷갈리는 개념을 기록하세요. (자동 저장)</p>
+    <textarea class="memo" id="memo" placeholder="예) OSI 암기: 아파서 티내면 네데물 (응용-표현-세션-전송-네트워크-데이터링크-물리)&#10;예) 교착상태 4조건: 상점비순 (상호배제-점유대기-비선점-순환대기)&#10;예) HRN 공식: (대기시간+실행시간)/실행시간&#10;예) 후보키: 유일성+최소성 / 슈퍼키: 유일성만&#10;예) TCP: 연결지향/신뢰성 / UDP: 비연결/빠름"></textarea>
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.5rem;">
+      <button class="btn btn-primary" onclick="saveMemo()">저장</button>
+      <span id="memo-ok" style="font-size:0.8rem;color:#059669;display:none;">✓ 저장됨</span>
+    </div>
+  </div>
+</section>
+
+</div>
+<button class="scroll-top" id="stbtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ── OSI 7계층 데이터 ─────────────────────────────────────
+const osiLayers = [
+  {
+    num:7, name:'응용 계층', en:'Application',
+    pdu:'Message (메시지)',
+    proto:'HTTP, FTP, SMTP, POP3, DNS, Telnet, SNMP',
+    device:'-',
+    color:'#dc2626',
+    memo:'가장 위 계층. 사용자와 직접 인터페이스. HTTP(80), FTP(21)',
+  },
+  {
+    num:6, name:'표현 계층', en:'Presentation',
+    pdu:'Message (메시지)',
+    proto:'JPEG, MPEG, GIF, ASCII, EBCDIC',
+    device:'-',
+    color:'#ea580c',
+    memo:'데이터 형식 변환, 암호화/복호화, 압축/해제',
+  },
+  {
+    num:5, name:'세션 계층', en:'Session',
+    pdu:'Message (메시지)',
+    proto:'NetBIOS, RPC, SSH',
+    device:'-',
+    color:'#ca8a04',
+    memo:'통신 세션 설정/유지/해제, 동기화(Synchronization)',
+  },
+  {
+    num:4, name:'전송 계층', en:'Transport',
+    pdu:'Segment (세그먼트)',
+    proto:'TCP, UDP',
+    device:'L4 스위치',
+    color:'#16a34a',
+    memo:'TCP(연결지향/신뢰성) / UDP(비연결/빠름), 포트 번호 사용',
+  },
+  {
+    num:3, name:'네트워크 계층', en:'Network',
+    pdu:'Packet (패킷)',
+    proto:'IP, ICMP, ARP, RARP, OSPF, BGP',
+    device:'라우터',
+    color:'#0891b2',
+    memo:'IP 주소 기반 라우팅, 패킷 포워딩',
+  },
+  {
+    num:2, name:'데이터링크 계층', en:'Data Link',
+    pdu:'Frame (프레임)',
+    proto:'이더넷(Ethernet), MAC, PPP',
+    device:'스위치, 브리지',
+    color:'#2563eb',
+    memo:'MAC 주소 기반, 오류 검출(CRC), 흐름 제어',
+  },
+  {
+    num:1, name:'물리 계층', en:'Physical',
+    pdu:'Bit (비트)',
+    proto:'RS-232, DSL, 광케이블',
+    device:'허브, 리피터, 케이블',
+    color:'#7c3aed',
+    memo:'전기/광/무선 신호로 데이터를 0과 1로 전송',
+  },
+];
+
+// ── 포트 데이터 ───────────────────────────────────────────
+const ports = [
+  { port:'20', name:'FTP (데이터)' },
+  { port:'21', name:'FTP (제어)' },
+  { port:'22', name:'SSH' },
+  { port:'23', name:'Telnet' },
+  { port:'25', name:'SMTP' },
+  { port:'53', name:'DNS' },
+  { port:'67/68', name:'DHCP' },
+  { port:'80', name:'HTTP' },
+  { port:'110', name:'POP3' },
+  { port:'143', name:'IMAP' },
+  { port:'161', name:'SNMP' },
+  { port:'443', name:'HTTPS' },
+];
+
+// ── 스케줄링 데이터 ───────────────────────────────────────
+const schedAlgos = [
+  {
+    name:'FCFS', full:'First Come First Served', preempt:'비선점',
+    desc:'도착 순서대로 처리합니다. 구현이 단순하지만 실행 시간이 긴 작업이 앞에 있으면 뒤 작업이 오래 대기합니다.',
+    memo:'Convoy Effect: 짧은 작업들이 긴 작업 하나 때문에 오래 기다리는 현상',
+  },
+  {
+    name:'SJF', full:'Shortest Job First', preempt:'비선점',
+    desc:'CPU 실행 시간이 가장 짧은 작업을 먼저 실행합니다. 평균 대기시간이 최소화됩니다.',
+    memo:'단점: 기아(Starvation) — 긴 작업은 영원히 실행 안 될 수 있음\n실행시간을 사전에 알아야 함',
+  },
+  {
+    name:'SRTF', full:'Shortest Remaining Time First', preempt:'선점',
+    desc:'SJF의 선점형 버전입니다. 현재 실행 중인 작업보다 잔여 실행 시간이 짧은 새 작업이 도착하면 선점합니다.',
+    memo:'SJF의 선점 버전\n기아 발생 가능, 잦은 문맥교환 오버헤드',
+  },
+  {
+    name:'Priority', full:'Priority Scheduling', preempt:'선점/비선점',
+    desc:'우선순위가 높은 프로세스를 먼저 실행합니다. 선점형과 비선점형 모두 가능합니다.',
+    memo:'기아(Starvation) 발생 → 에이징(Aging)으로 해결\n에이징: 오래 기다린 작업의 우선순위를 점진적으로 높임',
+  },
+  {
+    name:'RR', full:'Round Robin', preempt:'선점',
+    desc:'각 프로세스에 동일한 시간 할당량(Time Quantum, 타임 슬라이스)을 주고 순환합니다.',
+    memo:'TQ가 크면 → FCFS와 유사\nTQ가 작으면 → 문맥교환 오버헤드 증가\n시분할(Time Sharing) 시스템에 적합',
+  },
+  {
+    name:'HRN', full:'Highest Response Ratio Next', preempt:'비선점',
+    desc:'SJF의 기아 문제를 보완합니다. 대기 시간이 길수록 우선순위가 높아집니다.',
+    memo:'우선순위 공식: (대기시간 + 실행시간) / 실행시간\n= (W + S) / S\n값이 클수록 먼저 실행',
+  },
+  {
+    name:'MLQ', full:'Multi-Level Queue', preempt:'선점',
+    desc:'여러 개의 큐를 사용하여 작업 유형에 따라 다른 큐에 배치합니다.',
+    memo:'큐 간 작업 이동 불가\n각 큐마다 독립적인 스케줄링 정책 적용\nMFQ(Multi-Level Feedback Queue): 큐 간 이동 가능',
+  },
+];
+
+// ── 교착상태 퀴즈 데이터 ─────────────────────────────────
+const dlQuestions = [
+  {
+    desc:'프로세스가 어떤 자원을 점유한 채로, 다른 자원을 얻기 위해 대기하는 상태',
+    answer:'점유대기',
+    options:['상호배제','점유대기','비선점','순환대기'],
+  },
+  {
+    desc:'자원은 한 번에 한 프로세스만 사용할 수 있으며, 다른 프로세스가 사용 중인 자원을 사용할 수 없음',
+    answer:'상호배제',
+    options:['상호배제','점유대기','비선점','순환대기'],
+  },
+  {
+    desc:'프로세스가 자원을 사용하는 도중, 다른 프로세스가 그 자원을 강제로 빼앗을 수 없음',
+    answer:'비선점',
+    options:['상호배제','점유대기','비선점','순환대기'],
+  },
+  {
+    desc:'각 프로세스가 다음 프로세스가 원하는 자원을 점유하고 있어, 대기가 원형(사이클)을 형성함',
+    answer:'순환대기',
+    options:['상호배제','점유대기','비선점','순환대기'],
+  },
+];
+
+// ── 대표 문제 데이터 ─────────────────────────────────────
+const oqData = [
+  {
+    q:'OSI 7계층에서 TCP, UDP가 속하는 계층은?',
+    opts:['응용 계층','세션 계층','전송 계층','네트워크 계층'], ans:2,
+    exp:'전송 계층(Transport Layer, 4계층)에서 TCP와 UDP가 동작합니다.\nPDU는 Segment입니다.\n네트워크 계층: IP, ICMP (PDU: Packet)',
+  },
+  {
+    q:'교착상태(Deadlock) 발생 4가지 필요조건 중 "자원을 점유한 채 다른 자원을 기다리는 상태"에 해당하는 것은?',
+    opts:['상호배제','점유대기','비선점','순환대기'], ans:1,
+    exp:'교착상태 4필요조건 (암기: 상점비순)\n① 상호배제: 자원은 한 번에 하나만\n② 점유대기: 자원 점유 중 다른 자원 대기\n③ 비선점: 강제 자원 회수 불가\n④ 순환대기: 원형 대기 사이클 형성',
+  },
+  {
+    q:'SJF 스케줄링의 단점인 기아(Starvation) 현상을 해결하기 위한 방법은?',
+    opts:['FCFS로 전환','라운드 로빈 적용','에이징(Aging) 기법 적용','선점형으로 전환'], ans:2,
+    exp:'에이징(Aging): 프로세스가 오래 기다릴수록 우선순위를 점진적으로 높이는 기법\n이를 통해 낮은 우선순위 프로세스도 결국 실행될 수 있습니다.',
+  },
+  {
+    q:'HRN 스케줄링에서 우선순위를 계산하는 공식으로 올바른 것은?',
+    opts:[
+      '실행시간 / 대기시간',
+      '(대기시간 + 실행시간) / 실행시간',
+      '대기시간 / (대기시간 + 실행시간)',
+      '(실행시간 - 대기시간) / 실행시간',
+    ], ans:1,
+    exp:'HRN 우선순위 = (대기시간 + 실행시간) / 실행시간 = (W + S) / S\n값이 클수록 먼저 실행됩니다.\nSJF의 기아 문제를 보완: 대기시간이 길수록 우선순위가 높아집니다.',
+  },
+  {
+    q:'다음 중 TCP와 UDP의 차이에 대한 설명으로 옳은 것은?',
+    opts:[
+      'UDP는 연결 지향 프로토콜이다',
+      'TCP는 신뢰성 있는 데이터 전송을 보장한다',
+      'TCP는 UDP보다 빠르다',
+      'UDP는 혼잡 제어를 지원한다',
+    ], ans:1,
+    exp:'TCP: 연결 지향, 신뢰성 보장, 순서 보장, 흐름/혼잡 제어 → 느리지만 안전\nUDP: 비연결, 신뢰성 없음, 빠름 → DNS, 스트리밍, 게임에 사용',
+  },
+  {
+    q:'OSI 7계층에서 라우터(Router)가 동작하는 계층은?',
+    opts:['1계층 물리','2계층 데이터링크','3계층 네트워크','4계층 전송'], ans:2,
+    exp:'계층별 대표 장비:\n1계층 물리: 허브, 리피터\n2계층 데이터링크: 스위치, 브리지\n3계층 네트워크: 라우터\n4계층 전송: L4 스위치',
+  },
+  {
+    q:'다음 키 중 "유일성은 있지만 최소성이 없는" 키는?',
+    opts:['기본키','후보키','대체키','슈퍼키'], ans:3,
+    exp:'슈퍼키: 유일성 O, 최소성 X (속성 집합)\n후보키: 유일성 O, 최소성 O\n기본키: 후보키 중 선택된 키\n대체키: 후보키 - 기본키',
+  },
+  {
+    q:'DHCP 프로토콜의 역할로 올바른 것은?',
+    opts:[
+      '도메인 이름을 IP 주소로 변환',
+      'IP 주소를 MAC 주소로 변환',
+      'IP 주소를 클라이언트에 자동으로 할당',
+      '네트워크 장비 모니터링 및 관리',
+    ], ans:2,
+    exp:'DHCP(Dynamic Host Configuration Protocol, 포트 67/68): IP 주소 자동 할당\nDNS: 도메인 → IP 변환 (포트 53)\nARP: IP → MAC 변환\nSNMP: 네트워크 장비 관리 (포트 161)',
+  },
+];
+
+// ── 미니퀴즈 데이터 ───────────────────────────────────────
+const mqData = [
+  { q:'OSI 7계층에서 패킷(Packet)을 PDU로 사용하는 계층은?', opts:['전송 계층','네트워크 계층','데이터링크 계층','물리 계층'], ans:1 },
+  { q:'교착상태 4조건에 해당하지 않는 것은?', opts:['상호배제','점유대기','선점','순환대기'], ans:2 },
+  { q:'모든 프로세스에 동일한 시간 할당량을 부여하는 선점형 스케줄링은?', opts:['FCFS','SJF','Round Robin','HRN'], ans:2 },
+  { q:'HTTP 기본 포트번호는?', opts:['21','80','443','53'], ans:1 },
+  { q:'후보키와 기본키의 차이로 올바른 것은?', opts:['기본키는 NULL 허용','기본키는 후보키 중 선택된 키','후보키는 유일성이 없음','기본키는 최소성이 없음'], ans:1 },
+  { q:'IP 주소를 MAC 주소로 변환하는 프로토콜은?', opts:['RARP','ARP','DHCP','DNS'], ans:1 },
+  { q:'HTTPS 포트번호는?', opts:['80','8080','443','22'], ans:2 },
+  { q:'스래싱(Thrashing) 현상을 방지하기 위한 기법은?', opts:['페이징','세그멘테이션','워킹셋','캐싱'], ans:2 },
+];
+
+// ── 렌더링 ────────────────────────────────────────────────
+function renderOSI() {
+  document.getElementById('osi-stack').innerHTML = osiLayers.map((l, i) =>
+    `<div class="osi-layer" style="background:${l.color};" onclick="showOSI(${i})" id="osi-${i}">
+      <div class="osi-left">
+        <div class="osi-num">${l.num}</div>
+        <div>
+          <div class="osi-name">${l.name}</div>
+          <div class="osi-en">${l.en}</div>
+        </div>
+      </div>
+      <span class="osi-arrow">▼</span>
+    </div>`
+  ).join('');
+}
+
+let activeOSI = -1;
+function showOSI(i) {
+  document.querySelectorAll('.osi-layer').forEach((el, j) => el.classList.toggle('active', j === i));
+  const l = osiLayers[i];
+  const det = document.getElementById('osi-detail');
+  if (activeOSI === i) {
+    det.innerHTML = '<p style="color:var(--gray);font-size:0.84rem;">← 계층을 클릭하세요</p>';
+    document.getElementById(`osi-${i}`).classList.remove('active');
+    activeOSI = -1;
+    return;
+  }
+  det.innerHTML = `
+    <dl class="osi-detail-grid">
+      <dt>계층</dt><dd><strong>${l.num}계층 ${l.name}</strong> (${l.en})</dd>
+      <dt>PDU</dt><dd>${l.pdu}</dd>
+      <dt>프로토콜</dt><dd>${l.proto}</dd>
+      <dt>장비</dt><dd>${l.device}</dd>
+    </dl>
+    <div class="osi-note">${l.memo}</div>`;
+  activeOSI = i;
+}
+
+function renderPorts() {
+  document.getElementById('port-grid').innerHTML = ports.map(p =>
+    `<div class="port-item"><div class="port-num">${p.port}</div><div class="port-name">${p.name}</div></div>`
+  ).join('');
+}
+
+function renderFC() {
+  const fcData = [
+    { f:'OSI 7계층 순서\n(1→7)',   b:'물리→데이터링크→네트워크\n→전송→세션→표현→응용\n암기: 아파서 티내면 네데물' },
+    { f:'교착상태 4조건',            b:'상호배제·점유대기\n비선점·순환대기\n암기: 상점비순' },
+    { f:'TCP',                      b:'연결 지향, 신뢰성 보장\n흐름/혼잡 제어\nPDU: 세그먼트' },
+    { f:'UDP',                      b:'비연결, 신뢰성 없음\n빠름, 실시간 스트리밍\nPDU: 데이터그램' },
+    { f:'라우터 동작 계층',          b:'3계층 (네트워크 계층)\nIP 기반 경로 결정\nPDU: 패킷' },
+    { f:'스위치 동작 계층',          b:'2계층 (데이터링크 계층)\nMAC 주소 기반\nPDU: 프레임' },
+    { f:'후보키',                   b:'유일성 O + 최소성 O\n릴레이션에서 튜플을\n유일하게 구분하는 최소 속성' },
+    { f:'슈퍼키',                   b:'유일성 O + 최소성 X\n후보키를 포함하는\n더 넓은 개념' },
+    { f:'Round Robin',              b:'시간 할당량(Time Quantum) 순환\n선점형, 시분할 시스템\nTQ 크면 FCFS와 유사' },
+    { f:'HRN 공식',                 b:'(대기시간+실행시간)/실행시간\n= (W+S)/S\n값이 클수록 먼저 실행' },
+    { f:'DNS 포트',                 b:'53번\n도메인 → IP 주소 변환\nUDP/TCP 사용' },
+    { f:'ARP',                      b:'IP → MAC 주소 변환\n같은 네트워크 내 사용\n3계층 프로토콜' },
+    { f:'스래싱 (Thrashing)',        b:'페이지 교체가 너무 빈번\n→ 실제 작업보다 스와핑에\n더 많은 시간 소비' },
+    { f:'에이징 (Aging)',            b:'기아(Starvation) 해결책\n오래 기다린 프로세스의\n우선순위를 점진적으로 높임' },
+    { f:'외래키',                   b:'다른 테이블의 기본키 참조\n참조 무결성 보장\nNULL 허용' },
+    { f:'SMTP',                     b:'이메일 전송 프로토콜\n포트: 25\nSend Mail Transfer Protocol' },
+  ];
+  document.getElementById('fc-container').innerHTML = fcData.map(c =>
+    `<div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-inner">
+        <div class="fc-front">${c.f.replace(/\n/g, '<br>')}</div>
+        <div class="fc-back">${c.b.replace(/\n/g, '<br>')}</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function renderSched() {
+  document.getElementById('sched-container').innerHTML = schedAlgos.map((a, i) =>
+    `<div class="sched-card" onclick="showSched(${i})" id="sc-${i}">
+      <div class="sched-name">${a.name}</div>
+      <div class="sched-full">${a.full}</div>
+      <span class="badge ${a.preempt.includes('비') ? 'b-npre' : 'b-pre'}">${a.preempt}</span>
+    </div>`
+  ).join('');
+}
+
+let activeSched = -1;
+function showSched(i) {
+  document.querySelectorAll('.sched-card').forEach((el, j) => el.classList.toggle('active', j === i));
+  const det = document.getElementById('sched-detail');
+  if (activeSched === i) { det.classList.remove('show'); activeSched = -1; return; }
+  const a = schedAlgos[i];
+  det.innerHTML = `
+    <strong>${a.name} — ${a.full}</strong><br>
+    <span class="badge ${a.preempt.includes('비') ? 'b-npre' : 'b-pre'}" style="margin:0.5rem 0;display:inline-block;">${a.preempt}</span>
+    <p style="margin-top:0.5rem;">${a.desc}</p>
+    <div class="hl" style="margin-top:0.65rem;font-size:0.81rem;">${a.memo.replace(/\n/g,'<br>')}</div>`;
+  det.classList.add('show');
+  activeSched = i;
+}
+
+// 교착상태 퀴즈
+let dlSelected = {};
+function renderDL() {
+  dlSelected = {};
+  document.getElementById('dl-score').textContent = '';
+  document.getElementById('dl-quiz-container').innerHTML = dlQuestions.map((q, qi) =>
+    `<div style="margin-bottom:1.25rem;">
+      <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.6rem;">Q${qi+1}. ${q.desc}</p>
+      <div class="dl-items">${q.options.map(opt =>
+        `<div class="dl-item" id="dl-${qi}-${opt}" onclick="pickDL(${qi},'${opt}',this)">${opt}</div>`
+      ).join('')}</div>
+    </div>`
+  ).join('');
+}
+
+function pickDL(qi, opt, el) {
+  dlQuestions[qi].options.forEach(o => {
+    const btn = document.getElementById(`dl-${qi}-${o}`);
+    if (btn) { btn.classList.remove('picked','correct','wrong'); }
+  });
+  el.classList.add('picked');
+  dlSelected[qi] = opt;
+}
+
+function checkDL() {
+  let sc = 0;
+  dlQuestions.forEach((q, qi) => {
+    q.options.forEach(o => {
+      const btn = document.getElementById(`dl-${qi}-${o}`);
+      if (btn) btn.classList.remove('picked','correct','wrong');
+    });
+    document.getElementById(`dl-${qi}-${q.answer}`).classList.add('correct');
+    if (dlSelected[qi] && dlSelected[qi] !== q.answer) {
+      document.getElementById(`dl-${qi}-${dlSelected[qi]}`).classList.add('wrong');
+    }
+    if (dlSelected[qi] === q.answer) sc++;
+  });
+  document.getElementById('dl-score').textContent = `${sc}/${dlQuestions.length} 정답`;
+}
+
+function resetDL() { renderDL(); }
+
+// 대표 문제
+let oqAnswered = {}, oqSelected = {};
+function renderOQ() {
+  oqAnswered = {}; oqSelected = {};
+  document.getElementById('oq-container').innerHTML = oqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi+1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<div class="opt" onclick="pickOQ(${qi},${oi},this)" id="oq-${qi}-${oi}">${o}</div>`
+      ).join('')}</div>
+      <div class="exp" id="exp-${qi}">${q.exp.replace(/\n/g,'<br>')}</div>
+    </div>`
+  ).join('');
+  document.getElementById('oq-score').style.display = 'none';
+}
+
+function pickOQ(qi, oi, el) {
+  if (oqAnswered[qi]) return;
+  oqAnswered[qi] = true; oqSelected[qi] = oi;
+  const correct = oqData[qi].ans;
+  document.getElementById(`oq-${qi}-${correct}`).classList.add('correct');
+  if (oi !== correct) el.classList.add('wrong');
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  if (Object.keys(oqAnswered).length === oqData.length) {
+    const sc = oqData.filter((_, i) => oqSelected[i] === oqData[i].ans).length;
+    document.getElementById('oq-snum').textContent = `${sc}/${oqData.length}`;
+    document.getElementById('oq-smsg').textContent = sc === oqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 오답노트에 기록하세요!';
+    document.getElementById('oq-score').style.display = 'block';
+  }
+}
+
+function resetOQ() { renderOQ(); }
+
+function renderMQ() {
+  document.getElementById('mq-container').innerHTML = mqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi+1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<label style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;background:#f8fafc;border:2px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.84rem;" id="mql-${qi}-${oi}">
+          <input type="radio" name="mq${qi}" value="${oi}" style="margin:0;flex-shrink:0;">${o}
+        </label>`
+      ).join('')}</div>
+    </div>`
+  ).join('');
+  document.getElementById('mq-result').style.display = 'none';
+}
+
+function checkMQ() {
+  let sc = 0;
+  mqData.forEach((q, qi) => {
+    const sel = document.querySelector(`input[name="mq${qi}"]:checked`);
+    const v = sel ? +sel.value : -1;
+    const lbl = id => document.getElementById(`mql-${qi}-${id}`);
+    lbl(q.ans).style.cssText += ';border-color:#059669;background:#d1fae5;';
+    if (v !== -1 && v !== q.ans) lbl(v).style.cssText += ';border-color:#dc2626;background:#fee2e2;';
+    if (v === q.ans) sc++;
+  });
+  const r = document.getElementById('mq-result');
+  r.style.display = 'block';
+  r.innerHTML = `<div class="card" style="text-align:center;">
+    <div class="score-num">${sc}/${mqData.length}</div>
+    <p style="color:var(--gray);margin-top:0.4rem;">${sc === mqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 다시 복습하세요!'}</p>
+  </div>`;
+}
+
+function tab(btn, id) {
+  btn.closest('section').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.closest('section').querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+function saveMemo() {
+  localStorage.setItem('bt_memo', document.getElementById('memo').value);
+  const ok = document.getElementById('memo-ok');
+  ok.style.display = 'inline';
+  setTimeout(() => { ok.style.display = 'none'; }, 2000);
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('stbtn').classList.toggle('show', window.scrollY > 300);
+  let cur = '';
+  document.querySelectorAll('section[id]').forEach(s => { if (window.scrollY >= s.offsetTop - 110) cur = s.id; });
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderOSI();
+  renderPorts();
+  renderFC();
+  renderSched();
+  renderDL();
+  renderOQ();
+  renderMQ();
+  const m = localStorage.getItem('bt_memo');
+  if (m) document.getElementById('memo').value = m;
+  document.getElementById('memo').addEventListener('input', () =>
+    localStorage.setItem('bt_memo', document.getElementById('memo').value)
+  );
+});
+</script>
+</body>
+</html>

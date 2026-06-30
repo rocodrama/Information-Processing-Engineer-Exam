@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>10. 프로그래밍 언어 활용 | 정보처리기사 실기</title>
+<style>
+:root {
+  --primary: #2563eb;
+  --primary-light: #dbeafe;
+  --secondary: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --dark: #1e293b;
+  --gray: #64748b;
+  --light: #f8fafc;
+  --border: #e2e8f0;
+  --code-bg: #0f172a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.6; }
+
+nav { position: sticky; top: 0; z-index: 100; background: var(--dark); padding: 0.6rem 1.5rem; display: flex; gap: 0.5rem; align-items: center; overflow-x: auto; scrollbar-width: none; }
+nav::-webkit-scrollbar { display: none; }
+nav .nav-title { color: #93c5fd; font-weight: 700; font-size: 0.82rem; white-space: nowrap; margin-right: 0.5rem; }
+nav a { color: #94a3b8; text-decoration: none; font-size: 0.78rem; white-space: nowrap; padding: 0.3rem 0.7rem; border-radius: 5px; transition: all 0.2s; }
+nav a:hover, nav a.active { color: white; background: #334155; }
+
+.hero { background: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%); color: white; padding: 2.5rem 2rem; text-align: center; }
+.hero h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.4rem; }
+.hero .subtitle { color: #93c5fd; font-size: 0.95rem; margin-bottom: 1rem; }
+.tags { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; }
+.tag { background: rgba(255,255,255,0.15); color: white; padding: 0.2rem 0.65rem; border-radius: 20px; font-size: 0.78rem; }
+
+.container { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem; }
+section { margin-bottom: 3rem; }
+.section-title { font-size: 1.3rem; font-weight: 700; color: var(--dark); margin-bottom: 1.25rem; padding-bottom: 0.6rem; border-bottom: 3px solid var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { width: 30px; height: 30px; background: var(--primary); color: white; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; flex-shrink: 0; }
+
+.card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-bottom: 1rem; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+.card h3 { font-size: 0.95rem; margin-bottom: 0.75rem; }
+
+.tabs { display: flex; gap: 0.4rem; margin-bottom: 1.25rem; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+.tab-btn { padding: 0.45rem 1rem; background: none; border: none; color: var(--gray); cursor: pointer; font-size: 0.85rem; font-weight: 600; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.code-block {
+  background: var(--code-bg); color: #e2e8f0;
+  padding: 1.1rem 1.25rem; border-radius: 8px;
+  font-family: 'Consolas', 'Monaco', monospace; font-size: 0.82rem; line-height: 1.75;
+  overflow-x: auto; margin: 0.6rem 0; position: relative;
+  white-space: pre-wrap;
+}
+.lang-badge { position: absolute; top: 0.4rem; right: 0.6rem; font-size: 0.68rem; color: #475569; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+/* syntax colors — used via innerHTML */
+.cm { color: #6b7280; }
+.kw { color: #60a5fa; }
+.st { color: #86efac; }
+.nm { color: #fbbf24; }
+.fn { color: #c084fc; }
+
+table.base { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+table.base th { background: var(--dark); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+table.base td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+table.base tr:hover td { background: #f0f9ff; }
+table.base .cat td { background: #f1f5f9; font-weight: 700; color: var(--primary); font-size: 0.75rem; text-transform: uppercase; }
+
+.badge { display: inline-block; padding: 0.18rem 0.55rem; border-radius: 4px; font-size: 0.73rem; font-weight: 700; }
+.bc { background: #fef3c7; color: #92400e; }
+.bj { background: #fee2e2; color: #991b1b; }
+.bp { background: #dcfce7; color: #166534; }
+
+code.il { background: #f1f5f9; color: #dc2626; padding: 0.1rem 0.3rem; border-radius: 3px; font-family: monospace; font-size: 0.81rem; }
+
+.hl { background: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid var(--primary); border-radius: 7px; padding: 0.8rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; }
+.hl.warn { background: #fffbeb; border-color: #fde68a; border-left-color: var(--warning); }
+.hl.ok { background: #f0fdf4; border-color: #bbf7d0; border-left-color: var(--secondary); }
+
+.fc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 0.75rem; }
+.flip-card { height: 130px; perspective: 1000px; cursor: pointer; }
+.flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.55s; transform-style: preserve-3d; }
+.flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+.fc-front, .fc-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0.85rem; text-align: center; }
+.fc-front { background: white; border: 2px solid var(--primary); color: var(--dark); font-weight: 600; font-size: 0.85rem; }
+.fc-back { background: var(--primary); color: white; transform: rotateY(180deg); font-size: 0.78rem; line-height: 1.5; }
+
+.quiz-item { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem; }
+.quiz-q { font-weight: 700; margin-bottom: 0.75rem; font-size: 0.9rem; }
+.quiz-code { background: var(--code-bg); color: #e2e8f0; padding: 0.9rem 1rem; border-radius: 7px; font-family: monospace; font-size: 0.8rem; line-height: 1.75; margin-bottom: 0.85rem; overflow-x: auto; white-space: pre-wrap; }
+.opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.4rem; }
+.opt { padding: 0.55rem 0.9rem; background: #f8fafc; border: 2px solid var(--border); border-radius: 7px; cursor: pointer; font-family: monospace; font-size: 0.82rem; text-align: center; transition: all 0.18s; white-space: pre-wrap; }
+.opt:hover { border-color: var(--primary); background: var(--primary-light); }
+.opt.correct { border-color: var(--secondary); background: #d1fae5; color: #065f46; font-weight: 700; }
+.opt.wrong { border-color: var(--danger); background: #fee2e2; color: #991b1b; }
+.exp { display: none; margin-top: 0.85rem; padding: 0.7rem 0.9rem; background: #f0fdf4; border-left: 4px solid var(--secondary); border-radius: 4px; font-size: 0.82rem; line-height: 1.6; white-space: pre-wrap; }
+.exp.show { display: block; }
+
+.score-box { background: white; border: 2px solid var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; margin-top: 1.25rem; display: none; }
+.score-num { font-size: 2.2rem; font-weight: 800; color: var(--primary); }
+
+.mem-viz { display: flex; gap: 0.6rem; align-items: flex-start; overflow-x: auto; padding: 0.5rem 0; }
+.mem-cell { text-align: center; min-width: 75px; }
+.mem-addr { font-size: 0.65rem; color: var(--gray); margin-bottom: 3px; }
+.mem-box { border: 2px solid var(--border); border-radius: 5px; padding: 0.5rem 0.25rem; background: white; font-family: monospace; font-size: 0.88rem; font-weight: 700; transition: all 0.3s; }
+.mem-box.hi { border-color: var(--primary); background: var(--primary-light); }
+.mem-box.ptr { border-color: var(--warning); background: #fffbeb; }
+.mem-label { font-size: 0.7rem; color: var(--gray); margin-top: 3px; }
+
+.btn { padding: 0.5rem 1.1rem; border: none; border-radius: 7px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: opacity 0.2s; }
+.btn:hover { opacity: 0.85; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-green { background: var(--secondary); color: white; }
+.btn-gray { background: var(--gray); color: white; }
+.btn-yellow { background: var(--warning); color: white; }
+
+textarea.memo { width: 100%; min-height: 140px; padding: 0.9rem; border: 2px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.88rem; resize: vertical; background: #fffef7; }
+textarea.memo:focus { outline: none; border-color: var(--primary); }
+
+.scroll-top { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--primary); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; }
+.scroll-top.show { display: flex; }
+
+@media (max-width: 700px) {
+  .container { padding: 1rem; }
+  .hero h1 { font-size: 1.35rem; }
+  .card-grid { grid-template-columns: 1fr; }
+  .fc-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">⚡ 10. 프로그래밍</span>
+  <a href="#s1">출제기준</a>
+  <a href="#s2">핵심개념</a>
+  <a href="#s3">키워드카드</a>
+  <a href="#s4">언어비교</a>
+  <a href="#s5">포인터</a>
+  <a href="#s6">OOP</a>
+  <a href="#s7">출력퀴즈</a>
+  <a href="#s8">미니퀴즈</a>
+  <a href="#s9">오답노트</a>
+</nav>
+
+<div class="hero">
+  <h1>10. 프로그래밍 언어 활용</h1>
+  <p class="subtitle">기본문법 · 언어특성 · 라이브러리 — 코드 출력 예측이 핵심!</p>
+  <div class="tags">
+    <span class="tag">C언어</span>
+    <span class="tag">Java</span>
+    <span class="tag">Python</span>
+    <span class="tag">포인터</span>
+    <span class="tag">OOP</span>
+    <span class="tag">자료형</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- S1 출제기준 -->
+<section id="s1">
+  <h2 class="section-title"><span class="sec-num">1</span> 출제기준 요약</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3 style="color:var(--primary)">🔤 기본문법 활용하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>데이터 타입, 변수 선언</li>
+        <li>연산자 (산술, 관계, 논리, 비트)</li>
+        <li>제어문 (if, switch), 반복문 (for, while)</li>
+        <li>배열, 포인터, 구조체</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--secondary)">🧬 언어특성 활용하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>C: 절차지향, 포인터, 메모리 직접 관리</li>
+        <li>Java: 객체지향, JVM, 예외처리</li>
+        <li>Python: 동적타입, 들여쓰기, GC</li>
+        <li>클래스, 객체, 상속, 다형성</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--warning)">📚 라이브러리 활용하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>C: stdio.h, stdlib.h, string.h, math.h</li>
+        <li>Java: java.lang, java.util, java.io</li>
+        <li>Python: 표준 내장 함수 및 모듈</li>
+        <li>라이브러리 검색·선택·구성·적용</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hl warn">
+    <strong>⚠️ 시험 핵심:</strong> 코드를 읽고 <strong>출력 결과를 쓰는 문제</strong>가 매회 3~5문제 출제됩니다.
+    C언어 포인터·증감연산자, Java 상속·오버라이딩, Python 슬라이싱이 특히 자주 나옵니다.
+  </div>
+</section>
+
+<!-- S2 핵심개념 -->
+<section id="s2">
+  <h2 class="section-title"><span class="sec-num">2</span> 핵심 개념</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="tab(this,'c')">C 언어</button>
+    <button class="tab-btn" onclick="tab(this,'java')">Java</button>
+    <button class="tab-btn" onclick="tab(this,'py')">Python</button>
+    <button class="tab-btn" onclick="tab(this,'dtype')">자료형</button>
+    <button class="tab-btn" onclick="tab(this,'op')">연산자</button>
+  </div>
+
+  <div id="c" class="tab-content active">
+    <div class="card">
+      <h3>C 기본 입출력 &amp; 형식 지정자</h3>
+      <div class="code-block" data-code="c-io"></div>
+      <table class="base" style="margin-top:0.75rem;">
+        <tr><th>지정자</th><th>자료형</th><th>예시</th></tr>
+        <tr><td><code class="il">%d</code></td><td>int (정수)</td><td>printf("%d", 42) → 42</td></tr>
+        <tr><td><code class="il">%f</code></td><td>float/double</td><td>printf("%.2f", 3.1) → 3.10</td></tr>
+        <tr><td><code class="il">%c</code></td><td>char (문자)</td><td>printf("%c", 65) → A</td></tr>
+        <tr><td><code class="il">%s</code></td><td>char* (문자열)</td><td>printf("%s", "hi") → hi</td></tr>
+        <tr><td><code class="il">%o</code></td><td>8진수</td><td>printf("%o", 8) → 10</td></tr>
+        <tr><td><code class="il">%x</code></td><td>16진수</td><td>printf("%x", 255) → ff</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>포인터 (Pointer)</h3>
+      <div class="code-block" data-code="c-ptr"></div>
+      <div class="hl">
+        <strong>핵심 암기:</strong> &nbsp;
+        <code class="il">int *p</code> 포인터 선언 &nbsp;|&nbsp;
+        <code class="il">&amp;a</code> 주소 연산자 &nbsp;|&nbsp;
+        <code class="il">*p</code> 역참조(값에 접근)
+      </div>
+    </div>
+    <div class="card">
+      <h3>구조체 (struct)</h3>
+      <div class="code-block" data-code="c-struct"></div>
+      <div class="hl warn">
+        구조체 <strong>일반 변수</strong> 접근: <code class="il">s.name</code> (점)<br />
+        구조체 <strong>포인터</strong> 접근: <code class="il">p-&gt;name</code> (화살표)
+      </div>
+    </div>
+  </div>
+
+  <div id="java" class="tab-content">
+    <div class="card">
+      <h3>Java 기본 구조 &amp; 문자열</h3>
+      <div class="code-block" data-code="java-basic"></div>
+    </div>
+    <div class="card">
+      <h3>상속 &amp; 오버라이딩 (자주 출제!)</h3>
+      <div class="code-block" data-code="java-inherit"></div>
+      <div class="hl warn">
+        <strong>⚠️ 핵심 규칙</strong><br />
+        메서드: <strong>런타임 타입</strong>(실제 객체) 기준 → 오버라이딩된 메서드 호출<br />
+        필드: <strong>참조변수 타입</strong>(선언 타입) 기준
+      </div>
+    </div>
+    <div class="card">
+      <h3>예외 처리 (try-catch-finally)</h3>
+      <div class="code-block" data-code="java-trycatch"></div>
+      <div class="hl ok"><strong>finally</strong> 블록은 예외 발생 여부와 무관하게 <strong>무조건 실행</strong>됩니다.</div>
+    </div>
+  </div>
+
+  <div id="py" class="tab-content">
+    <div class="card">
+      <h3>Python 기본 &amp; 자료구조</h3>
+      <div class="code-block" data-code="py-basic"></div>
+    </div>
+    <div class="card">
+      <h3>리스트 슬라이싱 (자주 출제!)</h3>
+      <div class="code-block" data-code="py-slice"></div>
+      <div class="hl"><strong>규칙:</strong> <code class="il">lst[start:end:step]</code> — end 인덱스는 <strong>미포함!</strong></div>
+    </div>
+    <div class="card">
+      <h3>Python 클래스 &amp; 상속</h3>
+      <div class="code-block" data-code="py-class"></div>
+    </div>
+  </div>
+
+  <div id="dtype" class="tab-content">
+    <div class="card">
+      <h3>C언어 기본 자료형 크기</h3>
+      <table class="base">
+        <tr><th>자료형</th><th>크기</th><th>범위</th><th>비고</th></tr>
+        <tr><td><code class="il">char</code></td><td>1 byte</td><td>-128 ~ 127</td><td>문자 저장</td></tr>
+        <tr><td><code class="il">unsigned char</code></td><td>1 byte</td><td>0 ~ 255</td><td></td></tr>
+        <tr><td><code class="il">short</code></td><td>2 byte</td><td>-32768 ~ 32767</td><td></td></tr>
+        <tr><td><code class="il">int</code></td><td>4 byte</td><td>약 ±21억</td><td>가장 많이 사용</td></tr>
+        <tr><td><code class="il">long</code></td><td>4 or 8 byte</td><td>int 이상</td><td></td></tr>
+        <tr><td><code class="il">float</code></td><td>4 byte</td><td>소수점 7자리</td><td>3.14f</td></tr>
+        <tr><td><code class="il">double</code></td><td>8 byte</td><td>소수점 15자리</td><td>기본 실수형</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>형 변환 (Type Casting)</h3>
+      <div class="code-block" data-code="dtype-cast"></div>
+      <div class="hl warn"><strong>⚠️ 7/2 = 3</strong> (3.5가 아님!) — 정수끼리 나눗셈은 소수점 버림</div>
+    </div>
+  </div>
+
+  <div id="op" class="tab-content">
+    <div class="card">
+      <h3>증감 연산자 (자주 출제!)</h3>
+      <div class="code-block" data-code="op-incr"></div>
+      <div class="hl">
+        <strong>++a (전위)</strong>: 먼저 올리고 써라 → 증가된 값 사용<br />
+        <strong>a++ (후위)</strong>: 먼저 쓰고 올려라 → 원래 값 사용
+      </div>
+    </div>
+    <div class="card">
+      <h3>연산자 우선순위 (높은 순)</h3>
+      <table class="base">
+        <tr><th>순위</th><th>연산자</th><th>종류</th></tr>
+        <tr><td>1</td><td>() [] . -&gt; 후위++/--</td><td>괄호, 접근, 후위증감</td></tr>
+        <tr><td>2</td><td>전위++/-- ! ~ -(단항) *p &amp;a</td><td>단항 연산자</td></tr>
+        <tr><td>3</td><td>* / %</td><td>곱셈·나눗셈·나머지</td></tr>
+        <tr><td>4</td><td>+ -</td><td>덧셈·뺄셈</td></tr>
+        <tr><td>5</td><td>&lt;&lt; &gt;&gt;</td><td>비트 시프트</td></tr>
+        <tr><td>6</td><td>&lt; &lt;= &gt; &gt;=</td><td>관계 연산자</td></tr>
+        <tr><td>7</td><td>== !=</td><td>동등 비교</td></tr>
+        <tr><td>8~10</td><td>&amp; ^ |</td><td>비트 AND·XOR·OR</td></tr>
+        <tr><td>11~12</td><td>&amp;&amp; ||</td><td>논리 AND·OR</td></tr>
+        <tr><td>13</td><td>? :</td><td>삼항</td></tr>
+        <tr><td>14</td><td>= += -= *=</td><td>대입 (가장 낮음)</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>비트 연산자</h3>
+      <div class="code-block" data-code="op-bit"></div>
+    </div>
+  </div>
+</section>
+
+<!-- S3 플래시카드 -->
+<section id="s3">
+  <h2 class="section-title"><span class="sec-num">3</span> 시험용 키워드 플래시카드</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:0.85rem;">카드를 클릭하면 정답이 나옵니다.</p>
+  <div class="fc-grid" id="fc-container"></div>
+</section>
+
+<!-- S4 언어 비교 -->
+<section id="s4">
+  <h2 class="section-title"><span class="sec-num">4</span> 언어별 특징 비교</h2>
+  <div class="card" style="overflow-x:auto;">
+    <table class="base">
+      <tr>
+        <th style="width:20%">항목</th>
+        <th><span class="badge bc">C</span></th>
+        <th><span class="badge bj">Java</span></th>
+        <th><span class="badge bp">Python</span></th>
+      </tr>
+      <tr class="cat"><td colspan="4">기본 특성</td></tr>
+      <tr><td>패러다임</td><td>절차지향</td><td>객체지향</td><td>멀티패러다임</td></tr>
+      <tr><td>타입 시스템</td><td>정적 (선언 필수)</td><td>정적 (선언 필수)</td><td>동적 (자동 추론)</td></tr>
+      <tr><td>실행 방식</td><td>직접 컴파일</td><td>JVM 위에서 실행</td><td>인터프리터</td></tr>
+      <tr><td>메모리 관리</td><td>수동 (malloc/free)</td><td>자동 (GC)</td><td>자동 (GC)</td></tr>
+      <tr class="cat"><td colspan="4">문법 특성</td></tr>
+      <tr><td>블록 구분</td><td>{ }</td><td>{ }</td><td>들여쓰기</td></tr>
+      <tr><td>문장 끝</td><td>; (필수)</td><td>; (필수)</td><td>없음</td></tr>
+      <tr><td>문자열 타입</td><td>char 배열</td><td>String 클래스</td><td>str (내장)</td></tr>
+      <tr><td>포인터</td><td>있음 (*p, &amp;a)</td><td>없음 (참조만)</td><td>없음</td></tr>
+      <tr class="cat"><td colspan="4">객체지향</td></tr>
+      <tr><td>클래스</td><td>없음 (struct)</td><td>있음</td><td>있음</td></tr>
+      <tr><td>상속</td><td>없음</td><td>단일 상속</td><td>다중 상속 가능</td></tr>
+      <tr><td>인터페이스</td><td>없음</td><td>interface</td><td>추상 클래스</td></tr>
+      <tr><td>접근제어</td><td>없음</td><td>public/private/protected</td><td>_관례로 표시</td></tr>
+      <tr class="cat"><td colspan="4">주요 라이브러리</td></tr>
+      <tr><td>입출력</td><td>stdio.h</td><td>java.lang (자동)</td><td>내장 print()</td></tr>
+      <tr><td>문자열</td><td>string.h</td><td>java.lang.String</td><td>내장 str</td></tr>
+      <tr><td>수학</td><td>math.h</td><td>java.lang.Math</td><td>import math</td></tr>
+      <tr><td>컬렉션</td><td>배열만</td><td>java.util.*</td><td>list/dict/set</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- S5 포인터 시각화 -->
+<section id="s5">
+  <h2 class="section-title"><span class="sec-num">5</span> 포인터 메모리 시각화</h2>
+  <div class="card">
+    <div class="code-block" data-code="ptr-viz" style="margin-bottom:1rem;"></div>
+    <div class="mem-viz">
+      <div class="mem-cell">
+        <div class="mem-addr">1000번지</div>
+        <div class="mem-box" id="ma">?</div>
+        <div class="mem-label">a</div>
+      </div>
+      <div style="padding-top:1.8rem;font-size:1.2rem;color:var(--gray);">→</div>
+      <div class="mem-cell">
+        <div class="mem-addr">1004번지</div>
+        <div class="mem-box" id="mp">?</div>
+        <div class="mem-label">p (포인터)</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:1rem;">
+      <button class="btn btn-primary" onclick="ps(1)">① int a = 10</button>
+      <button class="btn btn-green" onclick="ps(2)">② int *p = &amp;a</button>
+      <button class="btn btn-yellow" onclick="ps(3)">③ *p = 20</button>
+      <button class="btn btn-gray" onclick="ps(0)">초기화</button>
+    </div>
+    <div id="pdesc" style="margin-top:0.85rem;padding:0.7rem 0.9rem;background:#f8fafc;border-radius:7px;font-size:0.84rem;">
+      버튼을 순서대로 눌러 포인터 동작을 확인하세요.
+    </div>
+  </div>
+</section>
+
+<!-- S6 OOP -->
+<section id="s6">
+  <h2 class="section-title"><span class="sec-num">6</span> OOP 핵심 개념</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3 style="color:var(--primary)">🔒 캡슐화 (Encapsulation)</h3>
+      <p style="font-size:0.83rem;color:var(--gray);margin-bottom:0.75rem;">데이터+메서드를 하나로 묶고, private으로 외부 접근 제한</p>
+      <div class="code-block" data-code="oop-encap" style="font-size:0.77rem;"></div>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--secondary)">🧬 상속 (Inheritance)</h3>
+      <p style="font-size:0.83rem;color:var(--gray);margin-bottom:0.75rem;">부모 클래스의 속성·메서드를 자식이 물려받아 재사용</p>
+      <div class="code-block" data-code="oop-inherit" style="font-size:0.77rem;"></div>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--warning)">🎭 다형성 (Polymorphism)</h3>
+      <table style="font-size:0.78rem;width:100%;border-collapse:collapse;">
+        <tr>
+          <th style="padding:0.3rem;background:#f8fafc;text-align:left;border-bottom:1px solid #e2e8f0;">구분</th>
+          <th style="padding:0.3rem;background:#f8fafc;border-bottom:1px solid #e2e8f0;">오버로딩</th>
+          <th style="padding:0.3rem;background:#f8fafc;border-bottom:1px solid #e2e8f0;">오버라이딩</th>
+        </tr>
+        <tr>
+          <td style="padding:0.3rem;border-bottom:1px solid #e2e8f0;">개념</td>
+          <td style="padding:0.3rem;border-bottom:1px solid #e2e8f0;">같은 이름, 매개변수 다름</td>
+          <td style="padding:0.3rem;border-bottom:1px solid #e2e8f0;">부모 메서드 재정의</td>
+        </tr>
+        <tr>
+          <td style="padding:0.3rem;border-bottom:1px solid #e2e8f0;">결정</td>
+          <td style="padding:0.3rem;border-bottom:1px solid #e2e8f0;">컴파일 타임</td>
+          <td style="padding:0.3rem;border-bottom:1px solid #e2e8f0;">런타임</td>
+        </tr>
+        <tr>
+          <td style="padding:0.3rem;">반환타입</td>
+          <td style="padding:0.3rem;">달라도 됨</td>
+          <td style="padding:0.3rem;">같아야 함</td>
+        </tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--danger)">🌫️ 추상화 (Abstraction)</h3>
+      <table style="font-size:0.78rem;width:100%;border-collapse:collapse;">
+        <tr>
+          <th style="padding:0.3rem;background:#f8fafc;text-align:left;border-bottom:1px solid #e2e8f0;">구분</th>
+          <th style="padding:0.3rem;background:#f8fafc;border-bottom:1px solid #e2e8f0;">추상 클래스</th>
+          <th style="padding:0.3rem;background:#f8fafc;border-bottom:1px solid #e2e8f0;">인터페이스</th>
+        </tr>
+        <tr>
+          <td style="padding:0.3rem;border-bottom:1px solid #e2e8f0;">선언</td>
+          <td style="padding:0.3rem;border-bottom:1px solid #e2e8f0;">abstract class</td>
+          <td style="padding:0.3rem;border-bottom:1px solid #e2e8f0;">interface</td>
+        </tr>
+        <tr>
+          <td style="padding:0.3rem;border-bottom:1px solid #e2e8f0;">구현</td>
+          <td style="padding:0.3rem;border-bottom:1px solid #e2e8f0;">extends</td>
+          <td style="padding:0.3rem;border-bottom:1px solid #e2e8f0;">implements</td>
+        </tr>
+        <tr>
+          <td style="padding:0.3rem;border-bottom:1px solid #e2e8f0;">다중상속</td>
+          <td style="padding:0.3rem;border-bottom:1px solid #e2e8f0;">불가</td>
+          <td style="padding:0.3rem;border-bottom:1px solid #e2e8f0;">가능</td>
+        </tr>
+        <tr>
+          <td style="padding:0.3rem;">일반 메서드</td>
+          <td style="padding:0.3rem;">가능</td>
+          <td style="padding:0.3rem;">default만 가능</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- S7 출력 퀴즈 -->
+<section id="s7">
+  <h2 class="section-title"><span class="sec-num">7</span> 코드 출력 예측 퀴즈</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:1.25rem;">실제 시험 유형 — 코드를 읽고 출력 결과를 선택하세요.</p>
+  <div id="oq-container"></div>
+  <div class="score-box" id="oq-score">
+    <div class="score-num" id="oq-snum">0/0</div>
+    <p style="color:var(--gray);margin-top:0.4rem;" id="oq-smsg"></p>
+  </div>
+  <button class="btn btn-primary" style="margin-top:1rem;" onclick="resetOQ()">퀴즈 다시 시작</button>
+</section>
+
+<!-- S8 미니 퀴즈 -->
+<section id="s8">
+  <h2 class="section-title"><span class="sec-num">8</span> 개념 미니 퀴즈</h2>
+  <div id="mq-container"></div>
+  <button class="btn btn-green" style="margin-top:0.85rem;" onclick="checkMQ()">채점하기</button>
+  <div id="mq-result" style="display:none;margin-top:1rem;"></div>
+</section>
+
+<!-- S9 오답노트 -->
+<section id="s9">
+  <h2 class="section-title"><span class="sec-num">9</span> 오답 노트</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.7rem;">틀린 문제나 헷갈리는 개념을 기록하세요. (자동 저장)</p>
+    <textarea class="memo" id="memo" placeholder="예) 후위 a++는 현재 값 사용 후 증가&#10;예) Java 오버라이딩은 런타임에 결정, 필드는 참조타입 기준&#10;예) Python lst[1:3]은 인덱스 1,2만 (3 미포함)&#10;예) int/int = int (소수점 버림)"></textarea>
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.5rem;">
+      <button class="btn btn-primary" onclick="saveMemo()">저장</button>
+      <span id="memo-ok" style="font-size:0.8rem;color:var(--secondary);display:none;">✓ 저장됨</span>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<button class="scroll-top" id="stbtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ── 코드 블록 데이터 (Prettier가 건드리지 않음) ─────────────
+const CODE = {
+'c-io':
+`<span class="lang-badge">C</span><span class="kw">#include</span> &lt;stdio.h&gt;
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="kw">int</span>   a = <span class="nm">10</span>;
+    <span class="kw">float</span> f = <span class="nm">3.14</span>;
+    <span class="kw">char</span>  c = <span class="st">'A'</span>;
+    <span class="kw">char</span>  s[<span class="nm">10</span>] = <span class="st">"Hello"</span>;
+    printf(<span class="st">"%d %f %c %s\\n"</span>, a, f, c, s);
+    <span class="kw">return</span> <span class="nm">0</span>;
+}`,
+
+'c-ptr':
+`<span class="lang-badge">C</span><span class="kw">int</span> a = <span class="nm">10</span>;
+<span class="kw">int</span> *p = &amp;a;   <span class="cm">// p에 a의 주소 저장</span>
+
+printf(<span class="st">"%d"</span>, a);   <span class="cm">// 10  변수 값</span>
+printf(<span class="st">"%d"</span>, &amp;a);  <span class="cm">// 100 a의 주소 (예시)</span>
+printf(<span class="st">"%d"</span>, p);   <span class="cm">// 100 p에 저장된 주소</span>
+printf(<span class="st">"%d"</span>, *p);  <span class="cm">// 10  역참조: p가 가리키는 값</span>
+
+*p = <span class="nm">20</span>;          <span class="cm">// a의 값이 20으로 변경!</span>
+printf(<span class="st">"%d"</span>, a);   <span class="cm">// 20</span>`,
+
+'c-struct':
+`<span class="lang-badge">C</span><span class="kw">struct</span> Student {
+    <span class="kw">char</span> name[<span class="nm">20</span>];
+    <span class="kw">int</span>  age;
+    <span class="kw">float</span> score;
+};
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="kw">struct</span> Student s = {<span class="st">"홍길동"</span>, <span class="nm">20</span>, <span class="nm">95.5</span>};
+    printf(<span class="st">"%s %d"</span>, s.name, s.age);  <span class="cm">// 점 연산자</span>
+
+    <span class="kw">struct</span> Student *p = &amp;s;
+    printf(<span class="st">"%s"</span>, p-&gt;name);           <span class="cm">// 화살표 연산자</span>
+    <span class="kw">return</span> <span class="nm">0</span>;
+}`,
+
+'java-basic':
+`<span class="lang-badge">Java</span><span class="kw">public class</span> Main {
+    <span class="kw">public static void</span> <span class="fn">main</span>(String[] args) {
+        System.out.<span class="fn">print</span>(<span class="st">"줄바꿈 없음"</span>);
+        System.out.<span class="fn">println</span>(<span class="st">"줄바꿈 있음"</span>);
+
+        String s = <span class="st">"Hello"</span>;
+        System.out.println(s.<span class="fn">length</span>());       <span class="cm">// 5</span>
+        System.out.println(s.<span class="fn">toUpperCase</span>());  <span class="cm">// HELLO</span>
+        System.out.println(s.<span class="fn">substring</span>(<span class="nm">1</span>, <span class="nm">3</span>)); <span class="cm">// el</span>
+        System.out.println(s.<span class="fn">charAt</span>(<span class="nm">0</span>));      <span class="cm">// H</span>
+        System.out.println(s.<span class="fn">indexOf</span>(<span class="st">"l"</span>));  <span class="cm">// 2</span>
+    }
+}`,
+
+'java-inherit':
+`<span class="lang-badge">Java</span><span class="kw">class</span> Animal {
+    String name = <span class="st">"동물"</span>;
+    <span class="kw">void</span> <span class="fn">sound</span>() { System.out.print(<span class="st">"..."</span>); }
+}
+<span class="kw">class</span> Dog <span class="kw">extends</span> Animal {
+    String name = <span class="st">"개"</span>;           <span class="cm">// 필드 은닉</span>
+    <span class="kw">@Override</span>
+    <span class="kw">void</span> <span class="fn">sound</span>() { System.out.print(<span class="st">"멍멍"</span>); }
+}
+<span class="kw">public class</span> Main {
+    <span class="kw">public static void</span> <span class="fn">main</span>(String[] args) {
+        Animal a = <span class="kw">new</span> Dog();
+        a.<span class="fn">sound</span>();               <span class="cm">// "멍멍" ← 런타임 타입(Dog)</span>
+        System.out.print(a.name); <span class="cm">// "동물" ← 참조타입(Animal)</span>
+    }
+}`,
+
+'java-trycatch':
+`<span class="lang-badge">Java</span><span class="kw">try</span> {
+    System.out.print(<span class="st">"1"</span>);
+    <span class="kw">int</span> x = <span class="nm">1</span> / <span class="nm">0</span>;          <span class="cm">// ArithmeticException</span>
+    System.out.print(<span class="st">"2"</span>);  <span class="cm">// 실행 안 됨</span>
+} <span class="kw">catch</span> (ArithmeticException e) {
+    System.out.print(<span class="st">"3"</span>);
+} <span class="kw">finally</span> {
+    System.out.print(<span class="st">"4"</span>);  <span class="cm">// 항상 실행!</span>
+}
+<span class="cm">// 출력: 134</span>`,
+
+'py-basic':
+`<span class="lang-badge">Python</span><span class="cm"># 동적 타입 - 선언 없이 바로 사용</span>
+a = <span class="nm">10</span>
+b = <span class="st">"Hello"</span>
+c = <span class="nm">3.14</span>
+d = <span class="kw">True</span>
+
+print(a, b)            <span class="cm"># 10 Hello</span>
+print(<span class="st">f"값: {a}"</span>)     <span class="cm"># 값: 10  (f-string)</span>
+
+lst = [<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>]        <span class="cm"># 리스트 (mutable, 순서 있음)</span>
+tpl = (<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>)        <span class="cm"># 튜플 (immutable)</span>
+dct = {<span class="st">"a"</span>: <span class="nm">1</span>}         <span class="cm"># 딕셔너리 (키-값)</span>
+st  = {<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>}        <span class="cm"># 집합 (중복 없음, 순서 없음)</span>`,
+
+'py-slice':
+`<span class="lang-badge">Python</span>lst = [<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">30</span>, <span class="nm">40</span>, <span class="nm">50</span>]
+<span class="cm">#       0    1    2    3    4   양수 인덱스</span>
+<span class="cm">#      -5   -4   -3   -2   -1  음수 인덱스</span>
+
+print(lst[<span class="nm">0</span>])        <span class="cm"># 10</span>
+print(lst[-<span class="nm">1</span>])       <span class="cm"># 50</span>
+print(lst[<span class="nm">1</span>:<span class="nm">3</span>])      <span class="cm"># [20, 30]  (end=3은 미포함)</span>
+print(lst[:<span class="nm">3</span>])       <span class="cm"># [10, 20, 30]</span>
+print(lst[<span class="nm">2</span>:])       <span class="cm"># [30, 40, 50]</span>
+print(lst[::<span class="nm">2</span>])      <span class="cm"># [10, 30, 50] (2칸 간격)</span>
+print(lst[::-<span class="nm">1</span>])     <span class="cm"># [50, 40, 30, 20, 10] (역순)</span>`,
+
+'py-class':
+`<span class="lang-badge">Python</span><span class="kw">class</span> Animal:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, name):
+        self.name = name
+    <span class="kw">def</span> <span class="fn">sound</span>(self):
+        print(<span class="st">f"{self.name}: ..."</span>)
+
+<span class="kw">class</span> Dog(Animal):        <span class="cm"># 상속</span>
+    <span class="kw">def</span> <span class="fn">sound</span>(self):      <span class="cm"># 오버라이딩</span>
+        print(<span class="st">f"{self.name}: 멍멍"</span>)
+
+d = Dog(<span class="st">"바둑이"</span>)
+d.<span class="fn">sound</span>()                <span class="cm"># 바둑이: 멍멍</span>`,
+
+'dtype-cast':
+`<span class="lang-badge">C</span><span class="kw">int</span> a = <span class="nm">7</span>, b = <span class="nm">2</span>;
+printf(<span class="st">"%d"</span>,   a / b);            <span class="cm">// 3   (정수÷정수=정수, 소수점 버림)</span>
+printf(<span class="st">"%.1f"</span>, (<span class="kw">float</span>)a / b);  <span class="cm">// 3.5 (강제 형변환)</span>
+
+<span class="cm">// 묵시적(자동) 형변환</span>
+<span class="kw">int</span> i = <span class="nm">65</span>;
+<span class="kw">char</span> c = (<span class="kw">char</span>)i;
+printf(<span class="st">"%c"</span>, c);  <span class="cm">// A  (ASCII 65 = 'A')</span>`,
+
+'op-incr':
+`<span class="lang-badge">C/Java</span><span class="kw">int</span> a = <span class="nm">5</span>;
+printf(<span class="st">"%d"</span>, ++a); <span class="cm">// 6  전위: 먼저 증가 후 사용</span>
+
+a = <span class="nm">5</span>;
+printf(<span class="st">"%d"</span>, a++); <span class="cm">// 5  후위: 먼저 사용 후 증가</span>
+printf(<span class="st">"%d"</span>, a);   <span class="cm">// 6  (이미 증가됨)</span>`,
+
+'op-bit':
+`<span class="lang-badge">C</span><span class="kw">int</span> a = <span class="nm">5</span>;  <span class="cm">// 0101</span>
+<span class="kw">int</span> b = <span class="nm">3</span>;  <span class="cm">// 0011</span>
+printf(<span class="st">"%d"</span>, a &amp; b);   <span class="cm">// 1  (AND: 0001)</span>
+printf(<span class="st">"%d"</span>, a | b);   <span class="cm">// 7  (OR:  0111)</span>
+printf(<span class="st">"%d"</span>, a ^ b);   <span class="cm">// 6  (XOR: 0110)</span>
+printf(<span class="st">"%d"</span>, a &lt;&lt; <span class="nm">1</span>); <span class="cm">// 10 (왼쪽시프트: ×2)</span>
+printf(<span class="st">"%d"</span>, a &gt;&gt; <span class="nm">1</span>); <span class="cm">// 2  (오른쪽시프트: ÷2)</span>`,
+
+'ptr-viz':
+`<span class="lang-badge">C</span><span class="kw">int</span> a = <span class="nm">10</span>;
+<span class="kw">int</span> *p = &amp;a;
+*p = <span class="nm">20</span>;`,
+
+'oop-encap':
+`<span class="kw">class</span> Account {
+    <span class="kw">private int</span> balance;
+    <span class="kw">public void</span> <span class="fn">deposit</span>(<span class="kw">int</span> n) {
+        balance += n;
+    }
+    <span class="kw">public int</span> <span class="fn">getBalance</span>() {
+        <span class="kw">return</span> balance;
+    }
+}`,
+
+'oop-inherit':
+`<span class="kw">class</span> Vehicle {
+    <span class="kw">int</span> speed;
+    <span class="kw">void</span> <span class="fn">move</span>() { ... }
+}
+<span class="kw">class</span> Car <span class="kw">extends</span> Vehicle {
+    <span class="kw">int</span> doors = <span class="nm">4</span>;  <span class="cm">// 추가 속성</span>
+}`,
+};
+
+// ── 플래시카드 데이터 ──────────────────────────────────────
+const fcData = [
+  { f:'포인터 선언',        b:'int *p;\np는 int형 변수의\n주소를 저장하는 변수' },
+  { f:'역참조 *p',          b:'포인터 p가 가리키는\n메모리의 값에 접근' },
+  { f:'주소 연산자 &a',     b:'변수 a의 메모리 주소\n(포인터에 저장)' },
+  { f:'구조체 포인터 접근', b:'p->member\n(일반 변수는 s.member)' },
+  { f:'오버로딩',           b:'같은 클래스, 같은 이름\n매개변수 다름\n컴파일 타임 결정' },
+  { f:'오버라이딩',         b:'부모 메서드를 자식이\n재정의\n런타임 결정' },
+  { f:'Java finally',       b:'예외 발생 여부와 무관\n항상 실행되는 블록' },
+  { f:'전위 ++a (a=5)',     b:'먼저 증가 후 사용\n→ 6 출력, a=6' },
+  { f:'후위 a++ (a=5)',     b:'먼저 사용 후 증가\n→ 5 출력, a=6' },
+  { f:'Python 슬라이싱',    b:'lst[start:end:step]\nend는 미포함!\nlst[1:3]→인덱스 1,2' },
+  { f:'Java 다형성',        b:'Animal a = new Dog();\n메서드→런타임(Dog)\n필드→컴파일(Animal)' },
+  { f:'추상 클래스',        b:'abstract class\nextends로 구현\n단일 상속만' },
+  { f:'인터페이스',         b:'interface\nimplements로 구현\n다중 상속 가능' },
+  { f:'7/2 (C, int)',       b:'정수÷정수=정수\n소수점 버림\n→ 3 (3.5 아님!)' },
+  { f:'캡슐화',             b:'데이터+메서드를 하나로\nprivate으로 은닉\nGetter/Setter 제공' },
+  { f:'Python tuple',       b:'immutable (수정 불가)\n(1, 2, 3)\nlist는 mutable' },
+];
+
+// ── 퀴즈 데이터 ───────────────────────────────────────────
+const oqData = [
+  {
+    lang:'C', q:'다음 C 코드의 출력 결과는?',
+    code:'int a = 5;\nprintf("%d %d", a++, ++a);',
+    opts:['5 7','6 7','5 6','6 6'], ans:0,
+    exp:'printf 인자는 오른쪽→왼쪽 평가(구현 의존).\n시험 기준: 왼쪽부터 읽으면 a++=5(후에 a=6), ++a=7\n→ 5 7',
+  },
+  {
+    lang:'C', q:'다음 C 코드의 출력 결과는?',
+    code:'int a = 7, b = 2;\nprintf("%d %.1f", a/b, (float)a/b);',
+    opts:['3 3.5','3.5 3.5','3 3.0','3.5 3.0'], ans:0,
+    exp:'a/b: int/int = int → 3 (소수점 버림)\n(float)a/b: 3.5\n%.1f 소수점 1자리 → 3.5',
+  },
+  {
+    lang:'C', q:'다음 C 코드의 출력 결과는?',
+    code:'int a = 10;\nint *p = &a;\n*p = 30;\nprintf("%d", a);',
+    opts:['10','30','오류','0'], ans:1,
+    exp:'*p = 30은 포인터 역참조로 a의 값을 30으로 변경\nprintf("%d", a) → 30',
+  },
+  {
+    lang:'Java', q:'다음 Java 코드의 출력 결과는?',
+    code:'class A {\n  String x = "A";\n  void p() { System.out.print("A"); }\n}\nclass B extends A {\n  String x = "B";\n  void p() { System.out.print("B"); }\n}\npublic class Main {\n  public static void main(String[] args) {\n    A obj = new B();\n    obj.p();\n    System.out.print(obj.x);\n  }\n}',
+    opts:['AB','BA','AA','BB'], ans:0,
+    exp:'obj.p(): 메서드는 런타임 타입 B → "B" 출력\nobj.x: 필드는 참조타입 A → "A" 출력\n결과: AB',
+  },
+  {
+    lang:'Java', q:'다음 Java 코드의 출력 결과는?',
+    code:'try {\n  System.out.print("1");\n  int x = 1/0;\n  System.out.print("2");\n} catch(Exception e) {\n  System.out.print("3");\n} finally {\n  System.out.print("4");\n}',
+    opts:['134','1234','14','34'], ans:0,
+    exp:'1 출력 → 1/0 예외 발생 → 2 건너뜀\ncatch 블록 → 3 출력\nfinally 항상 실행 → 4 출력\n결과: 134',
+  },
+  {
+    lang:'Python', q:'다음 Python 코드의 출력 결과는?',
+    code:'lst = [1, 2, 3, 4, 5]\nprint(lst[1:4])\nprint(lst[::-1])',
+    opts:['[2,3,4]\n[5,4,3,2,1]','[1,2,3]\n[5,4,3,2,1]','[2,3,4]\n[1,2,3,4,5]','[2,3,4,5]\n[5,4,3,2,1]'], ans:0,
+    exp:'lst[1:4]: 인덱스 1,2,3 → [2,3,4] (4 미포함)\nlst[::-1]: 역순 → [5,4,3,2,1]',
+  },
+  {
+    lang:'C', q:'다음 C 코드의 출력 결과는?',
+    code:'int i;\nfor(i=0; i<5; i+=2) {\n  printf("%d ", i);\n}',
+    opts:['0 2 4','0 2 4 6','1 3 5','0 1 2 3 4'], ans:0,
+    exp:'i=0→출력, i=2→출력, i=4→출력, i=6→6<5 거짓 종료\n결과: 0 2 4',
+  },
+  {
+    lang:'Java', q:'다음 Java 코드의 출력 결과는?',
+    code:'String s = "Hello World";\nSystem.out.println(s.length());\nSystem.out.println(s.substring(6));',
+    opts:['11\nWorld','10\nWorld','11\norld','11\nworld'], ans:0,
+    exp:'length(): 공백 포함 11자\nsubstring(6): 인덱스 6부터 끝 → "World"',
+  },
+];
+
+const mqData = [
+  { q:'C언어에서 포인터 p가 가리키는 값에 접근하는 연산자는?', opts:['&p','*p','p->','p.'], ans:1 },
+  { q:'Java에서 부모 클래스 메서드를 자식이 재정의하는 것은?', opts:['오버로딩','캡슐화','오버라이딩','추상화'], ans:2 },
+  { q:'Python에서 수정 불가능한(immutable) 자료형은?', opts:['list','dict','set','tuple'], ans:3 },
+  { q:'Java try-catch-finally에서 항상 실행되는 블록은?', opts:['try','catch','finally','throw'], ans:2 },
+  { q:'C언어에서 int a=5; printf("%d",a++); 출력 결과는?', opts:['4','5','6','오류'], ans:1 },
+  { q:'객체지향 4대 특성이 아닌 것은?', opts:['캡슐화','상속','다형성','반복'], ans:3 },
+  { q:'C언어 int/int 연산의 특징은?', opts:['소수점 반올림','소수점 버림','float 반환','오류 발생'], ans:1 },
+  { q:'Java에서 메서드 오버라이딩 결정 시점은?', opts:['컴파일 타임','링크 타임','런타임','실행 전'], ans:2 },
+];
+
+// ── 코드 블록 렌더링 ──────────────────────────────────────
+function renderCodeBlocks() {
+  document.querySelectorAll('.code-block[data-code]').forEach(el => {
+    el.innerHTML = CODE[el.dataset.code] || '';
+  });
+}
+
+// ── 플래시카드 ────────────────────────────────────────────
+function renderFC() {
+  document.getElementById('fc-container').innerHTML = fcData.map(c =>
+    `<div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-inner">
+        <div class="fc-front">${c.f.replace(/\n/g, '<br>')}</div>
+        <div class="fc-back">${c.b.replace(/\n/g, '<br>')}</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+// ── 출력 퀴즈 ─────────────────────────────────────────────
+let oqAnswered = {}, oqSelected = {};
+function renderOQ() {
+  oqAnswered = {}; oqSelected = {};
+  document.getElementById('oq-container').innerHTML = oqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div style="margin-bottom:0.4rem;"><span class="badge ${q.lang === 'C' ? 'bc' : q.lang === 'Java' ? 'bj' : 'bp'}">${q.lang}</span></div>
+      <div class="quiz-q">Q${qi + 1}. ${q.q}</div>
+      <div class="quiz-code">${q.code}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<div class="opt" onclick="pickOQ(${qi},${oi},this)" id="oq-${qi}-${oi}">${o}</div>`
+      ).join('')}</div>
+      <div class="exp" id="exp-${qi}">${q.exp}</div>
+    </div>`
+  ).join('');
+  document.getElementById('oq-score').style.display = 'none';
+}
+
+function pickOQ(qi, oi, el) {
+  if (oqAnswered[qi]) return;
+  oqAnswered[qi] = true; oqSelected[qi] = oi;
+  const correct = oqData[qi].ans;
+  document.getElementById(`oq-${qi}-${correct}`).classList.add('correct');
+  if (oi !== correct) el.classList.add('wrong');
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  if (Object.keys(oqAnswered).length === oqData.length) {
+    const sc = oqData.filter((_, i) => oqSelected[i] === oqData[i].ans).length;
+    document.getElementById('oq-snum').textContent = `${sc}/${oqData.length}`;
+    document.getElementById('oq-smsg').textContent = sc === oqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 오답노트에 기록하세요!';
+    document.getElementById('oq-score').style.display = 'block';
+  }
+}
+
+function resetOQ() { renderOQ(); }
+
+// ── 미니 퀴즈 ─────────────────────────────────────────────
+function renderMQ() {
+  document.getElementById('mq-container').innerHTML = mqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi + 1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<label style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;background:#f8fafc;border:2px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.84rem;" id="mql-${qi}-${oi}">
+          <input type="radio" name="mq${qi}" value="${oi}" style="margin:0;flex-shrink:0;">${o}
+        </label>`
+      ).join('')}</div>
+    </div>`
+  ).join('');
+  document.getElementById('mq-result').style.display = 'none';
+}
+
+function checkMQ() {
+  let sc = 0;
+  mqData.forEach((q, qi) => {
+    const sel = document.querySelector(`input[name="mq${qi}"]:checked`);
+    const v = sel ? +sel.value : -1;
+    const lbl = id => document.getElementById(`mql-${qi}-${id}`);
+    lbl(q.ans).style.borderColor = 'var(--secondary)';
+    lbl(q.ans).style.background = '#d1fae5';
+    if (v !== -1 && v !== q.ans) { lbl(v).style.borderColor = 'var(--danger)'; lbl(v).style.background = '#fee2e2'; }
+    if (v === q.ans) sc++;
+  });
+  const r = document.getElementById('mq-result');
+  r.style.display = 'block';
+  r.innerHTML = `<div class="card" style="text-align:center;"><div class="score-num">${sc}/${mqData.length}</div>
+    <p style="color:var(--gray);margin-top:0.4rem;">${sc === mqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 다시 복습하세요!'}</p></div>`;
+}
+
+// ── 포인터 시각화 ─────────────────────────────────────────
+function ps(step) {
+  const ma = document.getElementById('ma');
+  const mp = document.getElementById('mp');
+  ma.className = 'mem-box'; mp.className = 'mem-box';
+  const msgs = [
+    '버튼을 순서대로 눌러 포인터 동작을 확인하세요.',
+    '<strong>int a = 10;</strong><br>1000번지에 정수값 10이 저장됩니다.',
+    '<strong>int *p = &amp;a;</strong><br>포인터 p에 a의 주소(1000번지)가 저장됩니다. p는 a를 가리킵니다.',
+    '<strong>*p = 20;</strong><br>역참조(*p)로 1000번지에 20을 씁니다. a의 값이 20으로 변경됩니다!',
+  ];
+  if (step === 0) { ma.textContent = '?'; mp.textContent = '?'; }
+  if (step === 1) { ma.textContent = '10'; ma.className = 'mem-box hi'; mp.textContent = '?'; }
+  if (step === 2) { ma.textContent = '10'; mp.textContent = '1000'; mp.className = 'mem-box ptr'; }
+  if (step === 3) { ma.textContent = '20'; ma.className = 'mem-box hi'; mp.textContent = '1000'; mp.className = 'mem-box ptr'; }
+  document.getElementById('pdesc').innerHTML = msgs[step];
+}
+
+// ── 탭 ───────────────────────────────────────────────────
+function tab(btn, id) {
+  btn.closest('section').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.closest('section').querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+// ── 메모 ─────────────────────────────────────────────────
+function saveMemo() {
+  localStorage.setItem('pl_memo', document.getElementById('memo').value);
+  const ok = document.getElementById('memo-ok');
+  ok.style.display = 'inline';
+  setTimeout(() => { ok.style.display = 'none'; }, 2000);
+}
+
+// ── 스크롤 ────────────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('stbtn').classList.toggle('show', window.scrollY > 300);
+  let cur = '';
+  document.querySelectorAll('section[id]').forEach(s => { if (window.scrollY >= s.offsetTop - 110) cur = s.id; });
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+});
+
+// ── 초기화 ────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  renderCodeBlocks();
+  renderFC();
+  renderOQ();
+  renderMQ();
+  const m = localStorage.getItem('pl_memo');
+  if (m) document.getElementById('memo').value = m;
+  document.getElementById('memo').addEventListener('input', () =>
+    localStorage.setItem('pl_memo', document.getElementById('memo').value)
+  );
+});
+</script>
+</body>
+</html>

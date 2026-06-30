@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>04. 서버프로그램 구현 | 정보처리기사 실기</title>
+<style>
+:root {
+  --primary: #c2410c;
+  --primary-light: #ffedd5;
+  --secondary: #059669;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --dark: #1e293b;
+  --gray: #64748b;
+  --light: #f8fafc;
+  --border: #e2e8f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.6; }
+
+nav { position: sticky; top: 0; z-index: 100; background: var(--dark); padding: 0.6rem 1.5rem; display: flex; gap: 0.5rem; align-items: center; overflow-x: auto; scrollbar-width: none; }
+nav::-webkit-scrollbar { display: none; }
+nav .nav-title { color: #fdba74; font-weight: 700; font-size: 0.82rem; white-space: nowrap; margin-right: 0.5rem; }
+nav a { color: #94a3b8; text-decoration: none; font-size: 0.78rem; white-space: nowrap; padding: 0.3rem 0.7rem; border-radius: 5px; transition: all 0.2s; }
+nav a:hover, nav a.active { color: white; background: #334155; }
+
+.hero { background: linear-gradient(135deg, #7c2d12 0%, #1e293b 100%); color: white; padding: 2.5rem 2rem; text-align: center; }
+.hero h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.4rem; }
+.hero .subtitle { color: #fdba74; font-size: 0.95rem; margin-bottom: 1rem; }
+.tags { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; }
+.tag { background: rgba(255,255,255,0.12); color: white; padding: 0.2rem 0.65rem; border-radius: 20px; font-size: 0.78rem; }
+
+.container { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem; }
+section { margin-bottom: 3rem; }
+.section-title { font-size: 1.3rem; font-weight: 700; color: var(--dark); margin-bottom: 1.25rem; padding-bottom: 0.6rem; border-bottom: 3px solid var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { width: 30px; height: 30px; background: var(--primary); color: white; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; flex-shrink: 0; }
+
+.card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-bottom: 1rem; }
+.card h3 { font-size: 0.95rem; margin-bottom: 0.75rem; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+
+.tabs { display: flex; gap: 0.4rem; margin-bottom: 1.25rem; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+.tab-btn { padding: 0.45rem 1rem; background: none; border: none; color: var(--gray); cursor: pointer; font-size: 0.85rem; font-weight: 600; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+table.base { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+table.base th { background: var(--dark); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+table.base td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+table.base tr:hover td { background: #fff7ed; }
+
+.hl      { background: #fff7ed; border: 1px solid #fed7aa; border-left: 4px solid var(--primary); border-radius: 7px; padding: 0.8rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; }
+.hl.ok   { background: #f0fdf4; border-color: #bbf7d0; border-left-color: var(--secondary); }
+.hl.warn { background: #fffbeb; border-color: #fde68a; border-left-color: var(--warning); }
+.hl.blue { background: #eff6ff; border-color: #bfdbfe; border-left-color: #2563eb; }
+
+code.il { background: #f1f5f9; color: #c2410c; padding: 0.1rem 0.35rem; border-radius: 3px; font-family: monospace; font-size: 0.81rem; font-weight: 700; }
+
+/* 응집도/결합도 인터랙티브 */
+.cc-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.cc-col h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.75rem; padding: 0.4rem 0.75rem; border-radius: 6px; }
+.coh-head { background: #dcfce7; color: #166534; }
+.cou-head { background: #fee2e2; color: #991b1b; }
+.cc-ladder { display: flex; flex-direction: column; gap: 0.35rem; }
+.cc-item { padding: 0.5rem 0.85rem; border-radius: 7px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-size: 0.83rem; font-weight: 600; border: 2px solid transparent; transition: all 0.2s; }
+.cc-item:hover { transform: translateX(4px); filter: brightness(0.95); }
+.cc-item.active { border-color: var(--dark); box-shadow: 2px 2px 8px rgba(0,0,0,0.15); transform: translateX(6px); }
+.cc-rank { font-size: 0.7rem; opacity: 0.7; }
+.cc-detail { display: none; margin-top: 0.85rem; padding: 0.85rem; background: #f8fafc; border-left: 4px solid var(--primary); border-radius: 7px; font-size: 0.83rem; }
+.cc-detail.show { display: block; }
+
+/* 형상관리 흐름 */
+.cm-flow { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; justify-content: center; margin-bottom: 1rem; }
+.cm-step { padding: 0.55rem 1rem; border-radius: 8px; font-size: 0.84rem; font-weight: 700; cursor: pointer; border: 2px solid transparent; transition: all 0.25s; }
+.cm-step:hover { transform: translateY(-2px); }
+.cm-step.active { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.18); }
+.cms1 { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+.cms2 { background: #dcfce7; color: #166534; border-color: #86efac; }
+.cms3 { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+.cms4 { background: #fce7f3; color: #9d174d; border-color: #f9a8d4; }
+.cm-arrow { color: var(--gray); font-size: 1.1rem; }
+.cm-detail { min-height: 70px; padding: 0.85rem 1rem; background: #fff7ed; border-left: 4px solid var(--primary); border-radius: 7px; font-size: 0.84rem; }
+
+/* 아키텍처 패턴 카드 */
+.arch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 0.75rem; }
+.arch-card { background: white; border: 2px solid var(--border); border-radius: 10px; padding: 0.9rem; cursor: pointer; transition: all 0.2s; }
+.arch-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+.arch-card.active { border-color: var(--primary); background: var(--primary-light); }
+.arch-title { font-size: 0.88rem; font-weight: 700; color: var(--primary); margin-bottom: 0.3rem; }
+.arch-sub   { font-size: 0.75rem; color: var(--gray); }
+.arch-detail { display: none; margin-top: 0.85rem; padding: 0.85rem; background: white; border-left: 4px solid var(--primary); border-radius: 7px; font-size: 0.84rem; }
+.arch-detail.show { display: block; }
+
+/* 플래시카드 */
+.fc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 0.75rem; }
+.flip-card { height: 130px; perspective: 1000px; cursor: pointer; }
+.flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.55s; transform-style: preserve-3d; }
+.flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+.fc-front, .fc-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0.75rem; text-align: center; }
+.fc-front { background: white; border: 2px solid var(--primary); color: var(--dark); font-weight: 600; font-size: 0.84rem; }
+.fc-back { background: var(--primary); color: white; transform: rotateY(180deg); font-size: 0.77rem; line-height: 1.55; }
+
+/* 퀴즈 */
+.quiz-item { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem; }
+.quiz-q { font-weight: 700; margin-bottom: 0.75rem; font-size: 0.9rem; }
+.opts { display: flex; flex-direction: column; gap: 0.4rem; }
+.opt { padding: 0.6rem 1rem; background: #f8fafc; border: 2px solid var(--border); border-radius: 7px; cursor: pointer; font-size: 0.84rem; transition: all 0.18s; }
+.opt:hover { border-color: var(--primary); background: var(--primary-light); }
+.opt.correct { border-color: var(--secondary); background: #d1fae5; color: #065f46; font-weight: 700; }
+.opt.wrong   { border-color: var(--danger); background: #fee2e2; color: #991b1b; }
+.exp { display: none; margin-top: 0.85rem; padding: 0.7rem 0.9rem; background: #fff7ed; border-left: 4px solid var(--primary); border-radius: 4px; font-size: 0.82rem; line-height: 1.7; }
+.exp.show { display: block; }
+
+.score-box { background: white; border: 2px solid var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; margin-top: 1.25rem; display: none; }
+.score-num { font-size: 2.2rem; font-weight: 800; color: var(--primary); }
+
+.btn { padding: 0.5rem 1.1rem; border: none; border-radius: 7px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: opacity 0.2s; }
+.btn:hover { opacity: 0.85; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-green   { background: var(--secondary); color: white; }
+.btn-gray    { background: var(--gray); color: white; }
+
+textarea.memo { width: 100%; min-height: 140px; padding: 0.9rem; border: 2px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.88rem; resize: vertical; background: #fffef7; }
+textarea.memo:focus { outline: none; border-color: var(--primary); }
+
+.scroll-top { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--primary); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; }
+.scroll-top.show { display: flex; }
+
+@media (max-width: 700px) {
+  .container { padding: 1rem; }
+  .hero h1 { font-size: 1.35rem; }
+  .card-grid { grid-template-columns: 1fr; }
+  .fc-grid { grid-template-columns: repeat(2, 1fr); }
+  .cc-wrap, .two-col { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">🖥️ 04. 서버프로그램</span>
+  <a href="#s1">출제기준</a>
+  <a href="#s2">핵심개념</a>
+  <a href="#s3">키워드카드</a>
+  <a href="#s4">응집도·결합도</a>
+  <a href="#s5">아키텍처패턴</a>
+  <a href="#s6">형상관리</a>
+  <a href="#s7">문제풀이</a>
+  <a href="#s8">미니퀴즈</a>
+  <a href="#s9">오답노트</a>
+</nav>
+
+<div class="hero">
+  <h1>04. 서버프로그램 구현</h1>
+  <p class="subtitle">응집도·결합도 · 아키텍처 패턴 · 형상관리 · 배치 프로그램</p>
+  <div class="tags">
+    <span class="tag">응집도 7종류</span>
+    <span class="tag">결합도 6종류</span>
+    <span class="tag">MVC 패턴</span>
+    <span class="tag">형상관리</span>
+    <span class="tag">배치프로그램</span>
+    <span class="tag">재사용</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- S1 출제기준 -->
+<section id="s1">
+  <h2 class="section-title"><span class="sec-num">1</span> 출제기준 요약</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3 style="color:var(--primary)">🔧 개발환경 구축·공통 모듈</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>개발·운영·테스트 환경 구성</li>
+        <li>공통 모듈 설계 원칙 (응집도↑, 결합도↓)</li>
+        <li>재사용성, 확장성</li>
+        <li>형상관리 도구 (Git, SVN)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:#2563eb)">🏗️ 서버프로그램 구현</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>소프트웨어 아키텍처 패턴</li>
+        <li>MVC, 계층화, 파이프-필터 패턴</li>
+        <li>보안 취약점 제거</li>
+        <li>API 설계</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--secondary)">⏱️ 배치프로그램 구현</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>배치 프로그램 유형</li>
+        <li>이벤트·온디맨드·정기 배치</li>
+        <li>배치 스케줄러</li>
+        <li>Job, Step, Tasklet 구성</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hl warn">
+    <strong>⚠️ 시험 핵심:</strong>
+    <strong>응집도 7종류 순서</strong>(기순교절시논우)와
+    <strong>결합도 6종류 순서</strong>(내공외제스자)는 매회 출제됩니다.
+    좋은 모듈 = <strong>응집도 높고 + 결합도 낮음</strong>.
+  </div>
+</section>
+
+<!-- S2 핵심 개념 -->
+<section id="s2">
+  <h2 class="section-title"><span class="sec-num">2</span> 핵심 개념</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="tab(this,'t-cc')">응집도·결합도</button>
+    <button class="tab-btn" onclick="tab(this,'t-arch')">아키텍처 패턴</button>
+    <button class="tab-btn" onclick="tab(this,'t-cm')">형상관리</button>
+    <button class="tab-btn" onclick="tab(this,'t-batch')">배치 프로그램</button>
+  </div>
+
+  <!-- 응집도/결합도 개념 -->
+  <div id="t-cc" class="tab-content active">
+    <div class="card">
+      <h3>모듈화 핵심 원칙</h3>
+      <div class="two-col">
+        <div>
+          <p style="font-size:0.84rem;margin-bottom:0.6rem;"><strong>응집도 (Cohesion)</strong></p>
+          <p style="font-size:0.83rem;color:var(--gray);">모듈 <u>내부</u> 요소들이 서로 얼마나 밀접하게 관련되어 있는가</p>
+          <div class="hl ok" style="margin-top:0.5rem;">높을수록 좋음 ↑<br>기능적 &gt; 순차적 &gt; ... &gt; 우연적</div>
+        </div>
+        <div>
+          <p style="font-size:0.84rem;margin-bottom:0.6rem;"><strong>결합도 (Coupling)</strong></p>
+          <p style="font-size:0.83rem;color:var(--gray);">모듈 <u>사이</u>의 상호 의존 정도</p>
+          <div class="hl" style="margin-top:0.5rem;background:#fef2f2;border-color:#fecaca;border-left-color:#dc2626;">낮을수록 좋음 ↓<br>내용 &gt; 공통 &gt; ... &gt; 자료</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>응집도 7종류 (높음 → 낮음) 암기: 기순교절시논우</h3>
+      <table class="base">
+        <tr><th>순위</th><th>종류</th><th>설명</th></tr>
+        <tr style="background:#f0fdf4;"><td>1 (최고)</td><td><strong>기능적 응집도</strong><br><span style="font-size:0.75rem;color:var(--gray)">Functional</span></td><td>모든 요소가 단 <u>하나의 기능</u>을 수행 (이상적)</td></tr>
+        <tr><td>2</td><td><strong>순차적 응집도</strong><br><span style="font-size:0.75rem;color:var(--gray)">Sequential</span></td><td>한 요소의 출력이 다음 요소의 입력으로 사용</td></tr>
+        <tr><td>3</td><td><strong>교환적 응집도</strong><br><span style="font-size:0.75rem;color:var(--gray)">Communicational</span></td><td>같은 데이터를 사용하는 요소들의 모임</td></tr>
+        <tr><td>4</td><td><strong>절차적 응집도</strong><br><span style="font-size:0.75rem;color:var(--gray)">Procedural</span></td><td>정해진 순서대로 실행되는 요소들의 모임</td></tr>
+        <tr><td>5</td><td><strong>시간적 응집도</strong><br><span style="font-size:0.75rem;color:var(--gray)">Temporal</span></td><td>특정 시간에 함께 실행되는 요소들 (초기화)</td></tr>
+        <tr><td>6</td><td><strong>논리적 응집도</strong><br><span style="font-size:0.75rem;color:var(--gray)">Logical</span></td><td>유사한 성격의 요소들을 묶어놓음 (매개변수로 선택)</td></tr>
+        <tr style="background:#fef2f2;"><td>7 (최저)</td><td><strong>우연적 응집도</strong><br><span style="font-size:0.75rem;color:var(--gray)">Coincidental</span></td><td>아무런 관계 없이 묶인 경우 (최악)</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>결합도 6종류 (높음 → 낮음) 암기: 내공외제스자</h3>
+      <table class="base">
+        <tr><th>순위</th><th>종류</th><th>설명</th></tr>
+        <tr style="background:#fef2f2;"><td>1 (최고/최악)</td><td><strong>내용 결합도</strong><br><span style="font-size:0.75rem;color:var(--gray)">Content</span></td><td>다른 모듈의 내부 데이터/코드를 직접 참조·수정</td></tr>
+        <tr><td>2</td><td><strong>공통 결합도</strong><br><span style="font-size:0.75rem;color:var(--gray)">Common</span></td><td>전역 변수를 공유하는 경우</td></tr>
+        <tr><td>3</td><td><strong>외부 결합도</strong><br><span style="font-size:0.75rem;color:var(--gray)">External</span></td><td>외부 환경(포트, 파일 형식 등)을 공유</td></tr>
+        <tr><td>4</td><td><strong>제어 결합도</strong><br><span style="font-size:0.75rem;color:var(--gray)">Control</span></td><td>제어 신호(플래그)를 파라미터로 전달</td></tr>
+        <tr><td>5</td><td><strong>스탬프 결합도</strong><br><span style="font-size:0.75rem;color:var(--gray)">Stamp</span></td><td>자료 구조(레코드/객체) 전체를 전달, 일부만 사용</td></tr>
+        <tr style="background:#f0fdf4;"><td>6 (최저/최선)</td><td><strong>자료 결합도</strong><br><span style="font-size:0.75rem;color:var(--gray)">Data</span></td><td>필요한 데이터만 매개변수로 전달 (이상적)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 아키텍처 패턴 -->
+  <div id="t-arch" class="tab-content">
+    <div class="card">
+      <h3>소프트웨어 아키텍처 패턴</h3>
+      <table class="base">
+        <tr><th>패턴</th><th>설명</th><th>사용 예</th></tr>
+        <tr>
+          <td><strong>계층화 패턴</strong><br><span style="font-size:0.75rem;color:var(--gray)">Layered</span></td>
+          <td>상위 계층이 하위 계층 서비스를 호출<br>각 계층은 인접 계층과만 통신</td>
+          <td>OSI 7계층, MVC</td>
+        </tr>
+        <tr>
+          <td><strong>파이프-필터</strong><br><span style="font-size:0.75rem;color:var(--gray)">Pipe-Filter</span></td>
+          <td>데이터를 필터(처리)가 순차 변환<br>파이프로 데이터 전달</td>
+          <td>컴파일러, Unix 파이프</td>
+        </tr>
+        <tr>
+          <td><strong>클라이언트-서버</strong><br><span style="font-size:0.75rem;color:var(--gray)">Client-Server</span></td>
+          <td>클라이언트가 요청, 서버가 응답<br>서버는 여러 클라이언트에 서비스</td>
+          <td>웹, DB 서버</td>
+        </tr>
+        <tr>
+          <td><strong>MVC 패턴</strong></td>
+          <td>Model(데이터) + View(화면) + Controller(제어)<br>관심사 분리</td>
+          <td>Spring MVC, Django</td>
+        </tr>
+        <tr>
+          <td><strong>이벤트-버스</strong><br><span style="font-size:0.75rem;color:var(--gray)">Event-Bus</span></td>
+          <td>이벤트 소스→이벤트 버스→리스너<br>느슨한 결합</td>
+          <td>Android 이벤트, Kafka</td>
+        </tr>
+        <tr>
+          <td><strong>마스터-슬레이브</strong><br><span style="font-size:0.75rem;color:var(--gray)">Master-Slave</span></td>
+          <td>마스터가 슬레이브를 제어<br>병렬 처리 후 마스터가 합산</td>
+          <td>DB 복제, 분산 계산</td>
+        </tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>MVC 패턴 상세</h3>
+      <table class="base">
+        <tr><th>구성요소</th><th>역할</th><th>예시</th></tr>
+        <tr>
+          <td><strong>Model</strong></td>
+          <td>데이터와 비즈니스 로직 관리<br>View/Controller와 독립적</td>
+          <td>DB 엔티티, 서비스 로직</td>
+        </tr>
+        <tr>
+          <td><strong>View</strong></td>
+          <td>사용자 인터페이스 화면 담당<br>Model의 데이터를 시각화</td>
+          <td>HTML 템플릿, JSP</td>
+        </tr>
+        <tr>
+          <td><strong>Controller</strong></td>
+          <td>사용자 요청을 받아 Model 업데이트<br>적절한 View 선택</td>
+          <td>Servlet, @Controller</td>
+        </tr>
+      </table>
+      <div class="hl" style="margin-top:0.75rem;">
+        사용자 → Controller → Model → View → 사용자<br>
+        <strong>장점:</strong> 관심사 분리, 유지보수성↑, 재사용성↑
+      </div>
+    </div>
+  </div>
+
+  <!-- 형상관리 -->
+  <div id="t-cm" class="tab-content">
+    <div class="card">
+      <h3>형상관리 (Configuration Management) 4단계</h3>
+      <table class="base">
+        <tr><th>단계</th><th>활동</th><th>설명</th></tr>
+        <tr><td><strong>형상 식별</strong></td><td>CI 선정</td><td>관리할 형상 항목(CI)을 식별하고 기준선 설정</td></tr>
+        <tr><td><strong>형상 제어</strong></td><td>변경 관리</td><td>변경 요청 검토 → 승인/거부 → 변경 수행</td></tr>
+        <tr><td><strong>형상 상태 보고</strong></td><td>현황 기록</td><td>형상 변경 이력, 현재 상태 문서화</td></tr>
+        <tr><td><strong>형상 감사</strong></td><td>검증</td><td>기준선과 현재 상태 비교 검증</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>버전 관리 도구 비교</h3>
+      <table class="base">
+        <tr><th>구분</th><th>Git</th><th>SVN (Subversion)</th></tr>
+        <tr><td>방식</td><td><strong>분산형</strong> (로컬 저장소)</td><td><strong>중앙집중형</strong> (서버 저장소)</td></tr>
+        <tr><td>오프라인</td><td>가능 (로컬 커밋)</td><td>불가</td></tr>
+        <tr><td>브랜치</td><td>경량, 빠름</td><td>상대적으로 무거움</td></tr>
+        <tr><td>명령어 예</td><td><code class="il">git commit</code> <code class="il">git push</code></td><td><code class="il">svn commit</code></td></tr>
+      </table>
+      <div class="hl warn" style="margin-top:0.75rem;">
+        <strong>Git 주요 명령어:</strong><br>
+        <code class="il">git init</code> 저장소 초기화 /
+        <code class="il">git clone</code> 복제 /
+        <code class="il">git add</code> 스테이징 /
+        <code class="il">git commit</code> 커밋 /
+        <code class="il">git push</code> 원격 업로드 /
+        <code class="il">git pull</code> 원격 내려받기 /
+        <code class="il">git branch</code> 브랜치 /
+        <code class="il">git merge</code> 병합
+      </div>
+    </div>
+  </div>
+
+  <!-- 배치 프로그램 -->
+  <div id="t-batch" class="tab-content">
+    <div class="card">
+      <h3>배치 프로그램 (Batch Program)</h3>
+      <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.75rem;">사용자 상호작용 없이 <u>대량의 데이터를 자동으로 처리</u>하는 프로그램</p>
+      <table class="base">
+        <tr><th>유형</th><th>설명</th><th>예시</th></tr>
+        <tr><td><strong>이벤트 배치</strong></td><td>특정 이벤트 발생 시 자동 실행</td><td>파일 도착 시 처리</td></tr>
+        <tr><td><strong>온디맨드 배치</strong></td><td>사용자 요청에 따라 실행</td><td>보고서 수동 생성</td></tr>
+        <tr><td><strong>정기 배치</strong></td><td>설정된 시간에 정기적으로 실행</td><td>매일 오전 2시 정산</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>배치 프로그램 구성 요소 (Spring Batch 기준)</h3>
+      <table class="base">
+        <tr><th>구성요소</th><th>설명</th></tr>
+        <tr><td><strong>Job</strong></td><td>배치 작업의 최상위 단위, 여러 Step 포함</td></tr>
+        <tr><td><strong>Step</strong></td><td>Job의 실행 단계, 독립적으로 실행 가능</td></tr>
+        <tr><td><strong>Tasklet</strong></td><td>Step의 실제 처리 로직 (읽기-처리-쓰기)</td></tr>
+        <tr><td><strong>Job Repository</strong></td><td>Job 실행 이력 관리</td></tr>
+        <tr><td><strong>Job Launcher</strong></td><td>Job을 실행시키는 컴포넌트</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>배치 스케줄러</h3>
+      <table class="base">
+        <tr><th>도구</th><th>설명</th></tr>
+        <tr><td><strong>Quartz</strong></td><td>Java 기반 오픈소스 스케줄러, Cron 표현식 사용</td></tr>
+        <tr><td><strong>Spring Batch</strong></td><td>Spring 기반 배치 프레임워크</td></tr>
+        <tr><td><strong>Cron</strong></td><td>Unix/Linux 작업 스케줄러</td></tr>
+        <tr><td><strong>Jenkins</strong></td><td>CI/CD 파이프라인, 배치 작업 스케줄링 가능</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- S3 플래시카드 -->
+<section id="s3">
+  <h2 class="section-title"><span class="sec-num">3</span> 시험용 키워드 플래시카드</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:0.85rem;">카드를 클릭하면 정의가 나옵니다.</p>
+  <div class="fc-grid" id="fc-container"></div>
+</section>
+
+<!-- S4 응집도·결합도 인터랙션 -->
+<section id="s4">
+  <h2 class="section-title"><span class="sec-num">4</span> 응집도 · 결합도 순서 인터랙션</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:1rem;">각 항목을 클릭하면 상세 설명이 나타납니다.</p>
+    <div class="cc-wrap">
+      <div>
+        <h4 class="coh-head">응집도 ↑ (높을수록 좋음)</h4>
+        <div class="cc-ladder" id="coh-ladder"></div>
+      </div>
+      <div>
+        <h4 class="cou-head">결합도 ↓ (낮을수록 좋음)</h4>
+        <div class="cc-ladder" id="cou-ladder"></div>
+      </div>
+    </div>
+    <div class="cc-detail" id="cc-detail"></div>
+  </div>
+</section>
+
+<!-- S5 아키텍처 패턴 인터랙션 -->
+<section id="s5">
+  <h2 class="section-title"><span class="sec-num">5</span> 아키텍처 패턴 인터랙션</h2>
+  <div class="arch-grid" id="arch-container"></div>
+  <div class="arch-detail" id="arch-detail"></div>
+</section>
+
+<!-- S6 형상관리 흐름 -->
+<section id="s6">
+  <h2 class="section-title"><span class="sec-num">6</span> 형상관리 절차 시각화</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:1rem;">각 단계를 클릭하면 상세 내용이 나타납니다.</p>
+    <div class="cm-flow">
+      <div class="cm-step cms1" onclick="showCM(0)" id="cm-0">① 형상 식별</div>
+      <span class="cm-arrow">→</span>
+      <div class="cm-step cms2" onclick="showCM(1)" id="cm-1">② 형상 제어</div>
+      <span class="cm-arrow">→</span>
+      <div class="cm-step cms3" onclick="showCM(2)" id="cm-2">③ 상태 보고</div>
+      <span class="cm-arrow">→</span>
+      <div class="cm-step cms4" onclick="showCM(3)" id="cm-3">④ 형상 감사</div>
+    </div>
+    <div class="cm-detail" id="cm-detail">단계를 클릭하면 설명이 나타납니다.</div>
+  </div>
+</section>
+
+<!-- S7 문제풀이 -->
+<section id="s7">
+  <h2 class="section-title"><span class="sec-num">7</span> 대표 문제 유형</h2>
+  <div id="oq-container"></div>
+  <div class="score-box" id="oq-score">
+    <div class="score-num" id="oq-snum">0/0</div>
+    <p style="color:var(--gray);margin-top:0.4rem;" id="oq-smsg"></p>
+  </div>
+  <button class="btn btn-primary" style="margin-top:1rem;" onclick="resetOQ()">다시 풀기</button>
+</section>
+
+<!-- S8 미니퀴즈 -->
+<section id="s8">
+  <h2 class="section-title"><span class="sec-num">8</span> 미니 퀴즈</h2>
+  <div id="mq-container"></div>
+  <button class="btn btn-green" style="margin-top:0.85rem;" onclick="checkMQ()">채점하기</button>
+  <div id="mq-result" style="display:none;margin-top:1rem;"></div>
+</section>
+
+<!-- S9 오답노트 -->
+<section id="s9">
+  <h2 class="section-title"><span class="sec-num">9</span> 오답 노트</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.7rem;">틀린 문제나 헷갈리는 개념을 기록하세요. (자동 저장)</p>
+    <textarea class="memo" id="memo" placeholder="예) 응집도 높→낮: 기순교절시논우 (기능>순차>교환>절차>시간>논리>우연)&#10;예) 결합도 높→낮: 내공외제스자 (내용>공통>외부>제어>스탬프>자료)&#10;예) 좋은 모듈: 응집도↑ + 결합도↓&#10;예) 형상관리: 식별→제어→상태보고→감사&#10;예) Git=분산형 / SVN=중앙집중형"></textarea>
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.5rem;">
+      <button class="btn btn-primary" onclick="saveMemo()">저장</button>
+      <span id="memo-ok" style="font-size:0.8rem;color:#059669;display:none;">✓ 저장됨</span>
+    </div>
+  </div>
+</section>
+
+</div>
+<button class="scroll-top" id="stbtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ── 응집도 데이터 ─────────────────────────────────────────
+const cohData = [
+  { name:'기능적 응집도', rank:'1위 (최고)', bg:'#bbf7d0', color:'#14532d',
+    desc:'모듈의 모든 요소가 단 <strong>하나의 기능</strong>을 수행합니다. 가장 이상적인 응집도입니다.',
+    ex:'예) "학생 성적 조회" 기능만 수행하는 모듈' },
+  { name:'순차적 응집도', rank:'2위', bg:'#86efac', color:'#15803d',
+    desc:'한 요소의 <strong>출력이 다음 요소의 입력</strong>으로 사용됩니다.',
+    ex:'예) 데이터 읽기 → 처리 → 저장 순서' },
+  { name:'교환적 응집도', rank:'3위', bg:'#6ee7b7', color:'#065f46',
+    desc:'<strong>같은 데이터를 사용</strong>하는 요소들의 모임입니다.',
+    ex:'예) 같은 고객 정보로 이메일 전송 + 문자 전송' },
+  { name:'절차적 응집도', rank:'4위', bg:'#fef08a', color:'#713f12',
+    desc:'정해진 <strong>순서대로 실행</strong>되는 요소들의 모임입니다.',
+    ex:'예) 권한 확인 → 파일 읽기 → 결과 출력' },
+  { name:'시간적 응집도', rank:'5위', bg:'#fed7aa', color:'#9a3412',
+    desc:'<strong>특정 시간에 함께 실행</strong>되는 요소들 (초기화, 종료 등)',
+    ex:'예) 시스템 초기화 시: DB 연결 + 로그 설정 + 캐시 초기화' },
+  { name:'논리적 응집도', rank:'6위', bg:'#fecaca', color:'#991b1b',
+    desc:'<strong>유사한 성격의 요소</strong>를 묶어놓음. 매개변수로 실행할 기능 선택.',
+    ex:'예) "입출력 처리" 모듈에 파일 입력, 키보드 입력, 화면 출력 혼재' },
+  { name:'우연적 응집도', rank:'7위 (최저)', bg:'#fee2e2', color:'#7f1d1d',
+    desc:'<strong>아무런 관계 없이</strong> 묶인 경우. 최악의 응집도입니다.',
+    ex:'예) print문 모아놓기, 무작위로 기능 묶음' },
+];
+
+// ── 결합도 데이터 ─────────────────────────────────────────
+const couData = [
+  { name:'내용 결합도', rank:'1위 (최악)', bg:'#7f1d1d', color:'white',
+    desc:'다른 모듈의 <strong>내부 데이터·코드를 직접 참조·수정</strong>합니다. 가장 나쁜 형태.',
+    ex:'예) 다른 모듈의 지역변수를 직접 접근' },
+  { name:'공통 결합도', rank:'2위', bg:'#991b1b', color:'white',
+    desc:'<strong>전역 변수(Global Variable)</strong>를 여러 모듈이 공유합니다.',
+    ex:'예) 전역 변수 G를 여러 모듈에서 읽고 씀' },
+  { name:'외부 결합도', rank:'3위', bg:'#dc2626', color:'white',
+    desc:'<strong>외부 환경</strong>(포트번호, 파일 형식, 통신 프로토콜)을 공유합니다.',
+    ex:'예) 두 모듈이 같은 파일 형식을 의존' },
+  { name:'제어 결합도', rank:'4위', bg:'#f97316', color:'white',
+    desc:'<strong>제어 신호(플래그)</strong>를 파라미터로 전달하여 처리 흐름을 제어합니다.',
+    ex:'예) flag=true이면 A 기능, false이면 B 기능 실행' },
+  { name:'스탬프 결합도', rank:'5위', bg:'#fbbf24', color:'#1e293b',
+    desc:'<strong>자료 구조 전체</strong>를 전달하지만 일부만 사용합니다.',
+    ex:'예) Customer 객체 전체를 전달하지만 이름만 사용' },
+  { name:'자료 결합도', rank:'6위 (최선)', bg:'#bbf7d0', color:'#14532d',
+    desc:'<strong>필요한 데이터만</strong> 매개변수로 전달합니다. 가장 이상적인 형태.',
+    ex:'예) 이름, 나이만 필요하면 이름, 나이만 전달' },
+];
+
+// ── 형상관리 단계 데이터 ─────────────────────────────────
+const cmSteps = [
+  {
+    title:'① 형상 식별 (Configuration Identification)',
+    desc:'관리할 형상 항목(CI: Configuration Item)을 식별하고, 기준선(Baseline)을 설정합니다.',
+    items:'소스코드, 설계서, 요구사항 명세서, 테스트 계획서 등이 형상 항목에 포함됩니다.',
+  },
+  {
+    title:'② 형상 제어 (Configuration Control)',
+    desc:'변경 요청에 대해 검토·승인·거부하고, 승인된 변경만 수행합니다.',
+    items:'변경 제어 위원회(CCB: Change Control Board)가 검토 담당\n승인 → 변경 수행 → 재검증 절차',
+  },
+  {
+    title:'③ 형상 상태 보고 (Configuration Status Accounting)',
+    desc:'형상 항목의 현재 상태와 변경 이력을 문서화합니다.',
+    items:'누가, 언제, 무엇을, 왜 변경했는지 기록\n버전 이력, 변경 로그 유지',
+  },
+  {
+    title:'④ 형상 감사 (Configuration Audit)',
+    desc:'현재 형상이 설정된 기준선과 일치하는지 검증합니다.',
+    items:'물리적 형상 감사: 실제 제품이 명세와 일치하는지\n기능적 형상 감사: 요구사항을 충족하는지 확인',
+  },
+];
+
+// ── 아키텍처 패턴 데이터 ─────────────────────────────────
+const archData = [
+  {
+    title:'계층화 패턴', sub:'Layered Architecture',
+    desc:'각 계층은 인접 계층에만 서비스를 제공합니다.',
+    detail:'상위 계층 → 하위 계층으로 단방향 호출\n각 계층은 책임이 명확히 분리\n예) Presentation → Business → Persistence → DB\n장점: 유지보수 용이, 교체 용이\n단점: 성능 오버헤드 (계층 간 호출)',
+  },
+  {
+    title:'파이프-필터 패턴', sub:'Pipe-Filter',
+    desc:'데이터가 파이프를 통해 필터를 거치며 변환됩니다.',
+    detail:'Filter(처리) → Pipe(전달) → Filter(처리)\n각 필터는 독립적, 재조합 가능\n예) Unix 파이프(|), 컴파일러 (어휘분석→구문분석→코드생성)\n장점: 확장성 좋음, 병렬 처리 가능',
+  },
+  {
+    title:'클라이언트-서버', sub:'Client-Server',
+    desc:'클라이언트가 요청, 서버가 응답합니다.',
+    detail:'서버: 서비스 제공, 항상 대기\n클라이언트: 필요할 때 서버에 요청\n예) 웹 브라우저(클라이언트) - 웹 서버\n단점: 서버 병목 가능, 네트워크 의존',
+  },
+  {
+    title:'MVC 패턴', sub:'Model-View-Controller',
+    desc:'데이터, 화면, 제어를 분리합니다.',
+    detail:'Model: 데이터와 비즈니스 로직\nView: 사용자에게 보이는 화면\nController: 요청 처리, Model/View 연결\n흐름: 사용자→Controller→Model→View\n예) Spring MVC, Django MVT',
+  },
+  {
+    title:'이벤트-버스 패턴', sub:'Event-Bus',
+    desc:'이벤트 기반으로 느슨하게 결합합니다.',
+    detail:'Publisher가 이벤트를 버스에 발행\nSubscriber가 관심 이벤트를 구독\n예) Android 이벤트, Kafka, RabbitMQ\n장점: 느슨한 결합, 확장성\n단점: 순서 보장 어려움',
+  },
+  {
+    title:'마스터-슬레이브', sub:'Master-Slave',
+    desc:'마스터가 슬레이브를 제어하고 결과를 수집합니다.',
+    detail:'마스터가 작업을 분할하여 슬레이브에 할당\n슬레이브가 병렬 처리 후 결과 반환\n마스터가 결과 합산\n예) DB 복제 (쓰기=마스터, 읽기=슬레이브)',
+  },
+];
+
+// ── 플래시카드 데이터 ─────────────────────────────────────
+const fcData = [
+  { f:'응집도 순서\n(높→낮)',        b:'기순교절시논우\n기능>순차>교환>절차\n>시간>논리>우연' },
+  { f:'결합도 순서\n(높→낮/나쁨→좋음)', b:'내공외제스자\n내용>공통>외부>제어\n>스탬프>자료' },
+  { f:'좋은 모듈의 조건',            b:'응집도 높음 ↑\n결합도 낮음 ↓\n독립성·재사용성 높음' },
+  { f:'기능적 응집도',               b:'모든 요소가 하나의 기능만\n가장 좋은 응집도\n단일 책임 원칙(SRP)' },
+  { f:'우연적 응집도',               b:'아무 관계 없이 묶인 것\n가장 나쁜 응집도\n유지보수 어려움' },
+  { f:'내용 결합도',                 b:'다른 모듈 내부를 직접 참조\n가장 나쁜 결합도\n캡슐화 파괴' },
+  { f:'자료 결합도',                 b:'필요한 데이터만 전달\n가장 좋은 결합도\n매개변수 passing' },
+  { f:'MVC 패턴',                   b:'Model-View-Controller\n관심사 분리\nSpring, Django 등' },
+  { f:'형상관리 4단계',              b:'식별→제어→상태보고→감사\nCI(형상 항목)\nBaseline(기준선)' },
+  { f:'Git vs SVN',                 b:'Git: 분산형 (로컬 저장소)\nSVN: 중앙집중형\nGit이 현재 표준' },
+  { f:'배치 프로그램\n3가지 유형',   b:'이벤트 배치\n온디맨드 배치\n정기 배치' },
+  { f:'파이프-필터 패턴',            b:'데이터를 필터가 순차 변환\nUnix 파이프 | 명령어\n컴파일러 파이프라인' },
+  { f:'제어 결합도',                 b:'제어 신호(플래그)를 파라미터로 전달\n처리 흐름을 외부에서 제어\n논리적 응집도와 연관' },
+  { f:'스탬프 결합도',               b:'자료 구조 전체를 전달\n일부만 사용\n필요한 필드만 전달로 개선' },
+  { f:'CCB',                        b:'Change Control Board\n변경 제어 위원회\n형상 제어 단계에서 활동' },
+  { f:'Spring Batch',               b:'Job > Step > Tasklet\nJava 기반 배치 프레임워크\nQuartz로 스케줄링' },
+];
+
+// ── 대표 문제 ─────────────────────────────────────────────
+const oqData = [
+  {
+    q:'모듈의 응집도(Cohesion) 중 가장 높은(좋은) 응집도는?',
+    opts:['논리적 응집도','순차적 응집도','기능적 응집도','우연적 응집도'], ans:2,
+    exp:'응집도 높음→낮음: 기능>순차>교환>절차>시간>논리>우연\n암기: 기순교절시논우\n기능적 응집도가 가장 높고(좋고), 우연적이 가장 낮음(나쁨)',
+  },
+  {
+    q:'모듈 결합도 중 "제어 신호(플래그)를 파라미터로 전달하여 처리 흐름을 제어하는" 결합도는?',
+    opts:['내용 결합도','공통 결합도','제어 결합도','스탬프 결합도'], ans:2,
+    exp:'결합도 높음→낮음: 내용>공통>외부>제어>스탬프>자료\n암기: 내공외제스자\n제어 결합도: flag/switch 파라미터로 다른 모듈의 흐름 제어',
+  },
+  {
+    q:'MVC 패턴에서 사용자의 요청을 받아 Model을 업데이트하고 적절한 View를 선택하는 역할은?',
+    opts:['Model','View','Controller','Service'], ans:2,
+    exp:'MVC 패턴:\nModel: 데이터와 비즈니스 로직\nView: 사용자 인터페이스 화면\nController: 요청 처리, Model/View 조정\n흐름: 사용자→Controller→Model→View',
+  },
+  {
+    q:'Git과 SVN의 차이를 설명한 것으로 올바른 것은?',
+    opts:[
+      'Git은 중앙집중형, SVN은 분산형이다',
+      'Git은 분산형, SVN은 중앙집중형이다',
+      'Git과 SVN 모두 중앙집중형이다',
+      'Git과 SVN 모두 분산형이다',
+    ], ans:1,
+    exp:'Git: 분산형 버전 관리 → 로컬 저장소 존재, 오프라인 작업 가능\nSVN: 중앙집중형 → 서버에만 저장소 존재, 오프라인 불가\n현재는 Git이 사실상 표준',
+  },
+  {
+    q:'소프트웨어 아키텍처 패턴 중 "데이터가 처리 단계(Filter)를 통해 순차적으로 변환되는" 패턴은?',
+    opts:['계층화 패턴','파이프-필터 패턴','MVC 패턴','이벤트-버스 패턴'], ans:1,
+    exp:'파이프-필터(Pipe-Filter) 패턴:\n데이터 → Filter1 → Pipe → Filter2 → Pipe → Filter3\n예) Unix 명령어 파이프(|), 컴파일러 단계\n각 필터는 독립적, 재조합 가능',
+  },
+  {
+    q:'결합도(Coupling)에 대한 설명으로 옳은 것은?',
+    opts:[
+      '결합도는 높을수록 좋은 모듈이다',
+      '내용 결합도가 가장 낮은(좋은) 결합도이다',
+      '결합도는 낮을수록 독립적이고 좋은 모듈이다',
+      '자료 결합도는 전역 변수를 공유하는 방식이다',
+    ], ans:2,
+    exp:'결합도: 낮을수록 좋음 (독립성↑, 재사용성↑)\n내용 결합도: 가장 높음(나쁨) — 다른 모듈 내부 직접 접근\n자료 결합도: 가장 낮음(좋음) — 필요한 데이터만 전달\n전역 변수 공유: 공통 결합도',
+  },
+  {
+    q:'형상관리(Configuration Management)의 4단계 활동 순서로 올바른 것은?',
+    opts:[
+      '식별 → 감사 → 제어 → 상태 보고',
+      '제어 → 식별 → 상태 보고 → 감사',
+      '식별 → 제어 → 상태 보고 → 감사',
+      '감사 → 식별 → 제어 → 상태 보고',
+    ], ans:2,
+    exp:'형상관리 4단계: 식별 → 제어 → 상태 보고 → 감사\n① 형상 식별: CI 선정, 기준선 설정\n② 형상 제어: 변경 요청 검토·승인\n③ 상태 보고: 이력 문서화\n④ 형상 감사: 기준선과 비교 검증',
+  },
+  {
+    q:'배치 프로그램 유형 중 "특정 이벤트가 발생했을 때 자동으로 실행"되는 유형은?',
+    opts:['정기 배치','온디맨드 배치','이벤트 배치','실시간 배치'], ans:2,
+    exp:'배치 프로그램 유형:\n이벤트 배치: 특정 이벤트 발생 시 자동 실행 (파일 도착 등)\n온디맨드 배치: 사용자 요청 시 실행\n정기 배치: 설정된 시간에 주기적 실행 (매일 새벽 정산)',
+  },
+];
+
+// ── 미니 퀴즈 ─────────────────────────────────────────────
+const mqData = [
+  { q:'응집도 중 가장 나쁜(낮은) 응집도는?', opts:['기능적','논리적','우연적','시간적'], ans:2 },
+  { q:'결합도 중 가장 좋은(낮은) 결합도는?', opts:['내용','공통','제어','자료'], ans:3 },
+  { q:'MVC에서 데이터와 비즈니스 로직을 담당하는 것은?', opts:['Model','View','Controller','Service'], ans:0 },
+  { q:'분산형 버전 관리 도구는?', opts:['SVN','CVS','Git','ClearCase'], ans:2 },
+  { q:'형상관리에서 변경 요청을 검토·승인하는 단계는?', opts:['형상 식별','형상 제어','상태 보고','형상 감사'], ans:1 },
+  { q:'"사용자 요청에 따라 실행되는" 배치 프로그램 유형은?', opts:['정기 배치','이벤트 배치','온디맨드 배치','예약 배치'], ans:2 },
+  { q:'전역 변수를 여러 모듈이 공유하는 결합도는?', opts:['내용','공통','외부','제어'], ans:1 },
+  { q:'파이프-필터 패턴의 예시로 적절한 것은?', opts:['MVC 웹 프레임워크','Unix 파이프 명령어','클라이언트-서버','이벤트 버스'], ans:1 },
+];
+
+// ── 렌더링 ────────────────────────────────────────────────
+function renderFC() {
+  document.getElementById('fc-container').innerHTML = fcData.map(c =>
+    `<div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-inner">
+        <div class="fc-front">${c.f.replace(/\n/g,'<br>')}</div>
+        <div class="fc-back">${c.b.replace(/\n/g,'<br>')}</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+const cohColors = ['#bbf7d0','#86efac','#6ee7b7','#fef08a','#fed7aa','#fecaca','#fee2e2'];
+const couColors = ['#7f1d1d','#991b1b','#dc2626','#f97316','#fbbf24','#bbf7d0'];
+const cohText   = ['#14532d','#15803d','#065f46','#713f12','#9a3412','#991b1b','#7f1d1d'];
+const couText   = ['white','white','white','white','#1e293b','#14532d'];
+
+let activeCCKey = '';
+function renderCC() {
+  document.getElementById('coh-ladder').innerHTML = cohData.map((d, i) =>
+    `<div class="cc-item" style="background:${cohColors[i]};color:${cohText[i]};" onclick="showCC('c${i}','${encodeURIComponent(JSON.stringify(d))}')" id="ci-c${i}">
+      <span>${d.name}</span>
+      <span class="cc-rank">${d.rank}</span>
+    </div>`
+  ).join('');
+  document.getElementById('cou-ladder').innerHTML = couData.map((d, i) =>
+    `<div class="cc-item" style="background:${couColors[i]};color:${couText[i]};" onclick="showCC('u${i}','${encodeURIComponent(JSON.stringify(d))}')" id="ci-u${i}">
+      <span>${d.name}</span>
+      <span class="cc-rank">${d.rank}</span>
+    </div>`
+  ).join('');
+}
+
+function showCC(key, dataStr) {
+  document.querySelectorAll('.cc-item').forEach(el => el.classList.remove('active'));
+  const det = document.getElementById('cc-detail');
+  if (activeCCKey === key) { det.classList.remove('show'); activeCCKey = ''; return; }
+  const d = JSON.parse(decodeURIComponent(dataStr));
+  document.getElementById(`ci-${key}`).classList.add('active');
+  det.innerHTML = `<strong>${d.name}</strong> <span style="font-size:0.78rem;color:var(--gray);">${d.rank}</span><br>
+    <p style="margin-top:0.4rem;">${d.desc}</p>
+    <p style="margin-top:0.35rem;color:var(--gray);font-size:0.81rem;">${d.ex}</p>`;
+  det.classList.add('show');
+  activeCCKey = key;
+}
+
+function renderArch() {
+  document.getElementById('arch-container').innerHTML = archData.map((a, i) =>
+    `<div class="arch-card" onclick="showArch(${i})" id="ar-${i}">
+      <div class="arch-title">${a.title}</div>
+      <div class="arch-sub">${a.sub}</div>
+      <p style="font-size:0.78rem;color:var(--gray);margin-top:0.4rem;">${a.desc}</p>
+    </div>`
+  ).join('');
+}
+
+let activeArch = -1;
+function showArch(i) {
+  document.querySelectorAll('.arch-card').forEach((el, j) => el.classList.toggle('active', j === i));
+  const det = document.getElementById('arch-detail');
+  if (activeArch === i) { det.classList.remove('show'); activeArch = -1; return; }
+  const a = archData[i];
+  det.innerHTML = `<strong>${a.title} (${a.sub})</strong><br>
+    <div style="margin-top:0.5rem;">${a.detail.replace(/\n/g,'<br>')}</div>`;
+  det.classList.add('show');
+  activeArch = i;
+}
+
+let activeCM = -1;
+function showCM(i) {
+  document.querySelectorAll('.cm-step').forEach((el, j) => el.classList.toggle('active', j === i));
+  const det = document.getElementById('cm-detail');
+  if (activeCM === i) { det.textContent = '단계를 클릭하면 설명이 나타납니다.'; document.getElementById(`cm-${i}`).classList.remove('active'); activeCM = -1; return; }
+  const s = cmSteps[i];
+  det.innerHTML = `<strong>${s.title}</strong><br>
+    <p style="margin-top:0.4rem;">${s.desc}</p>
+    <div class="hl" style="margin-top:0.55rem;font-size:0.8rem;">${s.items.replace(/\n/g,'<br>')}</div>`;
+  activeCM = i;
+}
+
+let oqAnswered = {}, oqSelected = {};
+function renderOQ() {
+  oqAnswered = {}; oqSelected = {};
+  document.getElementById('oq-container').innerHTML = oqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi+1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<div class="opt" onclick="pickOQ(${qi},${oi},this)" id="oq-${qi}-${oi}">${o}</div>`
+      ).join('')}</div>
+      <div class="exp" id="exp-${qi}">${q.exp.replace(/\n/g,'<br>')}</div>
+    </div>`
+  ).join('');
+  document.getElementById('oq-score').style.display = 'none';
+}
+
+function pickOQ(qi, oi, el) {
+  if (oqAnswered[qi]) return;
+  oqAnswered[qi] = true; oqSelected[qi] = oi;
+  const correct = oqData[qi].ans;
+  document.getElementById(`oq-${qi}-${correct}`).classList.add('correct');
+  if (oi !== correct) el.classList.add('wrong');
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  if (Object.keys(oqAnswered).length === oqData.length) {
+    const sc = oqData.filter((_, i) => oqSelected[i] === oqData[i].ans).length;
+    document.getElementById('oq-snum').textContent = `${sc}/${oqData.length}`;
+    document.getElementById('oq-smsg').textContent = sc === oqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 오답노트에 기록하세요!';
+    document.getElementById('oq-score').style.display = 'block';
+  }
+}
+
+function resetOQ() { renderOQ(); }
+
+function renderMQ() {
+  document.getElementById('mq-container').innerHTML = mqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi+1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<label style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;background:#f8fafc;border:2px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.84rem;" id="mql-${qi}-${oi}">
+          <input type="radio" name="mq${qi}" value="${oi}" style="margin:0;flex-shrink:0;">${o}
+        </label>`
+      ).join('')}</div>
+    </div>`
+  ).join('');
+  document.getElementById('mq-result').style.display = 'none';
+}
+
+function checkMQ() {
+  let sc = 0;
+  mqData.forEach((q, qi) => {
+    const sel = document.querySelector(`input[name="mq${qi}"]:checked`);
+    const v = sel ? +sel.value : -1;
+    const lbl = id => document.getElementById(`mql-${qi}-${id}`);
+    lbl(q.ans).style.cssText += ';border-color:#059669;background:#d1fae5;';
+    if (v !== -1 && v !== q.ans) lbl(v).style.cssText += ';border-color:#dc2626;background:#fee2e2;';
+    if (v === q.ans) sc++;
+  });
+  const r = document.getElementById('mq-result');
+  r.style.display = 'block';
+  r.innerHTML = `<div class="card" style="text-align:center;">
+    <div class="score-num">${sc}/${mqData.length}</div>
+    <p style="color:var(--gray);margin-top:0.4rem;">${sc === mqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 다시 복습하세요!'}</p>
+  </div>`;
+}
+
+function tab(btn, id) {
+  btn.closest('section').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.closest('section').querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+function saveMemo() {
+  localStorage.setItem('sp_memo', document.getElementById('memo').value);
+  const ok = document.getElementById('memo-ok');
+  ok.style.display = 'inline';
+  setTimeout(() => { ok.style.display = 'none'; }, 2000);
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('stbtn').classList.toggle('show', window.scrollY > 300);
+  let cur = '';
+  document.querySelectorAll('section[id]').forEach(s => { if (window.scrollY >= s.offsetTop - 110) cur = s.id; });
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderFC();
+  renderCC();
+  renderArch();
+  renderOQ();
+  renderMQ();
+  const m = localStorage.getItem('sp_memo');
+  if (m) document.getElementById('memo').value = m;
+  document.getElementById('memo').addEventListener('input', () =>
+    localStorage.setItem('sp_memo', document.getElementById('memo').value)
+  );
+});
+</script>
+</body>
+</html>

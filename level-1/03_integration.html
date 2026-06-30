@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>03. 통합 구현 | 정보처리기사 실기</title>
+<style>
+:root {
+  --primary: #0369a1;
+  --primary-light: #e0f2fe;
+  --secondary: #7c3aed;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --dark: #1e293b;
+  --gray: #64748b;
+  --light: #f8fafc;
+  --border: #e2e8f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.6; }
+
+nav { position: sticky; top: 0; z-index: 100; background: var(--dark); padding: 0.6rem 1.5rem; display: flex; gap: 0.5rem; align-items: center; overflow-x: auto; scrollbar-width: none; }
+nav::-webkit-scrollbar { display: none; }
+nav .nav-title { color: #7dd3fc; font-weight: 700; font-size: 0.82rem; white-space: nowrap; margin-right: 0.5rem; }
+nav a { color: #94a3b8; text-decoration: none; font-size: 0.78rem; white-space: nowrap; padding: 0.3rem 0.7rem; border-radius: 5px; transition: all 0.2s; }
+nav a:hover, nav a.active { color: white; background: #334155; }
+
+.hero { background: linear-gradient(135deg, #0c4a6e 0%, #1e293b 100%); color: white; padding: 2.5rem 2rem; text-align: center; }
+.hero h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.4rem; }
+.hero .subtitle { color: #7dd3fc; font-size: 0.95rem; margin-bottom: 1rem; }
+.tags { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; }
+.tag { background: rgba(255,255,255,0.12); color: white; padding: 0.2rem 0.65rem; border-radius: 20px; font-size: 0.78rem; }
+
+.container { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem; }
+section { margin-bottom: 3rem; }
+.section-title { font-size: 1.3rem; font-weight: 700; color: var(--dark); margin-bottom: 1.25rem; padding-bottom: 0.6rem; border-bottom: 3px solid var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { width: 30px; height: 30px; background: var(--primary); color: white; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; flex-shrink: 0; }
+
+.card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-bottom: 1rem; }
+.card h3 { font-size: 0.95rem; margin-bottom: 0.75rem; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+
+.tabs { display: flex; gap: 0.4rem; margin-bottom: 1.25rem; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+.tab-btn { padding: 0.45rem 1rem; background: none; border: none; color: var(--gray); cursor: pointer; font-size: 0.85rem; font-weight: 600; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+table.base { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+table.base th { background: var(--dark); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+table.base td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+table.base tr:hover td { background: #f0f9ff; }
+
+.hl  { background: #f0f9ff; border: 1px solid #bae6fd; border-left: 4px solid var(--primary); border-radius: 7px; padding: 0.8rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; }
+.hl.warn { background: #fffbeb; border-color: #fde68a; border-left-color: var(--warning); }
+.hl.danger { background: #fef2f2; border-color: #fecaca; border-left-color: var(--danger); }
+
+code.il { background: #f1f5f9; color: #0369a1; padding: 0.1rem 0.35rem; border-radius: 3px; font-family: monospace; font-size: 0.81rem; font-weight: 700; }
+
+.fc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 0.75rem; }
+.flip-card { height: 128px; perspective: 1000px; cursor: pointer; }
+.flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.55s; transform-style: preserve-3d; }
+.flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+.fc-front, .fc-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0.75rem; text-align: center; }
+.fc-front { background: white; border: 2px solid var(--primary); color: var(--dark); font-weight: 600; font-size: 0.84rem; }
+.fc-back { background: var(--primary); color: white; transform: rotateY(180deg); font-size: 0.77rem; line-height: 1.5; }
+
+/* EAI 구축유형 카드 */
+.eai-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.85rem; }
+.eai-card { background: white; border: 2px solid var(--border); border-radius: 10px; padding: 1rem; cursor: pointer; transition: all 0.2s; text-align: center; }
+.eai-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+.eai-card.active { border-color: var(--primary); background: var(--primary-light); }
+.eai-card .eai-name { font-weight: 700; font-size: 0.9rem; color: var(--primary); margin-bottom: 0.3rem; }
+.eai-card .eai-sub { font-size: 0.78rem; color: var(--gray); }
+.eai-detail { min-height: 80px; padding: 0.9rem 1.1rem; background: var(--primary-light); border-left: 4px solid var(--primary); border-radius: 7px; font-size: 0.85rem; margin-top: 0.85rem; line-height: 1.7; }
+
+/* 매칭 게임 */
+.match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.match-item { padding: 0.6rem 0.9rem; background: white; border: 2px solid var(--border); border-radius: 7px; margin-bottom: 0.5rem; font-size: 0.83rem; cursor: pointer; transition: all 0.15s; font-family: monospace; }
+.match-item:hover { border-color: var(--secondary); }
+.match-item.selected { border-color: var(--secondary); background: #f5f3ff; }
+.match-item.matched { border-color: #059669; background: #d1fae5; color: #065f46; font-weight: 600; cursor: default; }
+.match-item.wrong-flash { border-color: var(--danger); background: #fee2e2; }
+.match-status { margin-top: 0.5rem; font-size: 0.84rem; color: var(--gray); font-weight: 600; }
+
+/* 퀴즈 */
+.quiz-item { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem; }
+.quiz-q { font-weight: 700; margin-bottom: 0.75rem; font-size: 0.9rem; }
+.opts { display: flex; flex-direction: column; gap: 0.4rem; }
+.opt { padding: 0.6rem 1rem; background: #f8fafc; border: 2px solid var(--border); border-radius: 7px; cursor: pointer; font-size: 0.84rem; transition: all 0.18s; }
+.opt:hover { border-color: var(--primary); background: #f0f9ff; }
+.opt.correct { border-color: #059669; background: #d1fae5; color: #065f46; font-weight: 700; }
+.opt.wrong { border-color: var(--danger); background: #fee2e2; color: #991b1b; }
+.exp { display: none; margin-top: 0.85rem; }
+.exp.show { display: block; }
+.exp-inner { padding: 0.7rem 0.9rem; background: #f0f9ff; border-left: 4px solid var(--primary); border-radius: 4px; font-size: 0.82rem; line-height: 1.7; }
+
+.score-box { background: white; border: 2px solid var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; margin-top: 1.25rem; display: none; }
+.score-num { font-size: 2.2rem; font-weight: 800; color: var(--primary); }
+
+.btn { padding: 0.5rem 1.1rem; border: none; border-radius: 7px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: opacity 0.2s; }
+.btn:hover { opacity: 0.85; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-blue   { background: var(--secondary); color: white; }
+.btn-gray   { background: var(--gray); color: white; }
+
+textarea.memo { width: 100%; min-height: 140px; padding: 0.9rem; border: 2px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.88rem; resize: vertical; background: #fffef7; }
+textarea.memo:focus { outline: none; border-color: var(--primary); }
+
+.scroll-top { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--primary); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; }
+.scroll-top.show { display: flex; }
+
+@media (max-width: 700px) {
+  .container { padding: 1rem; }
+  .hero h1 { font-size: 1.35rem; }
+  .card-grid { grid-template-columns: 1fr; }
+  .fc-grid { grid-template-columns: repeat(2, 1fr); }
+  .match-grid { grid-template-columns: 1fr; }
+  .eai-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">🔗 03. 통합 구현</span>
+  <a href="#s1">출제기준</a>
+  <a href="#s2">핵심개념</a>
+  <a href="#s3">키워드카드</a>
+  <a href="#s4">연계방식비교</a>
+  <a href="#s5">XML/JSON맞추기</a>
+  <a href="#s6">실패처리시나리오</a>
+  <a href="#s7">문제풀이</a>
+  <a href="#s8">미니퀴즈</a>
+  <a href="#s9">오답노트</a>
+</nav>
+
+<div class="hero">
+  <h1>03. 통합 구현</h1>
+  <p class="subtitle">연계 데이터 구성 · EAI/ESB 연계 메커니즘 · 내외부 연계 모듈 구현</p>
+  <div class="tags">
+    <span class="tag">EAI</span>
+    <span class="tag">ESB</span>
+    <span class="tag">REST/SOAP</span>
+    <span class="tag">XML/JSON</span>
+    <span class="tag">연계 실패처리</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- S1 출제기준 -->
+<section id="s1">
+  <h2 class="section-title"><span class="sec-num">1</span> 출제기준 요약</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3 style="color:var(--primary)">📋 연계 데이터 구성하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>내외부 모듈 연계 요구사항</li>
+        <li>연계 데이터 식별</li>
+        <li>데이터 표준</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--secondary)">🔧 연계 매커니즘 구성 / 모듈 구현하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>연계 방식, 연계 주기, 실패 처리</li>
+        <li>EAI, ESB, API, Web Service</li>
+        <li>XML, JSON</li>
+        <li>연계 보안, 데이터 무결성</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hl warn">
+    <strong>⚠️ 시험 핵심:</strong>
+    <strong>EAI 구축 유형 4가지</strong>, <strong>직접연계 vs 간접연계</strong>,
+    <strong>REST vs SOAP</strong>, <strong>연계 실패 처리(재처리)</strong>는 매회 출제됩니다.
+  </div>
+</section>
+
+<!-- S2 핵심 개념 -->
+<section id="s2">
+  <h2 class="section-title"><span class="sec-num">2</span> 핵심 개념</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="tab(this,'t-data')">연계 데이터</button>
+    <button class="tab-btn" onclick="tab(this,'t-eai')">EAI 구축 유형</button>
+    <button class="tab-btn" onclick="tab(this,'t-api')">ESB · API · Web Service</button>
+    <button class="tab-btn" onclick="tab(this,'t-method')">직접연계 · 간접연계</button>
+    <button class="tab-btn" onclick="tab(this,'t-sec')">보안 · 실패처리</button>
+  </div>
+
+  <div id="t-data" class="tab-content active">
+    <div class="card">
+      <h3>연계 데이터 식별 및 표준화</h3>
+      <table class="base">
+        <tr><th>항목</th><th>설명</th></tr>
+        <tr><td><strong>연계 대상 시스템</strong></td><td>데이터를 주고받는 송신/수신 시스템 식별</td></tr>
+        <tr><td><strong>연계 데이터 항목</strong></td><td>송수신 데이터의 항목, 타입, 길이 정의</td></tr>
+        <tr><td><strong>코드 매핑</strong></td><td>시스템 간 서로 다른 코드값을 표준 코드로 매핑</td></tr>
+        <tr><td><strong>데이터 표준화</strong></td><td>데이터 형식을 통일하여 해석 차이를 방지</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="t-eai" class="tab-content">
+    <div class="card">
+      <h3>EAI(Enterprise Application Integration) 구축 유형 (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>유형</th><th>특징</th></tr>
+        <tr><td><strong>Point-to-Point</strong></td><td>시스템 간 1:1 직접 연결, 구현은 단순하나 시스템 증가 시 연계 복잡도 급증</td></tr>
+        <tr><td><strong>Hub &amp; Spoke</strong></td><td>중앙 허브(Hub)를 두고 모든 시스템이 허브를 통해 연계, 허브 장애 시 전체 영향</td></tr>
+        <tr><td><strong>Message Bus(ESB)</strong></td><td>버스를 통한 표준 메시지 기반 연계, 확장성이 가장 우수</td></tr>
+        <tr><td><strong>Hybrid</strong></td><td>Hub&amp;Spoke와 Message Bus를 혼합한 방식</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="t-api" class="tab-content">
+    <div class="card">
+      <h3>ESB(Enterprise Service Bus)</h3>
+      <p style="font-size:0.85rem;color:var(--gray);">서비스 중심의 미들웨어로 메시지 라우팅, 데이터 형식 변환, 프로토콜 중계 등을 담당하며 시스템 간 결합도를 낮춥니다.</p>
+    </div>
+    <div class="card">
+      <h3>REST vs SOAP</h3>
+      <table class="base">
+        <tr><th>구분</th><th>REST</th><th>SOAP</th></tr>
+        <tr><td>기반</td><td>HTTP 메서드(GET/POST/PUT/DELETE)</td><td>XML 기반 프로토콜</td></tr>
+        <tr><td>데이터 형식</td><td>주로 JSON (경량)</td><td>XML (WSDL로 명세 정의)</td></tr>
+        <tr><td>특징</td><td>가볍고 빠름, 캐싱 용이</td><td>보안·트랜잭션 기능이 강력하나 무거움</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="t-method" class="tab-content">
+    <div class="card">
+      <h3>직접연계 vs 간접연계</h3>
+      <table class="base">
+        <tr><th>구분</th><th>직접연계</th><th>간접연계</th></tr>
+        <tr><td>방식</td><td>DB Link, API 직접 호출 등으로 시스템 간 직접 연결</td><td>EAI/ESB 등 미들웨어를 경유하여 연계</td></tr>
+        <tr><td>결합도</td><td>높음 (변경 시 영향범위 큼)</td><td>낮음 (변경에 유연)</td></tr>
+        <tr><td>구축비용</td><td>상대적으로 낮음</td><td>상대적으로 높음 (미들웨어 도입 필요)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="t-sec" class="tab-content">
+    <div class="card">
+      <h3>연계 보안 / 데이터 무결성</h3>
+      <table class="base">
+        <tr><th>항목</th><th>설명</th></tr>
+        <tr><td><strong>연계 데이터 암호화</strong></td><td>전송 구간 SSL/TLS 등으로 데이터 보호</td></tr>
+        <tr><td><strong>데이터 무결성 검증</strong></td><td>체크섬/해시값 비교로 데이터 위변조 여부 확인</td></tr>
+        <tr><td><strong>접근통제</strong></td><td>연계 가능한 시스템/IP 제한</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>연계 주기 / 실패 처리</h3>
+      <table class="base">
+        <tr><th>항목</th><th>설명</th></tr>
+        <tr><td><strong>연계 주기</strong></td><td>실시간(Real-time) 또는 배치(주기적, Batch) 처리</td></tr>
+        <tr><td><strong>재처리(Retry)</strong></td><td>연계 실패 시 정해진 횟수만큼 재시도</td></tr>
+        <tr><td><strong>오류 로그/알림</strong></td><td>실패 내역을 로그로 적재하고 담당자에게 알림</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- S3 플래시카드 -->
+<section id="s3">
+  <h2 class="section-title"><span class="sec-num">3</span> 시험용 키워드 플래시카드</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:0.85rem;">카드를 클릭하면 정의가 나옵니다.</p>
+  <div class="fc-grid" id="fc-container"></div>
+</section>
+
+<!-- S4 연계 방식 비교 -->
+<section id="s4">
+  <h2 class="section-title"><span class="sec-num">4</span> EAI 구축 유형 비교</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.85rem;">카드를 클릭하면 해당 구축 유형의 구조와 특징이 나타납니다.</p>
+    <div class="eai-grid" id="eai-container"></div>
+    <div class="eai-detail" id="eai-detail">유형을 클릭하면 설명이 나타납니다.</div>
+  </div>
+</section>
+
+<!-- S5 XML/JSON 구조 맞추기 -->
+<section id="s5">
+  <h2 class="section-title"><span class="sec-num">5</span> XML/JSON 구조 맞추기</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.75rem;">왼쪽 구문/기호를 클릭한 뒤, 오른쪽에서 알맞은 설명을 클릭하세요.</p>
+    <div class="match-grid">
+      <div id="match-syntax"></div>
+      <div id="match-desc"></div>
+    </div>
+    <div class="match-status" id="match-status"></div>
+    <button class="btn btn-gray" style="margin-top:0.75rem;" onclick="resetMatch()">다시 섞기</button>
+  </div>
+</section>
+
+<!-- S6 실패처리 시나리오 -->
+<section id="s6">
+  <h2 class="section-title"><span class="sec-num">6</span> 연계 실패 처리 시나리오</h2>
+  <div id="sc-container"></div>
+</section>
+
+<!-- S7 문제 풀이 -->
+<section id="s7">
+  <h2 class="section-title"><span class="sec-num">7</span> 대표 문제 유형</h2>
+  <div id="oq-container"></div>
+  <div class="score-box" id="oq-score">
+    <div class="score-num" id="oq-snum">0/0</div>
+    <p style="color:var(--gray);margin-top:0.4rem;" id="oq-smsg"></p>
+  </div>
+  <button class="btn btn-primary" style="margin-top:1rem;" onclick="resetOQ()">다시 풀기</button>
+</section>
+
+<!-- S8 미니 퀴즈 -->
+<section id="s8">
+  <h2 class="section-title"><span class="sec-num">8</span> 미니 퀴즈</h2>
+  <div id="mq-container"></div>
+  <button class="btn btn-blue" style="margin-top:0.85rem;" onclick="checkMQ()">채점하기</button>
+  <div id="mq-result" style="display:none;margin-top:1rem;"></div>
+</section>
+
+<!-- S9 오답노트 -->
+<section id="s9">
+  <h2 class="section-title"><span class="sec-num">9</span> 오답 노트</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.7rem;">틀린 문제나 헷갈리는 개념을 기록하세요. (자동 저장)</p>
+    <textarea class="memo" id="memo" placeholder="예) EAI 구축유형: Point-to-Point/Hub&Spoke/Message Bus(ESB)/Hybrid&#10;예) 직접연계=결합도 높음, 간접연계(미들웨어 경유)=결합도 낮음&#10;예) REST=HTTP+JSON, SOAP=XML+WSDL&#10;예) 연계 실패 시 재처리(Retry) + 오류로그/알림&#10;예) 데이터 무결성 검증 = 체크섬/해시값 비교"></textarea>
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.5rem;">
+      <button class="btn btn-primary" onclick="saveMemo()">저장</button>
+      <span id="memo-ok" style="font-size:0.8rem;color:#059669;display:none;">✓ 저장됨</span>
+    </div>
+  </div>
+</section>
+
+</div>
+<button class="scroll-top" id="stbtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+const fcData = [
+  { f:'EAI',                   b:'기업 내 다양한 애플리케이션을\n통합·연계하는\n솔루션/방법론' },
+  { f:'Point-to-Point',        b:'시스템 간 1:1 직접 연결\n구현 단순, 시스템 증가 시\n복잡도 급증' },
+  { f:'Hub & Spoke',           b:'중앙 허브를 통해 연계\n허브 장애 시\n전체 영향' },
+  { f:'Message Bus(ESB)',      b:'버스를 통한 표준 메시지\n기반 연계\n확장성 우수' },
+  { f:'ESB',                   b:'서비스 중심 미들웨어\n메시지 라우팅/변환/중계\n담당' },
+  { f:'REST',                  b:'HTTP 메서드 기반\n경량 API 방식\n주로 JSON 사용' },
+  { f:'SOAP',                  b:'XML 기반 프로토콜\nWSDL로 명세 정의\n보안/트랜잭션 강점' },
+  { f:'직접연계',                b:'DB Link/API 직접 호출\n결합도 높음' },
+  { f:'간접연계',                b:'미들웨어를 경유한 연계\n결합도 낮음, 변경 유연' },
+  { f:'연계 데이터 식별',         b:'연계 대상 시스템과\n송수신 데이터 항목을\n정의하는 과정' },
+  { f:'데이터 표준화',           b:'코드 매핑, 데이터 형식을\n통일하여\n해석 차이 방지' },
+  { f:'XML 선언부',             b:'<?xml version="1.0"?>\n문서의 시작을\n알리는 선언' },
+  { f:'JSON 객체',              b:'{ key: value } 형태의\n키-값 데이터 구조' },
+  { f:'재처리(Retry)',          b:'연계 실패 시\n일정 횟수 재시도하는\n처리 방식' },
+  { f:'데이터 무결성 검증',       b:'체크섬/해시값 비교로\n데이터 위변조 여부\n확인' },
+  { f:'WSDL',                  b:'웹서비스의 기능/메시지\n형식을 정의하는\nXML 기반 명세 문서' },
+];
+
+const eaiData = [
+  { name:'Point-to-Point', sub:'1:1 직접 연결', desc:'시스템 간 <strong>1:1로 직접 연결</strong>하는 방식입니다. 구현이 단순하지만 시스템이 N개로 증가하면 연계 수가 <strong>N(N-1)/2</strong>로 급증해 유지보수가 어려워집니다.' },
+  { name:'Hub & Spoke', sub:'중앙 허브 경유', desc:'중앙에 <strong>허브(Hub)</strong>를 두고 모든 시스템이 허브를 거쳐 연계합니다. 연계 구조가 단순해지지만 <strong>허브 장애 시 전체 연계가 중단</strong>되는 위험이 있습니다.' },
+  { name:'Message Bus(ESB)', sub:'표준 메시지 버스', desc:'<strong>버스(Bus)</strong>를 통해 표준화된 메시지로 시스템을 연계합니다. 시스템 추가/변경에 유연하고 <strong>확장성이 가장 우수</strong>한 방식입니다.' },
+  { name:'Hybrid', sub:'혼합 방식', desc:'<strong>Hub&Spoke + Message Bus</strong>를 혼합한 방식으로, 조직 내부는 Hub&Spoke로, 외부 연계는 ESB로 구성하는 등 상황에 맞게 결합합니다.' },
+];
+
+const matchData = [
+  { v:'&lt;?xml version="1.0"?&gt;', c:'XML 문서의 시작을 알리는 선언부' },
+  { v:'&lt;tag&gt;내용&lt;/tag&gt;', c:'XML의 엘리먼트(원소) 구조' },
+  { v:'&lt;tag attr="value"&gt;', c:'XML 엘리먼트의 속성(attribute) 표기' },
+  { v:'{ "key": "value" }', c:'JSON의 객체(Object) 구조' },
+  { v:'[ "a", "b", "c" ]', c:'JSON의 배열(Array) 구조' },
+  { v:'true / false / null', c:'JSON에서 사용하는 기본 값 타입' },
+  { v:'콜론 ( : )', c:'JSON에서 키와 값을 구분하는 기호' },
+  { v:'중첩 태그 구조', c:'XML의 계층적(트리) 구조 표현 방식' },
+];
+
+const scenarioData = [
+  { q:'배치 연계 작업 중 네트워크 장애로 데이터 전송이 실패했다. 가장 적절한 1차 대응은?', opts:['즉시 운영을 중단한다','정해진 횟수만큼 재처리(Retry)를 시도한다','데이터를 임의로 변경하여 강제 전송한다','오류를 무시하고 다음 배치로 진행한다'], ans:1, exp:'일시적 장애는 정해진 횟수만큼 재처리(Retry)를 먼저 시도하고, 계속 실패하면 오류 로그를 남기고 담당자에게 알립니다.' },
+  { q:'연계 데이터의 코드값이 송신/수신 시스템 간 다르게 정의되어 오류가 발생했다. 근본적인 해결 방법은?', opts:['코드 매핑 테이블을 적용한 데이터 표준화','연계를 영구적으로 중단한다','수신 시스템을 재설치한다','송신 시스템의 코드값을 무시한다'], ans:0, exp:'코드값 불일치는 코드 매핑 테이블을 통한 데이터 표준화로 해결해야 재발을 방지할 수 있습니다.' },
+  { q:'다수 시스템이 1:1로 직접 연계되어 신규 시스템 추가 시 연계 복잡도가 급증하는 문제가 발생했다. 적절한 개선 방향은?', opts:['Point-to-Point 연계를 추가한다','ESB(Message Bus) 도입으로 연계를 단순화한다','연계를 모두 수동 처리로 전환한다','데이터 표준화를 포기한다'], ans:1, exp:'Point-to-Point의 복잡도 급증 문제는 ESB(Message Bus)와 같은 중앙 집중형 연계 구조로 개선합니다.' },
+  { q:'연계 실패 발생 시 담당자가 신속히 인지하지 못해 장애가 확산되었다. 재발 방지를 위한 조치는?', opts:['오류 로그 적재 및 알림(Alert) 체계 구축','로그를 남기지 않는다','실패 시 자동으로 데이터를 삭제한다','연계 주기를 무작위로 변경한다'], ans:0, exp:'실패를 빠르게 인지하려면 오류 로그 적재와 담당자 알림(Alert) 체계를 구축해야 합니다.' },
+];
+
+const oqData = [
+  { q:'EAI 구축 유형 중, 중앙 허브를 두고 모든 시스템이 허브를 통해 연계하는 방식은?', opts:['Point-to-Point','Hub & Spoke','Message Bus','Hybrid'], ans:1, exp:'Hub & Spoke는 중앙 허브를 거쳐 연계하는 방식으로, 허브 장애 시 전체 연계에 영향을 줍니다.' },
+  { q:'다음 중 직접연계 방식의 특징으로 옳은 것은?', opts:['미들웨어를 경유하여 결합도가 낮다','DB Link 등으로 직접 연결하여 결합도가 높다','반드시 ESB를 사용해야 한다','연계 비용이 항상 가장 높다'], ans:1, exp:'직접연계는 DB Link, API 직접 호출 등으로 시스템을 직접 연결하므로 결합도가 높습니다.' },
+  { q:'REST API에 대한 설명으로 옳지 않은 것은?', opts:['HTTP 메서드를 활용한다','주로 JSON 형식을 사용한다','WSDL을 이용해 명세를 정의한다','경량화된 통신 방식이다'], ans:2, exp:'WSDL은 SOAP의 특징입니다. REST는 HTTP 메서드와 JSON을 활용하는 경량 방식입니다.' },
+  { q:'JSON에서 배열을 표현하는 기호는?', opts:['{ }','[ ]','&lt; &gt;','( )'], ans:1, exp:'JSON에서 객체는 { }, 배열은 [ ]로 표현합니다.' },
+  { q:'EAI 구축 유형 중 시스템이 증가할수록 연계 복잡도가 N(N-1)/2로 급증하는 방식은?', opts:['Point-to-Point','Hub & Spoke','Message Bus','ESB'], ans:0, exp:'Point-to-Point는 시스템 간 1:1 직접 연결 방식으로, 시스템 수가 늘어날수록 연계 수가 급증합니다.' },
+  { q:'연계 데이터의 무결성을 검증하기 위한 방법으로 가장 적절한 것은?', opts:['체크섬/해시값 비교','글자 색상 비교','파일명 비교','전송 속도 측정'], ans:0, exp:'데이터 무결성은 체크섬이나 해시값을 비교하여 위변조 여부를 확인합니다.' },
+  { q:'SOAP 프로토콜의 특징으로 옳은 것은?', opts:['JSON 기반의 경량 프로토콜이다','XML 기반이며 WSDL로 명세를 정의한다','HTTP 메서드만으로 모든 기능을 표현한다','보안 기능을 전혀 제공하지 않는다'], ans:1, exp:'SOAP은 XML 기반 프로토콜로 WSDL을 통해 서비스 명세를 정의하며, 보안/트랜잭션 기능이 강력합니다.' },
+  { q:'연계 실패 시 일정 횟수만큼 다시 시도하는 처리 방식은?', opts:['재처리(Retry)','즉시 종료','데이터 삭제','무한 대기'], ans:0, exp:'연계 실패 시에는 정해진 횟수만큼 재처리(Retry)를 수행하고, 계속 실패하면 오류 로그와 알림을 남깁니다.' },
+];
+
+const mqData = [
+  { q:'ESB의 주요 역할로 옳은 것은?', opts:['메시지 라우팅/변환/중계','UI 디자인','데이터베이스 인덱싱','사용자 인증서 발급'], ans:0 },
+  { q:'간접연계 방식의 특징은?', opts:['결합도가 높다','미들웨어를 경유하여 결합도가 낮다','연계가 불가능하다','데이터 변환이 불필요하다'], ans:1 },
+  { q:'XML 문서의 시작을 알리는 선언부는?', opts:['&lt;?xml version="1.0"?&gt;','{}','[]','&lt;!DOCTYPE&gt;'], ans:0 },
+  { q:'JSON에서 키와 값을 구분하는 기호는?', opts:['세미콜론(;)','콜론(:)','등호(=)','화살표(-&gt;)'], ans:1 },
+  { q:'연계 주기 중 정해진 시간마다 일괄 처리하는 방식은?', opts:['실시간','배치','즉시처리','수동처리'], ans:1 },
+  { q:'EAI 구축 유형 중 Hub&Spoke와 Message Bus를 혼합한 방식은?', opts:['Point-to-Point','Hybrid','단일연계','수동연계'], ans:1 },
+  { q:'REST API에서 자원을 삭제할 때 사용하는 HTTP 메서드는?', opts:['GET','POST','PUT','DELETE'], ans:3 },
+  { q:'연계 보안에서 데이터 위변조 여부를 확인하기 위해 사용하는 것은?', opts:['해시값 비교','폰트 변경','색상 대비','용량 증가'], ans:0 },
+];
+
+function renderFC() {
+  document.getElementById('fc-container').innerHTML = fcData.map(c =>
+    `<div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-inner">
+        <div class="fc-front">${c.f.replace(/\n/g, '<br>')}</div>
+        <div class="fc-back">${c.b.replace(/\n/g, '<br>')}</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+let activeEai = -1;
+function renderEai() {
+  document.getElementById('eai-container').innerHTML = eaiData.map((e, i) =>
+    `<div class="eai-card" onclick="showEai(${i})" id="eai-${i}">
+      <div class="eai-name">${e.name}</div>
+      <div class="eai-sub">${e.sub}</div>
+    </div>`
+  ).join('');
+}
+function showEai(i) {
+  eaiData.forEach((_, j) => {
+    document.getElementById(`eai-${j}`).classList.toggle('active', j === i && activeEai !== i);
+  });
+  const detail = document.getElementById('eai-detail');
+  if (activeEai === i) { detail.textContent = '유형을 클릭하면 설명이 나타납니다.'; activeEai = -1; return; }
+  detail.innerHTML = eaiData[i].desc;
+  activeEai = i;
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+let matchLeftSel = null, matchedCount = 0;
+function renderMatch() {
+  matchedCount = 0; matchLeftSel = null;
+  const idxs = matchData.map((_, i) => i);
+  const rightOrder = shuffle([...idxs]);
+  document.getElementById('match-syntax').innerHTML = matchData.map((d, i) =>
+    `<div class="match-item" data-i="${i}" onclick="selectVuln(${i},this)">${d.v}</div>`
+  ).join('');
+  document.getElementById('match-desc').innerHTML = rightOrder.map(ri =>
+    `<div class="match-item" data-i="${ri}" onclick="selectCtr(${ri},this)" style="font-family:inherit;">${matchData[ri].c}</div>`
+  ).join('');
+  updateMatchStatus();
+}
+
+function selectVuln(i, el) {
+  if (el.classList.contains('matched')) return;
+  document.querySelectorAll('#match-syntax .match-item').forEach(x => x.classList.remove('selected'));
+  el.classList.add('selected');
+  matchLeftSel = i;
+}
+
+function selectCtr(i, el) {
+  if (el.classList.contains('matched') || matchLeftSel === null) return;
+  if (i === matchLeftSel) {
+    el.classList.add('matched');
+    const leftEl = document.querySelector(`#match-syntax .match-item[data-i="${matchLeftSel}"]`);
+    leftEl.classList.add('matched');
+    leftEl.classList.remove('selected');
+    matchedCount++;
+    matchLeftSel = null;
+    updateMatchStatus();
+  } else {
+    el.classList.add('wrong-flash');
+    setTimeout(() => el.classList.remove('wrong-flash'), 450);
+  }
+}
+
+function updateMatchStatus() {
+  const s = document.getElementById('match-status');
+  s.textContent = matchedCount === matchData.length
+    ? `🎉 모두 매칭 완료! (${matchedCount}/${matchData.length})`
+    : `왼쪽 구문/기호를 클릭한 뒤, 오른쪽에서 알맞은 설명을 클릭하세요. (${matchedCount}/${matchData.length})`;
+}
+
+function resetMatch() { renderMatch(); }
+
+let scAnswered = {}, scSelected = {};
+function renderSC() {
+  scAnswered = {}; scSelected = {};
+  document.getElementById('sc-container').innerHTML = scenarioData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">상황 ${qi + 1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<div class="opt" onclick="pickSC(${qi},${oi},this)" id="sc-${qi}-${oi}">${o}</div>`
+      ).join('')}</div>
+      <div class="exp" id="scexp-${qi}"><div class="exp-inner">${q.exp}</div></div>
+    </div>`
+  ).join('');
+}
+
+function pickSC(qi, oi, el) {
+  if (scAnswered[qi]) return;
+  scAnswered[qi] = true; scSelected[qi] = oi;
+  const correct = scenarioData[qi].ans;
+  document.getElementById(`sc-${qi}-${correct}`).classList.add('correct');
+  if (oi !== correct) el.classList.add('wrong');
+  document.getElementById(`scexp-${qi}`).classList.add('show');
+}
+
+let oqAnswered = {}, oqSelected = {};
+function renderOQ() {
+  oqAnswered = {}; oqSelected = {};
+  document.getElementById('oq-container').innerHTML = oqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi + 1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<div class="opt" onclick="pickOQ(${qi},${oi},this)" id="oq-${qi}-${oi}">${o}</div>`
+      ).join('')}</div>
+      <div class="exp" id="exp-${qi}"><div class="exp-inner">${q.exp.replace(/\n/g, '<br>')}</div></div>
+    </div>`
+  ).join('');
+  document.getElementById('oq-score').style.display = 'none';
+}
+
+function pickOQ(qi, oi, el) {
+  if (oqAnswered[qi]) return;
+  oqAnswered[qi] = true; oqSelected[qi] = oi;
+  const correct = oqData[qi].ans;
+  document.getElementById(`oq-${qi}-${correct}`).classList.add('correct');
+  if (oi !== correct) el.classList.add('wrong');
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  if (Object.keys(oqAnswered).length === oqData.length) {
+    const sc = oqData.filter((_, i) => oqSelected[i] === oqData[i].ans).length;
+    document.getElementById('oq-snum').textContent = `${sc}/${oqData.length}`;
+    document.getElementById('oq-smsg').textContent = sc === oqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 오답노트에 기록하세요!';
+    document.getElementById('oq-score').style.display = 'block';
+  }
+}
+
+function resetOQ() { renderOQ(); }
+
+function renderMQ() {
+  document.getElementById('mq-container').innerHTML = mqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi + 1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<label style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;background:#f8fafc;border:2px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.84rem;" id="mql-${qi}-${oi}">
+          <input type="radio" name="mq${qi}" value="${oi}" style="margin:0;flex-shrink:0;">${o}
+        </label>`
+      ).join('')}</div>
+    </div>`
+  ).join('');
+  document.getElementById('mq-result').style.display = 'none';
+}
+
+function checkMQ() {
+  let sc = 0;
+  mqData.forEach((q, qi) => {
+    const sel = document.querySelector(`input[name="mq${qi}"]:checked`);
+    const v = sel ? +sel.value : -1;
+    const lbl = id => document.getElementById(`mql-${qi}-${id}`);
+    lbl(q.ans).style.cssText += ';border-color:#059669;background:#d1fae5;';
+    if (v !== -1 && v !== q.ans) lbl(v).style.cssText += ';border-color:#dc2626;background:#fee2e2;';
+    if (v === q.ans) sc++;
+  });
+  const r = document.getElementById('mq-result');
+  r.style.display = 'block';
+  r.innerHTML = `<div class="card" style="text-align:center;">
+    <div class="score-num">${sc}/${mqData.length}</div>
+    <p style="color:var(--gray);margin-top:0.4rem;">${sc === mqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 다시 복습하세요!'}</p>
+  </div>`;
+}
+
+function tab(btn, id) {
+  btn.closest('section').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.closest('section').querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+function saveMemo() {
+  localStorage.setItem('ig_memo', document.getElementById('memo').value);
+  const ok = document.getElementById('memo-ok');
+  ok.style.display = 'inline';
+  setTimeout(() => { ok.style.display = 'none'; }, 2000);
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('stbtn').classList.toggle('show', window.scrollY > 300);
+  let cur = '';
+  document.querySelectorAll('section[id]').forEach(s => { if (window.scrollY >= s.offsetTop - 110) cur = s.id; });
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderFC();
+  renderEai();
+  renderMatch();
+  renderSC();
+  renderOQ();
+  renderMQ();
+  const m = localStorage.getItem('ig_memo');
+  if (m) document.getElementById('memo').value = m;
+  document.getElementById('memo').addEventListener('input', () =>
+    localStorage.setItem('ig_memo', document.getElementById('memo').value)
+  );
+});
+</script>
+</body>
+</html>

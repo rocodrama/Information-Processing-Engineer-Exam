@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>06. 화면 설계 | 정보처리기사 실기</title>
+<style>
+:root {
+  --primary: #a21caf;
+  --primary-light: #fae8ff;
+  --secondary: #0d9488;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --dark: #1e293b;
+  --gray: #64748b;
+  --light: #f8fafc;
+  --border: #e2e8f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.6; }
+
+nav { position: sticky; top: 0; z-index: 100; background: var(--dark); padding: 0.6rem 1.5rem; display: flex; gap: 0.5rem; align-items: center; overflow-x: auto; scrollbar-width: none; }
+nav::-webkit-scrollbar { display: none; }
+nav .nav-title { color: #f0abfc; font-weight: 700; font-size: 0.82rem; white-space: nowrap; margin-right: 0.5rem; }
+nav a { color: #94a3b8; text-decoration: none; font-size: 0.78rem; white-space: nowrap; padding: 0.3rem 0.7rem; border-radius: 5px; transition: all 0.2s; }
+nav a:hover, nav a.active { color: white; background: #334155; }
+
+.hero { background: linear-gradient(135deg, #4a044e 0%, #1e293b 100%); color: white; padding: 2.5rem 2rem; text-align: center; }
+.hero h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.4rem; }
+.hero .subtitle { color: #f0abfc; font-size: 0.95rem; margin-bottom: 1rem; }
+.tags { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; }
+.tag { background: rgba(255,255,255,0.12); color: white; padding: 0.2rem 0.65rem; border-radius: 20px; font-size: 0.78rem; }
+
+.container { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem; }
+section { margin-bottom: 3rem; }
+.section-title { font-size: 1.3rem; font-weight: 700; color: var(--dark); margin-bottom: 1.25rem; padding-bottom: 0.6rem; border-bottom: 3px solid var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { width: 30px; height: 30px; background: var(--primary); color: white; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; flex-shrink: 0; }
+
+.card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-bottom: 1rem; }
+.card h3 { font-size: 0.95rem; margin-bottom: 0.75rem; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+
+.tabs { display: flex; gap: 0.4rem; margin-bottom: 1.25rem; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+.tab-btn { padding: 0.45rem 1rem; background: none; border: none; color: var(--gray); cursor: pointer; font-size: 0.85rem; font-weight: 600; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+table.base { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+table.base th { background: var(--dark); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+table.base td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+table.base tr:hover td { background: #fdf4ff; }
+
+.hl  { background: #fdf4ff; border: 1px solid #f5d0fe; border-left: 4px solid var(--primary); border-radius: 7px; padding: 0.8rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; }
+.hl.warn { background: #fffbeb; border-color: #fde68a; border-left-color: var(--warning); }
+.hl.danger { background: #fef2f2; border-color: #fecaca; border-left-color: var(--danger); }
+
+code.il { background: #f1f5f9; color: #a21caf; padding: 0.1rem 0.35rem; border-radius: 3px; font-family: monospace; font-size: 0.81rem; font-weight: 700; }
+
+.fc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 0.75rem; }
+.flip-card { height: 128px; perspective: 1000px; cursor: pointer; }
+.flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.55s; transform-style: preserve-3d; }
+.flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+.fc-front, .fc-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0.75rem; text-align: center; }
+.fc-front { background: white; border: 2px solid var(--primary); color: var(--dark); font-weight: 600; font-size: 0.84rem; }
+.fc-back { background: var(--primary); color: white; transform: rotateY(180deg); font-size: 0.77rem; line-height: 1.5; }
+
+/* 비교 카드 */
+.ui-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.85rem; }
+.ui-card { background: white; border: 2px solid var(--border); border-radius: 10px; padding: 1rem; cursor: pointer; transition: all 0.2s; text-align: center; }
+.ui-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+.ui-card.active { border-color: var(--primary); background: var(--primary-light); }
+.ui-card .ui-name { font-weight: 700; font-size: 0.9rem; color: var(--primary); margin-bottom: 0.3rem; }
+.ui-card .ui-sub { font-size: 0.78rem; color: var(--gray); }
+.ui-detail { min-height: 80px; padding: 0.9rem 1.1rem; background: var(--primary-light); border-left: 4px solid var(--primary); border-radius: 7px; font-size: 0.85rem; margin-top: 0.85rem; line-height: 1.7; }
+
+/* 화면 흐름 순서 맞추기 */
+.flowq-pool, .flowq-answer { display: flex; flex-wrap: wrap; gap: 0.5rem; min-height: 46px; padding: 0.6rem; border-radius: 8px; }
+.flowq-pool { background: #f8fafc; border: 2px dashed var(--border); }
+.flowq-answer { background: var(--primary-light); border: 2px solid var(--primary); margin-top: 0.75rem; }
+.flow-chip { padding: 0.5rem 0.9rem; background: white; border: 2px solid var(--primary); color: var(--primary); border-radius: 20px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.18s; }
+.flow-chip:hover { transform: translateY(-2px); }
+.flow-chip.picked { opacity: 0.35; cursor: default; pointer-events: none; }
+.flow-chip.picked-answer { background: var(--primary); color: white; cursor: default; }
+
+/* 퀴즈 */
+.quiz-item { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem; }
+.quiz-q { font-weight: 700; margin-bottom: 0.75rem; font-size: 0.9rem; }
+.opts { display: flex; flex-direction: column; gap: 0.4rem; }
+.opt { padding: 0.6rem 1rem; background: #f8fafc; border: 2px solid var(--border); border-radius: 7px; cursor: pointer; font-size: 0.84rem; transition: all 0.18s; }
+.opt:hover { border-color: var(--primary); background: #fdf4ff; }
+.opt.correct { border-color: #059669; background: #d1fae5; color: #065f46; font-weight: 700; }
+.opt.wrong { border-color: var(--danger); background: #fee2e2; color: #991b1b; }
+.opts.ox { flex-direction: row; gap: 0.6rem; }
+.opts.ox .opt { flex: 1; text-align: center; font-weight: 700; }
+.exp { display: none; margin-top: 0.85rem; }
+.exp.show { display: block; }
+.exp-inner { padding: 0.7rem 0.9rem; background: #fdf4ff; border-left: 4px solid var(--primary); border-radius: 4px; font-size: 0.82rem; line-height: 1.7; }
+
+.score-box { background: white; border: 2px solid var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; margin-top: 1.25rem; display: none; }
+.score-num { font-size: 2.2rem; font-weight: 800; color: var(--primary); }
+
+.btn { padding: 0.5rem 1.1rem; border: none; border-radius: 7px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: opacity 0.2s; }
+.btn:hover { opacity: 0.85; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-blue   { background: var(--secondary); color: white; }
+.btn-gray   { background: var(--gray); color: white; }
+
+textarea.memo { width: 100%; min-height: 140px; padding: 0.9rem; border: 2px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.88rem; resize: vertical; background: #fffef7; }
+textarea.memo:focus { outline: none; border-color: var(--primary); }
+
+.scroll-top { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--primary); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; }
+.scroll-top.show { display: flex; }
+
+@media (max-width: 700px) {
+  .container { padding: 1rem; }
+  .hero h1 { font-size: 1.35rem; }
+  .card-grid { grid-template-columns: 1fr; }
+  .fc-grid { grid-template-columns: repeat(2, 1fr); }
+  .ui-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">🖥️ 06. 화면 설계</span>
+  <a href="#s1">출제기준</a>
+  <a href="#s2">핵심개념</a>
+  <a href="#s3">키워드카드</a>
+  <a href="#s4">산출물비교</a>
+  <a href="#s5">화면흐름맞추기</a>
+  <a href="#s6">설계원칙OX</a>
+  <a href="#s7">문제풀이</a>
+  <a href="#s8">미니퀴즈</a>
+  <a href="#s9">오답노트</a>
+</nav>
+
+<div class="hero">
+  <h1>06. 화면 설계</h1>
+  <p class="subtitle">UI 요구사항 · 프로토타입/와이어프레임/스토리보드 · 화면흐름 · 메뉴구조</p>
+  <div class="tags">
+    <span class="tag">UI 표준/지침</span>
+    <span class="tag">와이어프레임</span>
+    <span class="tag">스토리보드</span>
+    <span class="tag">화면 흐름</span>
+    <span class="tag">사용자 편의성</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- S1 출제기준 -->
+<section id="s1">
+  <h2 class="section-title"><span class="sec-num">1</span> 출제기준 요약</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3 style="color:var(--primary)">📋 UI 요구사항 확인하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>UI 표준, UI 지침</li>
+        <li>UI 요구사항 수집·분석</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--secondary)">🎨 UI 설계하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>프로토타입, 와이어프레임, 스토리보드</li>
+        <li>화면 흐름, 폼 흐름</li>
+        <li>메뉴 구조, 사용자 편의성</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hl warn">
+    <strong>⚠️ 시험 핵심:</strong>
+    <strong>와이어프레임 vs 스토리보드 vs 프로토타입 구분</strong>, <strong>UI 설계 원칙(직관성/일관성/유연성)</strong>,
+    <strong>UI 표준과 UI 지침의 관계</strong>는 매회 출제됩니다.
+  </div>
+</section>
+
+<!-- S2 핵심 개념 -->
+<section id="s2">
+  <h2 class="section-title"><span class="sec-num">2</span> 핵심 개념</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="tab(this,'t-std')">UI 표준 / 요구사항</button>
+    <button class="tab-btn" onclick="tab(this,'t-proto')">프로토타입·와이어프레임·스토리보드</button>
+    <button class="tab-btn" onclick="tab(this,'t-flow')">화면 흐름 / 폼 흐름</button>
+    <button class="tab-btn" onclick="tab(this,'t-menu')">메뉴 구조 / 사용자 편의성</button>
+    <button class="tab-btn" onclick="tab(this,'t-rule')">UI 설계 원칙</button>
+  </div>
+
+  <div id="t-std" class="tab-content active">
+    <div class="card">
+      <h3>UI 표준 vs UI 지침</h3>
+      <table class="base">
+        <tr><th>구분</th><th>설명</th></tr>
+        <tr><td><strong>UI 표준</strong></td><td>전사적으로 공통 적용되는 화면 디자인/구성 규칙 (상위 개념)</td></tr>
+        <tr><td><strong>UI 지침</strong></td><td>UI 표준을 구체적으로 적용하기 위한 세부 방법 (하위 개념)</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>UI 요구사항</h3>
+      <p style="font-size:0.85rem;color:var(--gray);">사용자 인터뷰, 설문, 업무 분석 등을 통해 화면에 필요한 기능적·비기능적 요구사항을 수집하고 정리합니다.</p>
+    </div>
+  </div>
+
+  <div id="t-proto" class="tab-content">
+    <div class="card">
+      <h3>프로토타입 · 와이어프레임 · 스토리보드 비교 (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>구분</th><th>설명</th><th>상세도</th></tr>
+        <tr><td><strong>와이어프레임</strong></td><td>화면의 레이아웃을 간단한 선/도형으로 스케치, 디자인 요소는 배제</td><td>낮음</td></tr>
+        <tr><td><strong>스토리보드</strong></td><td>화면 단위로 흐름·상호작용·처리 로직까지 포함한 상세 설계 문서</td><td>높음 (개발 전달용)</td></tr>
+        <tr><td><strong>프로토타입</strong></td><td>실제 클릭/동작이 가능한 형태로 제작하여 사용자 검증에 활용</td><td>실제 화면과 유사</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="t-flow" class="tab-content">
+    <div class="card">
+      <h3>화면 흐름 / 폼 흐름</h3>
+      <table class="base">
+        <tr><th>구분</th><th>설명</th></tr>
+        <tr><td><strong>화면 흐름도</strong></td><td>화면 간 이동 순서와 전환 조건을 표현한 다이어그램</td></tr>
+        <tr><td><strong>폼 흐름</strong></td><td>입력 폼 간 이동 절차와 데이터 처리 순서를 정의</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="t-menu" class="tab-content">
+    <div class="card">
+      <h3>메뉴 구조</h3>
+      <p style="font-size:0.85rem;color:var(--gray);">기능을 <strong>계층적(트리형)</strong>으로 분류하여 사용자가 원하는 기능을 빠르게 찾을 수 있도록 설계합니다.</p>
+    </div>
+    <div class="card">
+      <h3>사용자 편의성</h3>
+      <table class="base">
+        <tr><th>요소</th><th>설명</th></tr>
+        <tr><td><strong>접근성</strong></td><td>다양한 사용자(장애인 포함)가 쉽게 이용할 수 있도록 설계</td></tr>
+        <tr><td><strong>가시성</strong></td><td>중요한 정보와 기능이 잘 보이도록 배치</td></tr>
+        <tr><td><strong>피드백 제공</strong></td><td>사용자 행동에 대해 시스템이 즉시 결과를 알려줌</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="t-rule" class="tab-content">
+    <div class="card">
+      <h3>UI 설계 원칙 (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>원칙</th><th>설명</th></tr>
+        <tr><td><strong>직관성</strong></td><td>사용자가 학습 없이도 쉽게 이해하고 사용할 수 있어야 함</td></tr>
+        <tr><td><strong>일관성</strong></td><td>동일한 기능은 동일한 디자인/위치/동작으로 제공해야 함</td></tr>
+        <tr><td><strong>유효성(효율성)</strong></td><td>정확하고 완전하게 사용자의 목표를 달성할 수 있도록 함</td></tr>
+        <tr><td><strong>유연성</strong></td><td>다양한 사용자 요구와 환경 변화에 대응할 수 있어야 함</td></tr>
+        <tr><td><strong>학습성</strong></td><td>누구나 쉽게 배우고 익힐 수 있어야 함</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- S3 플래시카드 -->
+<section id="s3">
+  <h2 class="section-title"><span class="sec-num">3</span> 시험용 키워드 플래시카드</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:0.85rem;">카드를 클릭하면 정의가 나옵니다.</p>
+  <div class="fc-grid" id="fc-container"></div>
+</section>
+
+<!-- S4 산출물 비교 -->
+<section id="s4">
+  <h2 class="section-title"><span class="sec-num">4</span> 와이어프레임 · 스토리보드 · 프로토타입 비교</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.85rem;">카드를 클릭하면 각 산출물의 특징이 나타납니다.</p>
+    <div class="ui-grid" id="ui-container"></div>
+    <div class="ui-detail" id="ui-detail">산출물을 클릭하면 설명이 나타납니다.</div>
+  </div>
+</section>
+
+<!-- S5 화면 흐름 순서 맞추기 -->
+<section id="s5">
+  <h2 class="section-title"><span class="sec-num">5</span> 화면 흐름 순서 맞추기</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.75rem;">쇼핑몰 주문 과정의 화면을 <strong>올바른 흐름 순서대로</strong> 클릭하세요.</p>
+    <div class="flowq-pool" id="flowq-pool"></div>
+    <div class="flowq-answer" id="flowq-answer"></div>
+    <div id="flowq-result" style="margin-top:0.85rem;display:none;"></div>
+    <button class="btn btn-gray" style="margin-top:0.75rem;" onclick="resetFlowQ()">다시 섞기</button>
+  </div>
+</section>
+
+<!-- S6 UI 설계 원칙 OX -->
+<section id="s6">
+  <h2 class="section-title"><span class="sec-num">6</span> UI 설계 원칙 체크리스트 (O/X)</h2>
+  <div id="ck-container"></div>
+  <div class="score-box" id="ck-score">
+    <div class="score-num" id="ck-snum">0/0</div>
+    <p style="color:var(--gray);margin-top:0.4rem;" id="ck-smsg"></p>
+  </div>
+  <button class="btn btn-primary" style="margin-top:1rem;" onclick="resetCK()">다시 풀기</button>
+</section>
+
+<!-- S7 문제 풀이 -->
+<section id="s7">
+  <h2 class="section-title"><span class="sec-num">7</span> 대표 문제 유형</h2>
+  <div id="oq-container"></div>
+  <div class="score-box" id="oq-score">
+    <div class="score-num" id="oq-snum">0/0</div>
+    <p style="color:var(--gray);margin-top:0.4rem;" id="oq-smsg"></p>
+  </div>
+  <button class="btn btn-primary" style="margin-top:1rem;" onclick="resetOQ()">다시 풀기</button>
+</section>
+
+<!-- S8 미니 퀴즈 -->
+<section id="s8">
+  <h2 class="section-title"><span class="sec-num">8</span> 미니 퀴즈</h2>
+  <div id="mq-container"></div>
+  <button class="btn btn-blue" style="margin-top:0.85rem;" onclick="checkMQ()">채점하기</button>
+  <div id="mq-result" style="display:none;margin-top:1rem;"></div>
+</section>
+
+<!-- S9 오답노트 -->
+<section id="s9">
+  <h2 class="section-title"><span class="sec-num">9</span> 오답 노트</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.7rem;">틀린 문제나 헷갈리는 개념을 기록하세요. (자동 저장)</p>
+    <textarea class="memo" id="memo" placeholder="예) 와이어프레임(레이아웃 스케치) < 스토리보드(흐름+처리로직까지 포함, 가장 상세)&#10;예) 프로토타입=실제 동작 가능한 모형, 사용자 검증용&#10;예) UI 표준(상위, 전사 공통규칙) → UI 지침(하위, 구체적 적용방법)&#10;예) UI 설계 원칙: 직관성/일관성/유효성/유연성/학습성&#10;예) 메뉴구조는 계층적(트리형)으로 설계"></textarea>
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.5rem;">
+      <button class="btn btn-primary" onclick="saveMemo()">저장</button>
+      <span id="memo-ok" style="font-size:0.8rem;color:#059669;display:none;">✓ 저장됨</span>
+    </div>
+  </div>
+</section>
+
+</div>
+<button class="scroll-top" id="stbtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+const fcData = [
+  { f:'UI 표준',                b:'전사적으로 공통 적용되는\n화면 디자인/구성\n규칙' },
+  { f:'UI 지침',                b:'UI 표준을\n구체적으로 적용하기 위한\n세부 방법' },
+  { f:'UI 요구사항',             b:'사용자 인터뷰/설문 등을 통해\n수집한\n화면 관련 요구사항' },
+  { f:'프로토타입',               b:'실제 동작 가능한 형태로\n제작하여 사용자 검증에\n활용하는 모형' },
+  { f:'와이어프레임',             b:'화면의 레이아웃을\n간단한 선과 도형으로\n스케치한 설계도' },
+  { f:'스토리보드',               b:'화면 단위로 흐름·상호작용·\n처리로직까지 포함한\n상세 설계 문서' },
+  { f:'화면 흐름도',              b:'화면 간 이동 순서와\n전환 조건을 표현한\n다이어그램' },
+  { f:'폼 흐름',                 b:'입력 폼 간 이동 절차와\n데이터 처리\n순서' },
+  { f:'메뉴 구조',               b:'기능을 계층적으로 분류하여\n빠르게 찾을 수 있도록\n구성한 체계' },
+  { f:'직관성',                  b:'사용자가 학습 없이도\n쉽게 이해할 수 있도록\n설계하는 원칙' },
+  { f:'일관성',                  b:'동일한 기능은\n동일한 디자인/위치로\n배치하는 원칙' },
+  { f:'유연성',                  b:'다양한 사용자 요구와\n환경 변화에 대응할 수 있도록\n설계하는 원칙' },
+  { f:'사용자 편의성',            b:'접근성, 가시성, 피드백을\n고려해 사용하기\n쉽게 만드는 것' },
+  { f:'UI 설계서',               b:'화면번호, 화면명, 이동경로,\n입력항목, 처리내용 등을\n정의한 문서' },
+  { f:'Balsamiq / Axure',       b:'와이어프레임/프로토타입\n제작에 사용하는\n대표 도구' },
+  { f:'피드백 제공',              b:'사용자 행동에 대해\n시스템이 결과를 알려주는 것\n(편의성 핵심 요소)' },
+];
+
+const uiData = [
+  { name:'와이어프레임', sub:'레이아웃 스케치', desc:'화면의 <strong>레이아웃을 간단한 선과 도형</strong>으로 스케치한 설계도입니다. 색상·폰트 등 디자인 요소는 배제하고 <strong>구조와 배치</strong>를 빠르게 논의하기 위해 사용합니다.' },
+  { name:'스토리보드', sub:'흐름+처리로직 포함, 가장 상세', desc:'화면 단위로 <strong>화면 흐름, 상호작용, 처리 로직/조건</strong>까지 포함한 가장 상세한 설계 문서입니다. 개발자에게 전달되는 <strong>최종 설계 산출물</strong>로 활용됩니다.' },
+  { name:'프로토타입', sub:'실제 동작 가능한 모형', desc:'실제 <strong>클릭/동작이 가능한 형태</strong>로 제작하여 사용자 테스트와 피드백 수집에 활용합니다. 세 산출물 중 <strong>실제 화면과 가장 유사</strong>합니다.' },
+];
+
+const flowSteps = ['로그인 화면', '상품목록 화면', '상품상세 화면', '장바구니 화면', '주문/결제 화면', '주문완료 화면'];
+
+const ckData = [
+  { q:'UI 설계는 사용자가 학습하지 않고도 직관적으로 이해할 수 있도록 해야 한다.', ans:true, exp:'직관성 원칙: 사용자가 학습 없이도 쉽게 이해하고 사용할 수 있어야 합니다.' },
+  { q:'동일한 기능은 화면마다 다른 디자인과 위치로 배치하는 것이 좋다.', ans:false, exp:'일관성 원칙에 따라 동일한 기능은 동일한 디자인/위치/동작으로 제공해야 합니다.' },
+  { q:'사용자의 실수를 예방하고, 실수했을 때 쉽게 복구할 수 있도록 설계해야 한다.', ans:true, exp:'사용자 편의성을 높이기 위해 오류 예방과 복구가 쉬운 설계가 필요합니다.' },
+  { q:'와이어프레임은 스토리보드보다 더 상세한 정보(처리로직, 흐름)를 포함한다.', ans:false, exp:'반대입니다. 스토리보드가 화면 흐름과 처리 로직까지 포함하여 와이어프레임보다 훨씬 상세합니다.' },
+  { q:'프로토타입은 실제 동작 가능한 형태로 제작하여 사용자 검증에 활용한다.', ans:true, exp:'프로토타입은 실제 클릭/동작이 가능한 모형으로 사용자 검증에 활용됩니다.' },
+  { q:'메뉴 구조는 사용자가 원하는 기능을 빠르게 찾을 수 있도록 계층적으로 설계하는 것이 좋다.', ans:true, exp:'메뉴는 계층적(트리형) 구조로 설계하여 탐색 효율을 높여야 합니다.' },
+  { q:'UI 설계 시 사용자의 요구사항보다 개발자의 구현 편의성을 최우선으로 고려해야 한다.', ans:false, exp:'UI 설계는 사용자 요구사항과 사용성을 최우선으로 고려해야 합니다.' },
+  { q:'UI 표준은 전사적으로 공통 적용되는 규칙이며, UI 지침은 이를 구체적으로 적용하는 방법이다.', ans:true, exp:'UI 표준(상위, 전사 공통 규칙)과 UI 지침(하위, 구체적 적용 방법)의 관계가 올바르게 설명되었습니다.' },
+];
+
+const oqData = [
+  { q:'다음 중 화면 설계 산출물 중 가장 상세한 정보(화면 흐름, 처리 로직, 조건)를 포함하는 것은?', opts:['와이어프레임','스토리보드','목업','아이콘 세트'], ans:1, exp:'스토리보드는 화면 흐름, 상호작용, 처리 로직까지 포함하는 가장 상세한 설계 문서입니다.' },
+  { q:'실제 동작이 가능한 형태로 제작하여 사용자 검증에 활용하는 화면 설계 산출물은?', opts:['프로토타입','와이어프레임','플로우차트','ERD'], ans:0, exp:'프로토타입은 실제 클릭/동작이 가능한 모형으로 사용자 검증에 활용됩니다.' },
+  { q:'UI 설계 원칙 중, 동일한 기능은 동일한 위치/디자인으로 배치해야 한다는 원칙은?', opts:['직관성','일관성','유연성','효율성'], ans:1, exp:'일관성 원칙은 동일한 기능을 동일한 디자인/위치/동작으로 제공하는 것을 의미합니다.' },
+  { q:'UI 표준과 UI 지침의 관계를 올바르게 설명한 것은?', opts:['UI 지침이 더 상위 개념이다','UI 표준을 구체적으로 적용하는 방법이 UI 지침이다','둘은 동일한 개념이다','UI 지침은 개발 완료 후 작성한다'], ans:1, exp:'UI 표준은 전사 공통 규칙(상위), UI 지침은 이를 구체적으로 적용하는 방법(하위)입니다.' },
+  { q:'화면 간 이동 순서와 전환 조건을 표현한 다이어그램은?', opts:['화면 흐름도','클래스 다이어그램','시퀀스 다이어그램','ERD'], ans:0, exp:'화면 흐름도는 화면 간 이동 순서와 전환 조건을 표현합니다.' },
+  { q:'메뉴 구조 설계 시 가장 중요하게 고려해야 할 사항은?', opts:['화려한 애니메이션 효과','사용자가 기능을 빠르게 찾을 수 있는 계층 구조','메뉴 항목의 개수를 최대화','개발자의 구현 편의성'], ans:1, exp:'메뉴는 계층적 구조로 설계하여 사용자가 기능을 빠르게 찾을 수 있도록 해야 합니다.' },
+  { q:'와이어프레임에 대한 설명으로 옳지 않은 것은?', opts:['화면의 레이아웃을 간단히 스케치한다','색상, 폰트 등 디자인 요소를 상세히 정의한다','빠르게 화면 구조를 논의하기 위해 사용한다','개발 초기 단계에서 주로 작성한다'], ans:1, exp:'와이어프레임은 디자인 요소를 배제하고 레이아웃 구조에 집중합니다. 디자인 요소까지 상세히 정의하는 것은 스토리보드/프로토타입입니다.' },
+  { q:'UI 설계서에 일반적으로 포함되는 항목이 아닌 것은?', opts:['화면번호/화면명','화면 이동 경로','서버 하드웨어 사양','입력항목 및 처리내용'], ans:2, exp:'UI 설계서는 화면번호, 화면명, 이동경로, 입력항목, 처리내용 등을 포함합니다. 서버 하드웨어 사양은 해당하지 않습니다.' },
+];
+
+const mqData = [
+  { q:'사용자가 학습 없이도 쉽게 이해할 수 있도록 설계하는 UI 원칙은?', opts:['직관성','일관성','유연성','접근성'], ans:0 },
+  { q:'화면 단위로 흐름과 처리 로직까지 포함하는 상세 설계 문서는?', opts:['와이어프레임','스토리보드','아이콘','폰트가이드'], ans:1 },
+  { q:'UI 요구사항을 수집하는 방법으로 적절한 것은?', opts:['사용자 인터뷰/설문','서버 로그 삭제','네트워크 속도 측정','데이터베이스 인덱싱'], ans:0 },
+  { q:'프로토타입의 주요 목적은?', opts:['실제 동작 형태로 사용자 검증','서버 성능 테스트','데이터베이스 정규화','소스코드 최적화'], ans:0 },
+  { q:'다음 중 메뉴 구조 설계의 형태로 가장 일반적인 것은?', opts:['계층형(트리형) 구조','무작위 배치','알파벳 순서만 고려','색상별 배치'], ans:0 },
+  { q:'UI 설계 원칙 중 다양한 사용자 환경에 대응할 수 있어야 한다는 원칙은?', opts:['일관성','유연성','직관성','단순성'], ans:1 },
+  { q:'폼 흐름 설계가 다루는 내용은?', opts:['입력 폼 간 이동 절차와 데이터 처리 순서','서버 IP 주소 설정','데이터베이스 백업 주기','네트워크 토폴로지'], ans:0 },
+  { q:'UI 설계서에 포함되는 항목으로 옳은 것은?', opts:['화면명, 이동경로, 처리내용','CPU 사양','RAID 레벨','컴파일러 버전'], ans:0 },
+];
+
+function renderFC() {
+  document.getElementById('fc-container').innerHTML = fcData.map(c =>
+    `<div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-inner">
+        <div class="fc-front">${c.f.replace(/\n/g, '<br>')}</div>
+        <div class="fc-back">${c.b.replace(/\n/g, '<br>')}</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+let activeUi = -1;
+function renderUi() {
+  document.getElementById('ui-container').innerHTML = uiData.map((e, i) =>
+    `<div class="ui-card" onclick="showUi(${i})" id="ui-${i}">
+      <div class="ui-name">${e.name}</div>
+      <div class="ui-sub">${e.sub}</div>
+    </div>`
+  ).join('');
+}
+function showUi(i) {
+  uiData.forEach((_, j) => {
+    document.getElementById(`ui-${j}`).classList.toggle('active', j === i && activeUi !== i);
+  });
+  const detail = document.getElementById('ui-detail');
+  if (activeUi === i) { detail.textContent = '산출물을 클릭하면 설명이 나타납니다.'; activeUi = -1; return; }
+  detail.innerHTML = uiData[i].desc;
+  activeUi = i;
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+let flowUserOrder = [];
+function renderFlowQ() {
+  flowUserOrder = [];
+  const shuffled = shuffle([...flowSteps]);
+  document.getElementById('flowq-pool').innerHTML = shuffled.map(s =>
+    `<div class="flow-chip" onclick="pickFlowQ('${s}',this)">${s}</div>`
+  ).join('');
+  document.getElementById('flowq-answer').innerHTML = '';
+  document.getElementById('flowq-result').style.display = 'none';
+}
+
+function pickFlowQ(s, el) {
+  if (el.classList.contains('picked')) return;
+  el.classList.add('picked');
+  flowUserOrder.push(s);
+  document.getElementById('flowq-answer').innerHTML += `<div class="flow-chip picked-answer">${flowUserOrder.length}. ${s}</div>`;
+  if (flowUserOrder.length === flowSteps.length) checkFlowQ();
+}
+
+function checkFlowQ() {
+  const correct = JSON.stringify(flowUserOrder) === JSON.stringify(flowSteps);
+  const r = document.getElementById('flowq-result');
+  r.style.display = 'block';
+  r.innerHTML = correct
+    ? '<div class="hl">🎉 정답입니다! 올바른 화면 흐름입니다.</div>'
+    : `<div class="hl danger">❌ 순서가 올바르지 않습니다.<br>정답: ${flowSteps.join(' → ')}</div>`;
+}
+
+function resetFlowQ() { renderFlowQ(); }
+
+let ckAnswered = {}, ckSelected = {};
+function renderCK() {
+  ckAnswered = {}; ckSelected = {};
+  document.getElementById('ck-container').innerHTML = ckData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi + 1}. ${q.q}</div>
+      <div class="opts ox">
+        <div class="opt" onclick="pickCK(${qi},0,this)" id="ck-${qi}-0">O (참)</div>
+        <div class="opt" onclick="pickCK(${qi},1,this)" id="ck-${qi}-1">X (거짓)</div>
+      </div>
+      <div class="exp" id="ckexp-${qi}"><div class="exp-inner">${q.exp}</div></div>
+    </div>`
+  ).join('');
+  document.getElementById('ck-score').style.display = 'none';
+}
+
+function pickCK(qi, oi, el) {
+  if (ckAnswered[qi]) return;
+  ckAnswered[qi] = true; ckSelected[qi] = oi;
+  const correctIdx = ckData[qi].ans ? 0 : 1;
+  document.getElementById(`ck-${qi}-${correctIdx}`).classList.add('correct');
+  if (oi !== correctIdx) el.classList.add('wrong');
+  document.getElementById(`ckexp-${qi}`).classList.add('show');
+  if (Object.keys(ckAnswered).length === ckData.length) {
+    const sc = ckData.filter((q, i) => ckSelected[i] === (q.ans ? 0 : 1)).length;
+    document.getElementById('ck-snum').textContent = `${sc}/${ckData.length}`;
+    document.getElementById('ck-smsg').textContent = sc === ckData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 오답노트에 기록하세요!';
+    document.getElementById('ck-score').style.display = 'block';
+  }
+}
+
+function resetCK() { renderCK(); }
+
+let oqAnswered = {}, oqSelected = {};
+function renderOQ() {
+  oqAnswered = {}; oqSelected = {};
+  document.getElementById('oq-container').innerHTML = oqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi + 1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<div class="opt" onclick="pickOQ(${qi},${oi},this)" id="oq-${qi}-${oi}">${o}</div>`
+      ).join('')}</div>
+      <div class="exp" id="exp-${qi}"><div class="exp-inner">${q.exp.replace(/\n/g, '<br>')}</div></div>
+    </div>`
+  ).join('');
+  document.getElementById('oq-score').style.display = 'none';
+}
+
+function pickOQ(qi, oi, el) {
+  if (oqAnswered[qi]) return;
+  oqAnswered[qi] = true; oqSelected[qi] = oi;
+  const correct = oqData[qi].ans;
+  document.getElementById(`oq-${qi}-${correct}`).classList.add('correct');
+  if (oi !== correct) el.classList.add('wrong');
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  if (Object.keys(oqAnswered).length === oqData.length) {
+    const sc = oqData.filter((_, i) => oqSelected[i] === oqData[i].ans).length;
+    document.getElementById('oq-snum').textContent = `${sc}/${oqData.length}`;
+    document.getElementById('oq-smsg').textContent = sc === oqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 오답노트에 기록하세요!';
+    document.getElementById('oq-score').style.display = 'block';
+  }
+}
+
+function resetOQ() { renderOQ(); }
+
+function renderMQ() {
+  document.getElementById('mq-container').innerHTML = mqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi + 1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<label style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;background:#f8fafc;border:2px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.84rem;" id="mql-${qi}-${oi}">
+          <input type="radio" name="mq${qi}" value="${oi}" style="margin:0;flex-shrink:0;">${o}
+        </label>`
+      ).join('')}</div>
+    </div>`
+  ).join('');
+  document.getElementById('mq-result').style.display = 'none';
+}
+
+function checkMQ() {
+  let sc = 0;
+  mqData.forEach((q, qi) => {
+    const sel = document.querySelector(`input[name="mq${qi}"]:checked`);
+    const v = sel ? +sel.value : -1;
+    const lbl = id => document.getElementById(`mql-${qi}-${id}`);
+    lbl(q.ans).style.cssText += ';border-color:#059669;background:#d1fae5;';
+    if (v !== -1 && v !== q.ans) lbl(v).style.cssText += ';border-color:#dc2626;background:#fee2e2;';
+    if (v === q.ans) sc++;
+  });
+  const r = document.getElementById('mq-result');
+  r.style.display = 'block';
+  r.innerHTML = `<div class="card" style="text-align:center;">
+    <div class="score-num">${sc}/${mqData.length}</div>
+    <p style="color:var(--gray);margin-top:0.4rem;">${sc === mqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 다시 복습하세요!'}</p>
+  </div>`;
+}
+
+function tab(btn, id) {
+  btn.closest('section').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.closest('section').querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+function saveMemo() {
+  localStorage.setItem('ui_memo', document.getElementById('memo').value);
+  const ok = document.getElementById('memo-ok');
+  ok.style.display = 'inline';
+  setTimeout(() => { ok.style.display = 'none'; }, 2000);
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('stbtn').classList.toggle('show', window.scrollY > 300);
+  let cur = '';
+  document.querySelectorAll('section[id]').forEach(s => { if (window.scrollY >= s.offsetTop - 110) cur = s.id; });
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderFC();
+  renderUi();
+  renderFlowQ();
+  renderCK();
+  renderOQ();
+  renderMQ();
+  const m = localStorage.getItem('ui_memo');
+  if (m) document.getElementById('memo').value = m;
+  document.getElementById('memo').addEventListener('input', () =>
+    localStorage.setItem('ui_memo', document.getElementById('memo').value)
+  );
+});
+</script>
+</body>
+</html>

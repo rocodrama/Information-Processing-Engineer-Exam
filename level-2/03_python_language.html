@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>03 Python 코드 추적 — Level-2</title>
+<style>
+:root {
+  --dark: #0f172a; --gray: #64748b; --light: #f8fafc; --border: #e2e8f0;
+  --accent: #0369a1; --accent2: #0284c7;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.7; }
+
+/* ── HERO ── */
+.hero { background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #0c4a6e 100%); color: white; padding: 2.5rem 1.5rem 2rem; }
+.hero-inner { max-width: 900px; margin: 0 auto; }
+.hero-back { font-size: 0.78rem; color: #94a3b8; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; margin-bottom: 1rem; }
+.hero-back:hover { color: white; }
+.hero h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.3rem; }
+.hero p { color: #bae6fd; font-size: 0.88rem; }
+.hero-meta { display: flex; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
+.htag { background: rgba(255,255,255,0.12); padding: 0.22rem 0.65rem; border-radius: 20px; font-size: 0.75rem; }
+
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+/* ── TOC ── */
+.toc { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.5rem; margin-bottom: 2rem; }
+.toc-title { font-size: 0.78rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.7rem; }
+.toc-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.toc-list a { font-size: 0.8rem; color: var(--accent); text-decoration: none; border: 1px solid #bae6fd; background: #f0f9ff; padding: 0.2rem 0.6rem; border-radius: 8px; }
+.toc-list a:hover { background: #e0f2fe; }
+
+/* ── SECTION TITLE ── */
+.sec-title { font-size: 1.3rem; font-weight: 800; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 20px; }
+
+/* ── ALERT BOXES ── */
+.info  { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #0c4a6e; margin: 1rem 0; }
+.warn  { background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #713f12; margin: 1rem 0; }
+.tip   { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #166534; margin: 1rem 0; }
+.red   { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #991b1b; margin: 1rem 0; }
+
+/* ── CODE ── */
+.code-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; margin: 0.8rem 0; border-radius: 10px; }
+.code-block { background: #0f172a; border-radius: 10px; padding: 1.1rem 1.3rem; min-width: 480px; }
+.code-block pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.84rem; line-height: 1.65; color: #e2e8f0; }
+.ln  { color: #334155; user-select: none; margin-right: 0.8rem; font-size: 0.76rem; }
+.kw  { color: #93c5fd; }
+.fn  { color: #fbbf24; }
+.bi  { color: #34d399; }    /* built-in functions */
+.str { color: #86efac; }
+.num { color: #f9a8d4; }
+.cmt { color: #475569; font-style: italic; }
+.cls { color: #34d399; }
+.dec { color: #c4b5fd; }    /* decorator */
+.slf { color: #fb923c; }    /* self */
+
+/* ── SLICE GRID ── */
+.slice-grid-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+.slice-grid { display: inline-grid; grid-template-columns: repeat(10, 1fr); gap: 2px; min-width: 480px; }
+.sg-idx  { text-align: center; font-size: 0.72rem; color: #0369a1; font-weight: 700; padding: 0.2rem; }
+.sg-ridx { text-align: center; font-size: 0.72rem; color: #7c3aed; font-weight: 700; padding: 0.2rem; }
+.sg-cell { background: white; border: 2px solid var(--border); text-align: center; padding: 0.45rem 0.5rem; font-family: monospace; font-size: 0.82rem; font-weight: 700; border-radius: 5px; }
+.sg-cell.hi { background: #dbeafe; border-color: #3b82f6; }
+.sg-cell.hi2{ background: #dcfce7; border-color: #22c55e; }
+.sg-label{ grid-column: 1 / -1; font-size: 0.76rem; color: var(--gray); padding: 0.3rem 0 0.1rem; font-weight: 600; }
+
+/* ── TRACE TABLE ── */
+.trace-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; margin: 1rem 0; }
+.trace-wrap::before { content: '← 좌우 스크롤'; display: none; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.3rem; }
+.trace-table { border-collapse: collapse; font-size: 0.82rem; font-family: 'Courier New', monospace; white-space: nowrap; }
+.trace-table th { background: #0f172a; color: #7dd3fc; padding: 0.45rem 0.9rem; text-align: center; font-size: 0.74rem; font-weight: 700; }
+.trace-table td { padding: 0.4rem 0.9rem; border-bottom: 1px solid var(--border); text-align: center; }
+.trace-table tr:hover td { background: #f0f9ff; }
+.changed { background: #fef3c7 !important; color: #92400e; font-weight: 700; }
+.output  { background: #dcfce7 !important; color: #15803d; font-weight: 700; }
+.active  { background: #dbeafe !important; }
+
+/* ── CONCEPT CARD ── */
+.concept { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1rem; }
+.concept h4 { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.4rem; }
+.concept h4::before { content: '▸'; color: var(--accent); }
+
+/* ── TABLE ── */
+.tbl-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+.tbl-wrap::before { content: '← 좌우 스크롤'; display: none; font-size: 0.68rem; color: var(--gray); text-align: right; padding: 0.3rem 0; }
+table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+th { background: #0f172a; color: #7dd3fc; padding: 0.5rem 0.8rem; text-align: left; font-size: 0.77rem; font-weight: 700; }
+td { padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--border); }
+tr:nth-child(even) td { background: #fafafa; }
+tr:hover td { background: #f0f9ff; }
+code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.82rem; }
+
+/* ── QUIZ ── */
+.quiz-wrap { display: flex; flex-direction: column; gap: 1.1rem; margin-top: 1rem; }
+.quiz-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.quiz-q {
+  padding: 1rem 1.2rem; font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; min-height: 52px;
+}
+.quiz-q:hover { background: #fafafa; }
+.quiz-q:active { background: #f0f9ff; }
+.quiz-badge { font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.quiz-badge.year { background: #bae6fd; color: #0c4a6e; }
+.quiz-badge.sim  { background: #e0e7ff; color: #4338ca; }
+.quiz-chevron { font-size: 0.75rem; color: var(--gray); flex-shrink: 0; margin-top: 0.1rem; transition: transform 0.2s; }
+.quiz-card.open .quiz-chevron { transform: rotate(180deg); }
+.quiz-ans { display: none; padding: 0 1.2rem 1.1rem; border-top: 1px solid var(--border); }
+.quiz-card.open .quiz-ans { display: block; }
+.ans-label { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin: 0.8rem 0 0.3rem; }
+.ans-val   { font-size: 1rem; font-weight: 700; color: var(--dark); font-family: monospace; }
+.ans-explain { font-size: 0.82rem; color: #374151; margin-top: 0.5rem; line-height: 1.65; }
+.ans-code-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.7rem 0; border-radius: 8px; }
+.ans-code { background: #0f172a; border-radius: 8px; padding: 0.9rem 1.1rem; min-width: 360px; }
+.ans-code pre { margin: 0; font-family: 'Courier New', monospace; font-size: 0.8rem; line-height: 1.6; color: #e2e8f0; }
+
+/* ── MOBILE ── */
+@media (max-width: 640px) {
+  .hero { padding: 1.8rem 1rem 1.5rem; }
+  .hero h1 { font-size: 1.25rem; }
+  .hero p { font-size: 0.84rem; }
+
+  .container { padding: 1.5rem 0.9rem 3rem; }
+  .toc { padding: 0.9rem 1rem; }
+  .toc-list a { font-size: 0.74rem; }
+  .sec-title { font-size: 1.1rem; margin: 2rem 0 0.85rem; }
+
+  .code-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.3rem; }
+  .code-block { padding: 0.9rem 1rem; }
+  .code-block pre { font-size: 0.74rem; }
+
+  .trace-wrap::before { display: block; }
+  .trace-table { font-size: 0.72rem; }
+  .trace-table th { padding: 0.35rem 0.6rem; font-size: 0.66rem; }
+  .trace-table td { padding: 0.3rem 0.6rem; }
+
+  .tbl-wrap::before { display: block; }
+  table { font-size: 0.76rem; }
+  th, td { padding: 0.35rem 0.6rem; }
+
+  .slice-grid-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.2rem; }
+  .sg-cell { font-size: 0.72rem; padding: 0.35rem 0.4rem; }
+  .sg-idx, .sg-ridx { font-size: 0.64rem; }
+
+  .info, .warn, .tip, .red { font-size: 0.8rem; padding: 0.85rem 1rem; }
+  .concept { padding: 1rem; }
+
+  .quiz-q { padding: 0.9rem 1rem; font-size: 0.83rem; }
+  .quiz-ans { padding: 0 1rem 1rem; }
+  .ans-val { font-size: 0.92rem; }
+  .ans-explain { font-size: 0.79rem; }
+  .ans-code-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.2rem; }
+  .ans-code pre { font-size: 0.72rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <a class="hero-back" href="index.html">← Level-2 목록</a>
+    <h1>🐍 Python 코드 추적</h1>
+    <p>슬라이싱 · 딕셔너리 · 컴프리헨션 · 클래스 · 람다 · 내장함수</p>
+    <div class="hero-meta">
+      <span class="htag">출제 빈도 ★★★★☆</span>
+      <span class="htag">03번</span>
+      <span class="htag">매회 1~3문제 출제</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="toc">
+    <div class="toc-title">목차</div>
+    <div class="toc-list">
+      <a href="#slice">리스트 슬라이싱</a>
+      <a href="#dict">딕셔너리</a>
+      <a href="#comp">컴프리헨션</a>
+      <a href="#lambda">람다 & 내장함수</a>
+      <a href="#class">클래스</a>
+      <a href="#string">문자열 메서드</a>
+      <a href="#quiz">기출 문제</a>
+    </div>
+  </div>
+
+  <!-- ① 리스트 슬라이싱 -->
+  <div class="sec-title" id="slice"><span class="sec-num">01</span> 리스트 슬라이싱</div>
+
+  <div class="info">
+    <code>lst[start:stop:step]</code> — start(포함), stop(미포함), step(간격)<br>
+    생략 시: start=0, stop=끝, step=1 &nbsp;|&nbsp; 음수 인덱스는 뒤에서부터 카운트
+  </div>
+
+  <div class="concept">
+    <h4>인덱스 구조 시각화 — lst = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]</h4>
+    <div class="slice-grid-wrap">
+      <div class="slice-grid">
+        <div class="sg-idx">0</div><div class="sg-idx">1</div><div class="sg-idx">2</div>
+        <div class="sg-idx">3</div><div class="sg-idx">4</div><div class="sg-idx">5</div>
+        <div class="sg-idx">6</div><div class="sg-idx">7</div><div class="sg-idx">8</div><div class="sg-idx">9</div>
+        <div class="sg-cell">10</div><div class="sg-cell">20</div><div class="sg-cell">30</div>
+        <div class="sg-cell">40</div><div class="sg-cell">50</div><div class="sg-cell">60</div>
+        <div class="sg-cell">70</div><div class="sg-cell">80</div><div class="sg-cell">90</div><div class="sg-cell">100</div>
+        <div class="sg-ridx">-10</div><div class="sg-ridx">-9</div><div class="sg-ridx">-8</div>
+        <div class="sg-ridx">-7</div><div class="sg-ridx">-6</div><div class="sg-ridx">-5</div>
+        <div class="sg-ridx">-4</div><div class="sg-ridx">-3</div><div class="sg-ridx">-2</div><div class="sg-ridx">-1</div>
+      </div>
+    </div>
+
+    <div class="trace-wrap" style="margin-top:0.8rem;">
+      <table class="trace-table">
+        <tr><th>슬라이싱</th><th>결과</th><th>설명</th></tr>
+        <tr><td>lst[2:5]</td><td class="output">[30, 40, 50]</td><td>인덱스 2~4 (5 미포함)</td></tr>
+        <tr><td>lst[:4]</td><td class="output">[10, 20, 30, 40]</td><td>처음부터 3까지</td></tr>
+        <tr><td>lst[6:]</td><td class="output">[70, 80, 90, 100]</td><td>6번째부터 끝까지</td></tr>
+        <tr><td>lst[::2]</td><td class="output">[10, 30, 50, 70, 90]</td><td>step=2 (짝수 인덱스)</td></tr>
+        <tr><td>lst[1::2]</td><td class="output">[20, 40, 60, 80, 100]</td><td>1번부터 step=2 (홀수 인덱스)</td></tr>
+        <tr><td>lst[::-1]</td><td class="output">[100, 90, ..., 10]</td><td>역순 전체</td></tr>
+        <tr><td>lst[7:2:-1]</td><td class="output">[80, 70, 60, 50, 40]</td><td>7에서 3까지 역순</td></tr>
+        <tr><td>lst[-3:]</td><td class="output">[80, 90, 100]</td><td>뒤에서 3개</td></tr>
+        <tr><td>lst[1:7:3]</td><td class="output">[20, 50]</td><td>1,4 인덱스 (step=3)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h4>슬라이싱 추적 실전 예제</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln">1</span>lst = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>, <span class="num">7</span>]
+<span class="ln">2</span>a = lst[<span class="num">1</span>:<span class="num">6</span>:<span class="num">2</span>]   <span class="cmt"># [2, 4, 6]</span>
+<span class="ln">3</span>b = a[::-<span class="num">1</span>]      <span class="cmt"># [6, 4, 2]</span>
+<span class="ln">4</span>c = b[<span class="num">0</span>] + b[-<span class="num">1</span>] <span class="cmt"># 6 + 2 = 8</span>
+<span class="ln">5</span><span class="bi">print</span>(a, b, c)</pre></div>
+    </div>
+    <div class="trace-wrap">
+      <table class="trace-table">
+        <tr><th>라인</th><th>변수</th><th>값</th></tr>
+        <tr><td>2</td><td>a</td><td class="changed">[2, 4, 6]</td></tr>
+        <tr><td>3</td><td>b</td><td class="changed">[6, 4, 2]</td></tr>
+        <tr><td>4</td><td>c = b[0]+b[-1]</td><td class="changed">6 + 2 = 8</td></tr>
+        <tr><td>5</td><td>출력</td><td class="output">[2, 4, 6] [6, 4, 2] 8</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ② 딕셔너리 -->
+  <div class="sec-title" id="dict"><span class="sec-num">02</span> 딕셔너리</div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>연산</th><th>문법</th><th>예시</th><th>결과</th></tr>
+      <tr><td>접근</td><td><code>d[key]</code></td><td><code>d['a']</code></td><td>키가 없으면 KeyError</td></tr>
+      <tr><td>안전 접근</td><td><code>d.get(key, 기본값)</code></td><td><code>d.get('x', 0)</code></td><td>없으면 0 반환</td></tr>
+      <tr><td>추가/수정</td><td><code>d[key] = value</code></td><td><code>d['b'] = 10</code></td><td>있으면 수정, 없으면 추가</td></tr>
+      <tr><td>삭제</td><td><code>del d[key]</code></td><td><code>del d['a']</code></td><td>해당 키 제거</td></tr>
+      <tr><td>키 목록</td><td><code>d.keys()</code></td><td></td><td>dict_keys 객체</td></tr>
+      <tr><td>값 목록</td><td><code>d.values()</code></td><td></td><td>dict_values 객체</td></tr>
+      <tr><td>쌍 목록</td><td><code>d.items()</code></td><td></td><td>dict_items (key,value) 튜플</td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>딕셔너리 연산 추적</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln">1</span>d = {<span class="str">'a'</span>: <span class="num">1</span>, <span class="str">'b'</span>: <span class="num">2</span>, <span class="str">'c'</span>: <span class="num">3</span>}
+<span class="ln">2</span>d[<span class="str">'d'</span>] = d[<span class="str">'a'</span>] + d[<span class="str">'b'</span>]  <span class="cmt"># 'd': 3 추가</span>
+<span class="ln">3</span>d[<span class="str">'a'</span>] = <span class="num">10</span>               <span class="cmt"># 'a' 값 수정</span>
+<span class="ln">4</span><span class="kw">del</span> d[<span class="str">'c'</span>]                <span class="cmt"># 'c' 삭제</span>
+<span class="ln">5</span><span class="bi">print</span>(<span class="bi">sum</span>(d.values()))     <span class="cmt"># ?</span>
+<span class="ln">6</span><span class="bi">print</span>(<span class="bi">list</span>(d.keys()))     <span class="cmt"># ?</span></pre></div>
+    </div>
+    <div class="trace-wrap">
+      <table class="trace-table">
+        <tr><th>라인</th><th>d의 상태</th></tr>
+        <tr><td>1</td><td class="changed">{'a':1, 'b':2, 'c':3}</td></tr>
+        <tr><td>2</td><td class="changed">{'a':1, 'b':2, 'c':3, 'd':3}</td></tr>
+        <tr><td>3</td><td class="changed">{'a':10, 'b':2, 'c':3, 'd':3}</td></tr>
+        <tr><td>4</td><td class="changed">{'a':10, 'b':2, 'd':3}</td></tr>
+        <tr><td>5 sum</td><td class="output">10+2+3 = 15</td></tr>
+        <tr><td>6 keys</td><td class="output">['a', 'b', 'd']</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ③ 컴프리헨션 -->
+  <div class="sec-title" id="comp"><span class="sec-num">03</span> 컴프리헨션</div>
+
+  <div class="info">
+    <strong>리스트 컴프리헨션</strong>: <code>[식 for 변수 in 반복가능 if 조건]</code><br>
+    <strong>딕셔너리 컴프리헨션</strong>: <code>{키:값 for 변수 in 반복가능 if 조건}</code><br>
+    읽는 순서: <em>for부터 → if 조건 적용 → 앞의 식으로 변환</em>
+  </div>
+
+  <div class="concept">
+    <h4>컴프리헨션 추적 — 단계별 분해</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln">1</span><span class="cmt"># 1~10 중 홀수의 제곱</span>
+<span class="ln">2</span>result = [x**<span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="bi">range</span>(<span class="num">1</span>, <span class="num">11</span>) <span class="kw">if</span> x % <span class="num">2</span> != <span class="num">0</span>]
+<span class="ln">3</span>
+<span class="ln">4</span><span class="cmt"># 딕셔너리: 값을 2배로</span>
+<span class="ln">5</span>d = {<span class="str">'a'</span>:<span class="num">1</span>, <span class="str">'b'</span>:<span class="num">2</span>, <span class="str">'c'</span>:<span class="num">3</span>}
+<span class="ln">6</span>d2 = {k: v*<span class="num">2</span> <span class="kw">for</span> k, v <span class="kw">in</span> d.items()}
+<span class="ln">7</span>
+<span class="ln">8</span><span class="bi">print</span>(result)          <span class="cmt"># [1, 9, 25, 49, 81]</span>
+<span class="ln">9</span><span class="bi">print</span>(<span class="bi">sum</span>(result))     <span class="cmt"># 165</span>
+<span class="ln">10</span><span class="bi">print</span>(d2)              <span class="cmt"># {'a':2, 'b':4, 'c':6}</span></pre></div>
+    </div>
+    <div class="trace-wrap">
+      <table class="trace-table">
+        <tr><th>x</th><th>x % 2 != 0</th><th>x**2</th><th>포함 여부</th></tr>
+        <tr><td>1</td><td>True</td><td>1</td><td class="active">포함</td></tr>
+        <tr><td>2</td><td>False</td><td>—</td><td>제외</td></tr>
+        <tr><td>3</td><td>True</td><td>9</td><td class="active">포함</td></tr>
+        <tr><td>4</td><td>False</td><td>—</td><td>제외</td></tr>
+        <tr><td>5</td><td>True</td><td>25</td><td class="active">포함</td></tr>
+        <tr><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+        <tr><td>result</td><td colspan="3" class="output">[1, 9, 25, 49, 81] → sum=165</td></tr>
+      </table>
+    </div>
+    <div class="tip">✅ 중첩 컴프리헨션: <code>[x*y for x in [1,2,3] for y in [10,20]]</code> → [10,20,20,40,30,60]<br>
+    → 바깥 for가 먼저, 안쪽 for가 안에서 돌아감</div>
+  </div>
+
+  <!-- ④ 람다 & 내장함수 -->
+  <div class="sec-title" id="lambda"><span class="sec-num">04</span> 람다 & 내장함수</div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>함수</th><th>문법</th><th>예시</th><th>결과</th></tr>
+      <tr><td><code>map()</code></td><td><code>map(함수, 반복)</code></td><td><code>list(map(lambda x: x*2, [1,2,3]))</code></td><td>[2, 4, 6]</td></tr>
+      <tr><td><code>filter()</code></td><td><code>filter(함수, 반복)</code></td><td><code>list(filter(lambda x: x>2, [1,2,3,4]))</code></td><td>[3, 4]</td></tr>
+      <tr><td><code>sorted()</code></td><td><code>sorted(반복, key=, reverse=)</code></td><td><code>sorted([3,1,2])</code></td><td>[1, 2, 3]</td></tr>
+      <tr><td><code>zip()</code></td><td><code>zip(a, b)</code></td><td><code>list(zip([1,2],[3,4]))</code></td><td>[(1,3), (2,4)]</td></tr>
+      <tr><td><code>enumerate()</code></td><td><code>enumerate(반복, start=0)</code></td><td><code>list(enumerate(['a','b']))</code></td><td>[(0,'a'), (1,'b')]</td></tr>
+      <tr><td><code>sum/min/max</code></td><td><code>sum(반복, start=0)</code></td><td><code>sum([1,2,3], 10)</code></td><td>16</td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>map + filter + sorted 체이닝 추적</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln">1</span>nums = [<span class="num">5</span>, <span class="num">3</span>, <span class="num">8</span>, <span class="num">1</span>, <span class="num">6</span>, <span class="num">2</span>]
+<span class="ln">2</span>
+<span class="ln">3</span><span class="cmt"># ① map: 각 원소 * 3</span>
+<span class="ln">4</span>step1 = <span class="bi">list</span>(<span class="bi">map</span>(<span class="kw">lambda</span> x: x*<span class="num">3</span>, nums))
+<span class="ln">5</span><span class="cmt"># [15, 9, 24, 3, 18, 6]</span>
+<span class="ln">6</span>
+<span class="ln">7</span><span class="cmt"># ② filter: 10 초과만</span>
+<span class="ln">8</span>step2 = <span class="bi">list</span>(<span class="bi">filter</span>(<span class="kw">lambda</span> x: x &gt; <span class="num">10</span>, step1))
+<span class="ln">9</span><span class="cmt"># [15, 24, 18]</span>
+<span class="ln">10</span>
+<span class="ln">11</span><span class="cmt"># ③ sorted: 내림차순</span>
+<span class="ln">12</span>step3 = <span class="bi">sorted</span>(step2, reverse=<span class="kw">True</span>)
+<span class="ln">13</span><span class="cmt"># [24, 18, 15]</span>
+<span class="ln">14</span>
+<span class="ln">15</span><span class="bi">print</span>(step3[<span class="num">0</span>], step3[-<span class="num">1</span>])  <span class="cmt"># 24 15</span></pre></div>
+    </div>
+    <div class="trace-wrap">
+      <table class="trace-table">
+        <tr><th>단계</th><th>결과</th></tr>
+        <tr><td>map(*3)</td><td class="changed">[15, 9, 24, 3, 18, 6]</td></tr>
+        <tr><td>filter(>10)</td><td class="changed">[15, 24, 18]</td></tr>
+        <tr><td>sorted(내림차순)</td><td class="changed">[24, 18, 15]</td></tr>
+        <tr><td>step3[0], step3[-1]</td><td class="output">24 15</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h4>zip + enumerate 추적</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln">1</span>names  = [<span class="str">'Kim'</span>, <span class="str">'Lee'</span>, <span class="str">'Park'</span>]
+<span class="ln">2</span>scores = [<span class="num">85</span>, <span class="num">92</span>, <span class="num">78</span>]
+<span class="ln">3</span>
+<span class="ln">4</span><span class="kw">for</span> i, (name, score) <span class="kw">in</span> <span class="bi">enumerate</span>(<span class="bi">zip</span>(names, scores), start=<span class="num">1</span>):
+<span class="ln">5</span>    <span class="bi">print</span>(<span class="str">f"</span><span class="num">{i}</span><span class="str">. </span><span class="num">{name}</span><span class="str">:</span><span class="num">{score}</span><span class="str">"</span>)</pre></div>
+    </div>
+    <div class="trace-wrap">
+      <table class="trace-table">
+        <tr><th>i</th><th>name</th><th>score</th><th>출력</th></tr>
+        <tr><td>1</td><td>Kim</td><td>85</td><td class="output">1. Kim:85</td></tr>
+        <tr><td>2</td><td>Lee</td><td>92</td><td class="output">2. Lee:92</td></tr>
+        <tr><td>3</td><td>Park</td><td>78</td><td class="output">3. Park:78</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ⑤ 클래스 -->
+  <div class="sec-title" id="class"><span class="sec-num">05</span> 클래스 & 상속</div>
+
+  <div class="info">
+    <code>__init__(self, ...)</code>: 생성자. 인스턴스 생성 시 자동 호출.<br>
+    <code>super().__init__(...)</code>: 부모 생성자 호출.<br>
+    Python은 다중 상속 가능: <code>class C(A, B):</code>
+  </div>
+
+  <div class="concept">
+    <h4>클래스 상속 추적</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln"> 1</span><span class="kw">class</span> <span class="cls">Animal</span>:
+<span class="ln"> 2</span>    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="slf">self</span>, name):
+<span class="ln"> 3</span>        <span class="slf">self</span>.name = name
+<span class="ln"> 4</span>    <span class="kw">def</span> <span class="fn">speak</span>(<span class="slf">self</span>):
+<span class="ln"> 5</span>        <span class="kw">return</span> <span class="str">f"</span><span class="num">{self.name}</span><span class="str">:..."</span>
+<span class="ln"> 6</span>
+<span class="ln"> 7</span><span class="kw">class</span> <span class="cls">Dog</span>(<span class="cls">Animal</span>):
+<span class="ln"> 8</span>    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="slf">self</span>, name, breed):
+<span class="ln"> 9</span>        <span class="bi">super</span>().__init__(name)
+<span class="ln">10</span>        <span class="slf">self</span>.breed = breed
+<span class="ln">11</span>    <span class="kw">def</span> <span class="fn">speak</span>(<span class="slf">self</span>):           <span class="cmt"># override</span>
+<span class="ln">12</span>        <span class="kw">return</span> <span class="str">f"</span><span class="num">{self.name}</span><span class="str">({self.breed}):멍"</span>
+<span class="ln">13</span>
+<span class="ln">14</span>a = <span class="cls">Animal</span>(<span class="str">"고양이"</span>)
+<span class="ln">15</span>d = <span class="cls">Dog</span>(<span class="str">"바둑"</span>, <span class="str">"진돗개"</span>)
+<span class="ln">16</span><span class="bi">print</span>(a.<span class="fn">speak</span>())  <span class="cmt"># 고양이:...</span>
+<span class="ln">17</span><span class="bi">print</span>(d.<span class="fn">speak</span>())  <span class="cmt"># 바둑(진돗개):멍</span>
+<span class="ln">18</span><span class="bi">print</span>(<span class="bi">isinstance</span>(d, <span class="cls">Animal</span>))  <span class="cmt"># True</span></pre></div>
+    </div>
+    <div class="trace-wrap">
+      <table class="trace-table">
+        <tr><th>라인</th><th>동작</th><th>출력</th></tr>
+        <tr><td>14</td><td>Animal("고양이") → self.name="고양이"</td><td></td></tr>
+        <tr><td>15</td><td>Dog("바둑","진돗개") → super().__init__("바둑") → self.breed="진돗개"</td><td></td></tr>
+        <tr><td>16</td><td>a.speak() → Animal의 speak()</td><td class="output">고양이:...</td></tr>
+        <tr><td>17</td><td>d.speak() → Dog의 speak() (오버라이드)</td><td class="output">바둑(진돗개):멍</td></tr>
+        <tr><td>18</td><td>isinstance(d, Animal) → Dog는 Animal 상속</td><td class="output">True</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ⑥ 문자열 메서드 -->
+  <div class="sec-title" id="string"><span class="sec-num">06</span> 문자열 메서드</div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>메서드</th><th>예시</th><th>결과</th></tr>
+      <tr><td><code>s.upper() / .lower()</code></td><td><code>"Hello".upper()</code></td><td>"HELLO"</td></tr>
+      <tr><td><code>s.strip() / .lstrip() / .rstrip()</code></td><td><code>"  hi  ".strip()</code></td><td>"hi"</td></tr>
+      <tr><td><code>s.split(sep)</code></td><td><code>"a,b,c".split(",")</code></td><td>['a','b','c']</td></tr>
+      <tr><td><code>sep.join(lst)</code></td><td><code>"-".join(['a','b','c'])</code></td><td>"a-b-c"</td></tr>
+      <tr><td><code>s.replace(old, new)</code></td><td><code>"apple".replace("p","P")</code></td><td>"aPPle"</td></tr>
+      <tr><td><code>s.find(sub)</code></td><td><code>"hello".find("ll")</code></td><td>2 (없으면 -1)</td></tr>
+      <tr><td><code>s.count(sub)</code></td><td><code>"banana".count("a")</code></td><td>3</td></tr>
+      <tr><td><code>s.startswith() / .endswith()</code></td><td><code>"hello".startswith("he")</code></td><td>True</td></tr>
+      <tr><td><code>s[::-1]</code></td><td><code>"hello"[::-1]</code></td><td>"olleh" (역순)</td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>문자열 처리 체인 추적</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln">1</span>s = <span class="str">"  Python is Fun  "</span>
+<span class="ln">2</span>words = s.<span class="fn">strip</span>().<span class="fn">split</span>()      <span class="cmt"># ['Python', 'is', 'Fun']</span>
+<span class="ln">3</span>result = <span class="str">"_"</span>.<span class="fn">join</span>([w.<span class="fn">lower</span>() <span class="kw">for</span> w <span class="kw">in</span> words])
+<span class="ln">4</span>                                <span class="cmt"># "python_is_fun"</span>
+<span class="ln">5</span>rev = result[::-<span class="num">1</span>]             <span class="cmt"># "nuf_si_nohtyp"</span>
+<span class="ln">6</span><span class="bi">print</span>(result.<span class="fn">count</span>(<span class="str">"_"</span>))      <span class="cmt"># 2</span>
+<span class="ln">7</span><span class="bi">print</span>(rev[:<span class="num">3</span>])                 <span class="cmt"># "nuf"</span></pre></div>
+    </div>
+    <div class="trace-wrap">
+      <table class="trace-table">
+        <tr><th>단계</th><th>결과</th></tr>
+        <tr><td>s.strip()</td><td>"Python is Fun"</td></tr>
+        <tr><td>.split()</td><td class="changed">['Python', 'is', 'Fun']</td></tr>
+        <tr><td>w.lower() for w</td><td>['python', 'is', 'fun']</td></tr>
+        <tr><td>"_".join(...)</td><td class="changed">"python_is_fun"</td></tr>
+        <tr><td>result[::-1]</td><td class="changed">"nuf_si_nohtyp"</td></tr>
+        <tr><td>result.count("_")</td><td class="output">2</td></tr>
+        <tr><td>rev[:3]</td><td class="output">nuf</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ⑦ 기출 문제 -->
+  <div class="sec-title" id="quiz"><span class="sec-num">07</span> 기출 문제</div>
+
+  <div class="quiz-wrap">
+
+    <!-- Q1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          다음 Python 코드의 출력 결과를 쓰시오. (슬라이싱 + step)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+lst = [<span class="num">0</span>, <span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>, <span class="num">7</span>, <span class="num">8</span>, <span class="num">9</span>]
+a = lst[<span class="num">1</span>:<span class="num">8</span>:<span class="num">2</span>]
+b = lst[::-<span class="num">1</span>][:<span class="num">4</span>]
+<span class="bi">print</span>(a)
+<span class="bi">print</span>(b)
+<span class="bi">print</span>(a[<span class="num">0</span>] + b[-<span class="num">1</span>])</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">[1, 3, 5, 7]<br>[9, 8, 7, 6]<br>7</div>
+        <div class="ans-explain">
+          a = lst[1:8:2] → 인덱스 1,3,5,7 → <strong>[1, 3, 5, 7]</strong><br>
+          b = lst[::-1][:4] → 역순=[9,8,7,6,5,...] → 앞 4개 → <strong>[9, 8, 7, 6]</strong><br>
+          a[0]=1, b[-1]=6 → 1+6 = <strong>7</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          다음 Python 코드의 출력 결과를 쓰시오. (리스트 컴프리헨션)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+result = [x**<span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="bi">range</span>(<span class="num">1</span>, <span class="num">6</span>) <span class="kw">if</span> x % <span class="num">2</span> != <span class="num">0</span>]
+<span class="bi">print</span>(result)
+<span class="bi">print</span>(<span class="bi">sum</span>(result))
+<span class="bi">print</span>(<span class="bi">max</span>(result) - <span class="bi">min</span>(result))</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">[1, 9, 25]<br>35<br>24</div>
+        <div class="ans-explain">
+          range(1,6) = 1,2,3,4,5 중 홀수(1,3,5)의 제곱<br>
+          result = [1²,3²,5²] = <strong>[1, 9, 25]</strong><br>
+          sum = 1+9+25 = <strong>35</strong><br>
+          max-min = 25-1 = <strong>24</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          다음 Python 코드의 출력 결과를 쓰시오. (딕셔너리 + 컴프리헨션)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+scores = {<span class="str">'수학'</span>: <span class="num">85</span>, <span class="str">'영어'</span>: <span class="num">92</span>, <span class="str">'국어'</span>: <span class="num">78</span>, <span class="str">'과학'</span>: <span class="num">90</span>}
+
+passed = {k: v <span class="kw">for</span> k, v <span class="kw">in</span> scores.items() <span class="kw">if</span> v &gt;= <span class="num">85</span>}
+<span class="bi">print</span>(passed)
+<span class="bi">print</span>(<span class="bi">len</span>(passed))
+<span class="bi">print</span>(<span class="bi">sum</span>(passed.values()) / <span class="bi">len</span>(passed))</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">{'수학': 85, '영어': 92, '과학': 90}<br>3<br>89.0</div>
+        <div class="ans-explain">
+          85 이상인 항목: 수학(85), 영어(92), 과학(90) → 국어(78) 제외<br>
+          len = 3<br>
+          (85+92+90)/3 = 267/3 = 89.0
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          다음 Python 코드의 출력 결과를 쓰시오. (lambda + sorted + map)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+students = [(<span class="str">'Kim'</span>, <span class="num">85</span>), (<span class="str">'Lee'</span>, <span class="num">92</span>), (<span class="str">'Park'</span>, <span class="num">78</span>), (<span class="str">'Choi'</span>, <span class="num">92</span>)]
+
+top = <span class="bi">sorted</span>(students, key=<span class="kw">lambda</span> x: (-x[<span class="num">1</span>], x[<span class="num">0</span>]))
+names = <span class="bi">list</span>(<span class="bi">map</span>(<span class="kw">lambda</span> x: x[<span class="num">0</span>], top[:<span class="num">2</span>]))
+
+<span class="bi">print</span>(top[<span class="num">0</span>])
+<span class="bi">print</span>(names)</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">('Choi', 92)<br>['Choi', 'Lee']</div>
+        <div class="ans-explain">
+          key=(-점수, 이름) → 점수 내림차순, 동점은 이름 오름차순<br>
+          92점: Choi, Lee → 이름 정렬 → Choi 먼저<br>
+          top = [(Choi,92),(Lee,92),(Kim,85),(Park,78)]<br>
+          top[0] = <strong>('Choi', 92)</strong><br>
+          names(상위 2명) = <strong>['Choi', 'Lee']</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          다음 Python 코드의 출력 결과를 쓰시오. (클래스 상속 + super)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">class</span> <span class="cls">A</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="slf">self</span>, x):
+        <span class="slf">self</span>.x = x
+    <span class="kw">def</span> <span class="fn">calc</span>(<span class="slf">self</span>):
+        <span class="kw">return</span> <span class="slf">self</span>.x * <span class="num">2</span>
+
+<span class="kw">class</span> <span class="cls">B</span>(<span class="cls">A</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="slf">self</span>, x, y):
+        <span class="bi">super</span>().__init__(x)
+        <span class="slf">self</span>.y = y
+    <span class="kw">def</span> <span class="fn">calc</span>(<span class="slf">self</span>):
+        <span class="kw">return</span> <span class="bi">super</span>().<span class="fn">calc</span>() + <span class="slf">self</span>.y
+
+b = <span class="cls">B</span>(<span class="num">3</span>, <span class="num">10</span>)
+<span class="bi">print</span>(b.<span class="fn">calc</span>())
+<span class="bi">print</span>(b.x, b.y)</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">16<br>3 10</div>
+        <div class="ans-explain">
+          B(3,10): super().__init__(3) → self.x=3, self.y=10<br>
+          b.calc(): super().calc() = A의 calc() = self.x*2 = 6<br>
+          6 + self.y = 6+10 = <strong>16</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">기출 유사</span>&nbsp;
+          다음 Python 코드의 출력 결과를 쓰시오. (filter + map 체이닝)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+nums = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>]
+result = <span class="bi">list</span>(<span class="bi">filter</span>(<span class="kw">lambda</span> x: x &gt; <span class="num">10</span>,
+              <span class="bi">map</span>(<span class="kw">lambda</span> x: x * <span class="num">2</span>, nums)))
+<span class="bi">print</span>(result)
+<span class="bi">print</span>(<span class="bi">sum</span>(result))</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">[12]<br>12</div>
+        <div class="ans-explain">
+          map(×2): [2, 4, 6, 8, 10, 12]<br>
+          filter(>10): 10 초과인 것만 → [12] (10은 미포함, 12만 해당)<br>
+          sum([12]) = 12
+        </div>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">기출 유사</span>&nbsp;
+          다음 Python 코드의 출력 결과를 쓰시오. (문자열 + 리스트 처리)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+s = <span class="str">"apple banana cherry apple banana"</span>
+words = s.<span class="fn">split</span>()
+counts = {}
+<span class="kw">for</span> w <span class="kw">in</span> words:
+    counts[w] = counts.<span class="fn">get</span>(w, <span class="num">0</span>) + <span class="num">1</span>
+
+result = <span class="bi">sorted</span>(counts.items(), key=<span class="kw">lambda</span> x: -x[<span class="num">1</span>])
+<span class="bi">print</span>(result[<span class="num">0</span>][<span class="num">0</span>], result[<span class="num">0</span>][<span class="num">1</span>])</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">apple 2</div>
+        <div class="ans-explain">
+          words = ['apple','banana','cherry','apple','banana']<br>
+          counts = {'apple':2, 'banana':2, 'cherry':1}<br>
+          sorted(내림차순): [('apple',2),('banana',2),('cherry',1)] 또는 ('banana',2) 먼저일 수 있음<br>
+          → 동점이면 딕셔너리 삽입 순서, apple이 먼저 들어감 → result[0] = ('apple', 2)
+        </div>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">개념 확인</span>&nbsp;
+          다음 Python 코드의 출력 결과를 쓰시오. (중첩 컴프리헨션)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+matrix = [[<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>], [<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>], [<span class="num">7</span>,<span class="num">8</span>,<span class="num">9</span>]]
+
+flat  = [x <span class="kw">for</span> row <span class="kw">in</span> matrix <span class="kw">for</span> x <span class="kw">in</span> row]
+diag  = [matrix[i][i] <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(<span class="bi">len</span>(matrix))]
+total = <span class="bi">sum</span>(flat)
+
+<span class="bi">print</span>(flat[<span class="num">4</span>])
+<span class="bi">print</span>(diag)
+<span class="bi">print</span>(total)</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">5<br>[1, 5, 9]<br>45</div>
+        <div class="ans-explain">
+          flat = [1,2,3,4,5,6,7,8,9] → flat[4] = <strong>5</strong> (0-based)<br>
+          diag: i=0→matrix[0][0]=1, i=1→matrix[1][1]=5, i=2→matrix[2][2]=9 → <strong>[1,5,9]</strong><br>
+          sum(1~9) = <strong>45</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">개념 확인</span>&nbsp;
+          Python의 mutable(가변) 타입과 immutable(불변) 타입을 각각 3가지씩 쓰시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">mutable: list, dict, set<br>immutable: int, str, tuple</div>
+        <div class="ans-explain">
+          <strong>Mutable (변경 가능)</strong>: list, dict, set — 내용을 수정해도 같은 객체 유지<br>
+          <strong>Immutable (변경 불가)</strong>: int, float, str, tuple, bool — 값 변경 시 새 객체 생성<br>
+          ⚠️ 함수에 list를 전달하면 원본 수정 가능! (mutable이라 참조 전달과 동일 효과)
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+</div><!-- /container -->
+
+<footer style="text-align:center; padding:1.5rem; color:var(--gray); font-size:0.78rem; border-top:1px solid var(--border);">
+  Level-2 · 03 Python 코드 추적 · <a href="index.html" style="color:var(--accent); text-decoration:none;">← 목록으로</a>
+</footer>
+
+<script>
+function toggle(el) {
+  el.closest('.quiz-card').classList.toggle('open');
+}
+</script>
+</body>
+</html>

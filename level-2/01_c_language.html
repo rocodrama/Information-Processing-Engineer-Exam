@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>01 C언어 코드 추적 — Level-2</title>
+<style>
+:root {
+  --dark: #0f172a; --gray: #64748b; --light: #f8fafc; --border: #e2e8f0;
+  --accent: #1d4ed8; --accent2: #3b82f6;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.7; }
+
+/* ── HERO ── */
+.hero { background: linear-gradient(135deg, #030712 0%, #0f172a 60%, #1e3a5f 100%); color: white; padding: 2.5rem 1.5rem 2rem; }
+.hero-inner { max-width: 900px; margin: 0 auto; }
+.hero-back { font-size: 0.78rem; color: #94a3b8; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; margin-bottom: 1rem; }
+.hero-back:hover { color: white; }
+.hero h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.3rem; }
+.hero p { color: #93c5fd; font-size: 0.88rem; }
+.hero-meta { display: flex; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
+.htag { background: rgba(255,255,255,0.12); padding: 0.22rem 0.65rem; border-radius: 20px; font-size: 0.75rem; }
+
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+/* ── TOC ── */
+.toc { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.5rem; margin-bottom: 2rem; }
+.toc-title { font-size: 0.78rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.7rem; }
+.toc-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.toc-list a { font-size: 0.8rem; color: var(--accent); text-decoration: none; border: 1px solid #bfdbfe; background: #eff6ff; padding: 0.2rem 0.6rem; border-radius: 8px; }
+.toc-list a:hover { background: #dbeafe; }
+
+/* ── SECTION TITLE ── */
+.sec-title { font-size: 1.3rem; font-weight: 800; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 20px; }
+
+/* ── INFO BOXES ── */
+.info  { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #1e40af; margin: 1rem 0; }
+.warn  { background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #713f12; margin: 1rem 0; }
+.tip   { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #166534; margin: 1rem 0; }
+
+/* ── CODE BLOCK ── */
+.code-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; margin: 0.8rem 0; border-radius: 10px; }
+.code-block { background: #0f172a; border-radius: 10px; padding: 1.1rem 1.3rem; min-width: 480px; }
+.code-block pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.84rem; line-height: 1.65; color: #e2e8f0; }
+.ln  { color: #334155; user-select: none; margin-right: 0.8rem; font-size: 0.76rem; }
+.kw  { color: #93c5fd; }   /* keywords */
+.tp  { color: #67e8f9; }   /* types */
+.fn  { color: #fbbf24; }   /* function names */
+.str { color: #86efac; }   /* strings / includes */
+.num { color: #f9a8d4; }   /* numbers */
+.cmt { color: #475569; font-style: italic; }   /* comments */
+.hl  { background: rgba(251,191,36,0.12); display: inline-block; width: 100%; }
+
+/* ── TRACE TABLE ── */
+.trace-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; margin: 1rem 0; }
+.trace-wrap::before { content: '← 좌우 스크롤'; display: none; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.3rem; }
+.trace-table { border-collapse: collapse; font-size: 0.82rem; font-family: 'Courier New', monospace; white-space: nowrap; }
+.trace-table th { background: #0f172a; color: #93c5fd; padding: 0.45rem 0.9rem; text-align: center; font-size: 0.74rem; font-weight: 700; }
+.trace-table td { padding: 0.4rem 0.9rem; border-bottom: 1px solid var(--border); text-align: center; color: var(--dark); }
+.trace-table tr:hover td { background: #eff6ff; }
+.changed { background: #fef3c7 !important; color: #92400e; font-weight: 700; }
+.output  { background: #dcfce7 !important; color: #15803d; font-weight: 700; }
+.active  { background: #dbeafe !important; }
+
+/* ── CONCEPT CARD ── */
+.concept { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1rem; }
+.concept h4 { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.4rem; }
+.concept h4::before { content: '▸'; color: var(--accent); }
+
+/* ── CALL STACK ── */
+.call-stack { display: flex; flex-direction: column; gap: 2px; max-width: 300px; margin: 1rem 0; }
+.call-frame { background: white; border: 1px solid var(--border); border-radius: 6px; padding: 0.45rem 0.9rem; font-family: monospace; font-size: 0.82rem; display: flex; justify-content: space-between; align-items: center; }
+.call-frame.base { border-color: #22c55e; background: #f0fdf4; }
+.call-frame.ret { border-color: var(--accent2); }
+.call-arrow { font-size: 0.72rem; color: var(--gray); }
+
+/* ── BIT TABLE ── */
+.bit-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; max-width: 260px; margin: 0.4rem 0; }
+.bit-cell { background: #f1f5f9; border: 1px solid var(--border); text-align: center; padding: 0.3rem 0; font-size: 0.78rem; font-family: monospace; border-radius: 4px; font-weight: 700; }
+.bit-cell.on  { background: #1d4ed8; color: white; border-color: #1d4ed8; }
+.bit-cell.off { background: #e2e8f0; color: var(--gray); }
+.bit-op-label { font-size: 0.72rem; color: var(--gray); margin: 0.2rem 0 0.05rem; font-weight: 700; }
+
+/* ── TABLE ── */
+.tbl-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+th { background: #0f172a; color: #93c5fd; padding: 0.5rem 0.8rem; text-align: left; font-size: 0.77rem; font-weight: 700; }
+td { padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--border); }
+tr:nth-child(even) td { background: #fafafa; }
+tr:hover td { background: #eff6ff; }
+code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.82rem; }
+
+/* ── QUIZ ── */
+.quiz-wrap { display: flex; flex-direction: column; gap: 1.1rem; margin-top: 1rem; }
+.quiz-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.quiz-q {
+  padding: 1rem 1.2rem; font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; min-height: 52px;
+}
+.quiz-q:hover { background: #fafafa; }
+.quiz-q:active { background: #f0f9ff; }
+.quiz-badge { font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.quiz-badge.year { background: #bfdbfe; color: #1e40af; }
+.quiz-badge.sim  { background: #e0e7ff; color: #4338ca; }
+.quiz-chevron { font-size: 0.75rem; color: var(--gray); flex-shrink: 0; margin-top: 0.1rem; transition: transform 0.2s; }
+.quiz-card.open .quiz-chevron { transform: rotate(180deg); }
+.quiz-ans { display: none; padding: 0 1.2rem 1.1rem; border-top: 1px solid var(--border); }
+.quiz-card.open .quiz-ans { display: block; }
+.ans-label { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin: 0.8rem 0 0.3rem; }
+.ans-val   { font-size: 1rem; font-weight: 700; color: var(--dark); font-family: monospace; }
+.ans-explain { font-size: 0.82rem; color: #374151; margin-top: 0.5rem; line-height: 1.65; }
+.ans-code-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.7rem 0; border-radius: 8px; }
+.ans-code { background: #0f172a; border-radius: 8px; padding: 0.9rem 1.1rem; min-width: 340px; }
+.ans-code pre { margin: 0; font-family: 'Courier New', monospace; font-size: 0.8rem; line-height: 1.6; color: #e2e8f0; }
+
+/* ── MOBILE ── */
+@media (max-width: 640px) {
+  .hero { padding: 1.8rem 1rem 1.5rem; }
+  .hero h1 { font-size: 1.25rem; }
+  .hero p { font-size: 0.84rem; }
+  .htag { font-size: 0.7rem; }
+
+  .container { padding: 1.5rem 0.9rem 3rem; }
+  .toc { padding: 0.9rem 1rem; }
+  .toc-list a { font-size: 0.74rem; }
+  .sec-title { font-size: 1.1rem; margin: 2rem 0 0.85rem; }
+
+  .code-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.3rem; }
+  .code-block { padding: 0.9rem 1rem; }
+  .code-block pre { font-size: 0.76rem; }
+
+  .trace-wrap::before { display: block; }
+  .trace-table { font-size: 0.74rem; }
+  .trace-table th { padding: 0.38rem 0.6rem; font-size: 0.68rem; }
+  .trace-table td { padding: 0.32rem 0.6rem; }
+
+  .tbl-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; padding: 0.3rem 0; }
+  table { font-size: 0.76rem; }
+  th, td { padding: 0.38rem 0.6rem; }
+
+  .concept { padding: 1rem; }
+  .bit-grid { max-width: 210px; }
+  .bit-cell { font-size: 0.7rem; padding: 0.22rem 0; }
+
+  .info, .warn, .tip { font-size: 0.8rem; padding: 0.85rem 1rem; }
+
+  .quiz-q { padding: 0.9rem 1rem; font-size: 0.83rem; }
+  .quiz-ans { padding: 0 1rem 1rem; }
+  .ans-val { font-size: 0.92rem; }
+  .ans-explain { font-size: 0.79rem; }
+  .ans-code-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.2rem; }
+  .ans-code pre { font-size: 0.74rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <a class="hero-back" href="index.html">← Level-2 목록</a>
+    <h1>🔵 C언어 코드 추적</h1>
+    <p>포인터 · 배열 · 구조체 · 재귀 · static · 비트 연산</p>
+    <div class="hero-meta">
+      <span class="htag">출제 빈도 ★★★★★</span>
+      <span class="htag">01번</span>
+      <span class="htag">매회 2~3문제 출제</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="toc">
+    <div class="toc-title">목차</div>
+    <div class="toc-list">
+      <a href="#pointer">포인터 기본</a>
+      <a href="#array">배열 & 포인터</a>
+      <a href="#struct">구조체 포인터</a>
+      <a href="#recursive">재귀함수</a>
+      <a href="#static">static 변수</a>
+      <a href="#bit">비트 연산</a>
+      <a href="#string">문자열 포인터</a>
+      <a href="#quiz">기출 문제</a>
+    </div>
+  </div>
+
+  <!-- ① 포인터 기본 -->
+  <div class="sec-title" id="pointer"><span class="sec-num">01</span> 포인터 기본</div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>연산자</th><th>의미</th><th>예시</th><th>결과</th></tr>
+      <tr><td><code>&amp;var</code></td><td>var의 주소값</td><td><code>int a=5; int *p=&amp;a;</code></td><td>p는 a의 주소를 가짐</td></tr>
+      <tr><td><code>*ptr</code></td><td>ptr이 가리키는 값 (역참조)</td><td><code>printf("%d", *p);</code></td><td>5 출력</td></tr>
+      <tr><td><code>*ptr = x</code></td><td>ptr이 가리키는 곳에 값 저장</td><td><code>*p = 20;</code></td><td>a가 20으로 변경</td></tr>
+      <tr><td><code>ptr + n</code></td><td>n×(자료형 크기) 만큼 주소 이동</td><td><code>p+1</code> (int: +4바이트)</td><td>다음 정수 주소</td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>포인터 추적 예제</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="tp">int</span> a = <span class="num">10</span>, b = <span class="num">20</span>;
+<span class="ln">4</span>    <span class="tp">int</span> *p = &amp;a;      <span class="cmt">// p → a</span>
+<span class="ln">5</span>    *p = <span class="num">30</span>;           <span class="cmt">// a = 30</span>
+<span class="ln">6</span>    p = &amp;b;           <span class="cmt">// p → b</span>
+<span class="ln">7</span>    printf(<span class="str">"%d %d"</span>, a, *p); <span class="cmt">// 30 20</span>
+<span class="ln">8</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">9</span>}</pre></div>
+    </div>
+    <div class="trace-wrap">
+      <table class="trace-table">
+        <tr><th>라인</th><th>a</th><th>b</th><th>p</th><th>*p</th><th>출력</th></tr>
+        <tr><td>3</td><td class="changed">10</td><td class="changed">20</td><td>—</td><td>—</td><td></td></tr>
+        <tr><td>4</td><td>10</td><td>20</td><td class="changed">&amp;a</td><td class="changed">10</td><td></td></tr>
+        <tr><td>5</td><td class="changed">30</td><td>20</td><td>&amp;a</td><td class="changed">30</td><td></td></tr>
+        <tr><td>6</td><td>30</td><td>20</td><td class="changed">&amp;b</td><td class="changed">20</td><td></td></tr>
+        <tr><td>7</td><td>30</td><td>20</td><td>&amp;b</td><td>20</td><td class="output">30 20</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ② 배열 & 포인터 -->
+  <div class="sec-title" id="array"><span class="sec-num">02</span> 배열 & 포인터 관계</div>
+
+  <div class="info">
+    배열 이름은 첫 번째 원소의 주소. <code>arr[i]</code> 와 <code>*(arr+i)</code> 는 완전히 동일.
+    2차원 배열의 경우 <code>arr[i][j]</code> = <code>*(*(arr+i)+j)</code>.
+  </div>
+
+  <div class="concept">
+    <h4>1차원 배열 포인터 추적</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln">1</span><span class="tp">int</span> arr[] = {<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>};
+<span class="ln">2</span><span class="tp">int</span> *p = arr;    <span class="cmt">// p = &amp;arr[0]</span>
+<span class="ln">3</span>printf(<span class="str">"%d\n"</span>, *p);       <span class="cmt">// 10</span>
+<span class="ln">4</span>printf(<span class="str">"%d\n"</span>, *(p+2));   <span class="cmt">// 30</span>
+<span class="ln">5</span>printf(<span class="str">"%d\n"</span>, p[3]);     <span class="cmt">// 40  (p[i] == *(p+i))</span>
+<span class="ln">6</span>p++;                       <span class="cmt">// p → arr[1]</span>
+<span class="ln">7</span>printf(<span class="str">"%d\n"</span>, *p);       <span class="cmt">// 20</span></pre></div>
+    </div>
+    <div class="tip">✅ 핵심: <code>p++</code> 하면 p는 다음 int 주소로 이동 (4바이트 전진). <code>*(p+n)</code> = <code>p[n]</code> = <code>arr[기준+n]</code></div>
+  </div>
+
+  <div class="concept">
+    <h4>2차원 배열 포인터 추적 — 기출 빈출 패턴</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln">1</span><span class="tp">int</span> arr[3][4] = {
+<span class="ln">2</span>    {<span class="num">1</span>,  <span class="num">2</span>,  <span class="num">3</span>,  <span class="num">4</span>},   <span class="cmt">// index 0~3</span>
+<span class="ln">3</span>    {<span class="num">5</span>,  <span class="num">6</span>,  <span class="num">7</span>,  <span class="num">8</span>},   <span class="cmt">// index 4~7</span>
+<span class="ln">4</span>    {<span class="num">9</span>, <span class="num">10</span>, <span class="num">11</span>, <span class="num">12</span>}    <span class="cmt">// index 8~11</span>
+<span class="ln">5</span>};
+<span class="ln">6</span><span class="tp">int</span> *p = arr[<span class="num">0</span>];   <span class="cmt">// p = &amp;arr[0][0] = 1의 주소</span>
+<span class="ln">7</span>printf(<span class="str">"%d"</span>, *(p+<span class="num">6</span>) + *(p+<span class="num">2</span>));  <span class="cmt">// ?</span></pre></div>
+    </div>
+    <div class="trace-wrap">
+      <table class="trace-table">
+        <tr><th>표현식</th><th>오프셋</th><th>행/열</th><th>값</th></tr>
+        <tr><td>*(p+0)</td><td>0</td><td>arr[0][0]</td><td>1</td></tr>
+        <tr><td>*(p+2)</td><td>2</td><td>arr[0][2]</td><td class="active">3</td></tr>
+        <tr><td>*(p+4)</td><td>4</td><td>arr[1][0]</td><td>5</td></tr>
+        <tr><td>*(p+6)</td><td>6</td><td>arr[1][2]</td><td class="active">7</td></tr>
+        <tr><td colspan="3"><strong>*(p+6) + *(p+2)</strong></td><td class="output">7 + 3 = 10</td></tr>
+      </table>
+    </div>
+    <div class="info">💡 <strong>오프셋 계산법</strong>: p = arr[0][0]부터 시작. 열 수(4)를 기준으로 행을 건너뜀.<br>arr[i][j] = *(p + i×4 + j)</div>
+  </div>
+
+  <!-- ③ 구조체 포인터 -->
+  <div class="sec-title" id="struct"><span class="sec-num">03</span> 구조체 포인터</div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>표현</th><th>의미</th><th>동치</th></tr>
+      <tr><td><code>s.member</code></td><td>구조체 변수로 멤버 접근</td><td>—</td></tr>
+      <tr><td><code>ptr-&gt;member</code></td><td>포인터로 멤버 접근 (화살표)</td><td><code>(*ptr).member</code></td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>구조체 포인터 추적 예제</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="kw">struct</span> Person {
+<span class="ln">3</span>    <span class="tp">char</span> name[<span class="num">10</span>];
+<span class="ln">4</span>    <span class="tp">int</span>  age;
+<span class="ln">5</span>};
+<span class="ln">6</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">7</span>    <span class="kw">struct</span> Person p = {<span class="str">"Kim"</span>, <span class="num">25</span>};
+<span class="ln">8</span>    <span class="kw">struct</span> Person *ptr = &amp;p;
+<span class="ln">9</span>    ptr-&gt;age += <span class="num">5</span>;       <span class="cmt">// p.age = 30</span>
+<span class="ln">10</span>   printf(<span class="str">"%d"</span>, ptr-&gt;age * <span class="num">20</span> + <span class="num">1</span>); <span class="cmt">// ?</span>
+<span class="ln">11</span>   <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">12</span>}</pre></div>
+    </div>
+    <div class="trace-wrap">
+      <table class="trace-table">
+        <tr><th>라인</th><th>p.name</th><th>p.age</th><th>ptr</th><th>출력</th></tr>
+        <tr><td>7</td><td>"Kim"</td><td class="changed">25</td><td>—</td><td></td></tr>
+        <tr><td>8</td><td>"Kim"</td><td>25</td><td class="changed">&amp;p</td><td></td></tr>
+        <tr><td>9</td><td>"Kim"</td><td class="changed">30</td><td>&amp;p</td><td></td></tr>
+        <tr><td>10</td><td>"Kim"</td><td>30</td><td>&amp;p</td><td class="output">30×20+1 = 601</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ④ 재귀함수 -->
+  <div class="sec-title" id="recursive"><span class="sec-num">04</span> 재귀함수 (Recursion)</div>
+
+  <div class="warn">⚠️ 재귀 추적의 핵심: <strong>호출 스택</strong>을 직접 쌓아보기. 각 호출이 반환하는 값을 바깥 호출에 대입하며 역으로 계산.</div>
+
+  <div class="concept">
+    <h4>팩토리얼 재귀 — f(5) 추적</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln">1</span><span class="tp">int</span> <span class="fn">f</span>(<span class="tp">int</span> n) {
+<span class="ln">2</span>    <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> <span class="num">1</span>;   <span class="cmt">// 기저 조건</span>
+<span class="ln">3</span>    <span class="kw">return</span> n * <span class="fn">f</span>(n - <span class="num">1</span>);
+<span class="ln">4</span>}</pre></div>
+    </div>
+    <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.8rem;">
+      <div>
+        <div style="font-size:0.78rem; color:var(--gray); margin-bottom:0.4rem; font-weight:700;">▼ 호출 스택 (내려가기)</div>
+        <div class="call-stack">
+          <div class="call-frame"><span>f(5)</span><span class="call-arrow">→ 5 × f(4)</span></div>
+          <div class="call-frame"><span>f(4)</span><span class="call-arrow">→ 4 × f(3)</span></div>
+          <div class="call-frame"><span>f(3)</span><span class="call-arrow">→ 3 × f(2)</span></div>
+          <div class="call-frame"><span>f(2)</span><span class="call-arrow">→ 2 × f(1)</span></div>
+          <div class="call-frame base"><span>f(1)</span><span class="call-arrow">→ return 1</span></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:0.78rem; color:var(--gray); margin-bottom:0.4rem; font-weight:700;">▲ 반환 (올라오기)</div>
+        <div class="call-stack">
+          <div class="call-frame ret"><span>f(5)</span><span class="call-arrow">= 5 × 24 = <strong>120</strong></span></div>
+          <div class="call-frame ret"><span>f(4)</span><span class="call-arrow">= 4 × 6 = 24</span></div>
+          <div class="call-frame ret"><span>f(3)</span><span class="call-arrow">= 3 × 2 = 6</span></div>
+          <div class="call-frame ret"><span>f(2)</span><span class="call-arrow">= 2 × 1 = 2</span></div>
+          <div class="call-frame base"><span>f(1)</span><span class="call-arrow">= 1</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="tip" style="margin-top:0.8rem;">✅ f(7) = 7! = 7×6×5×4×3×2×1 = <strong>5040</strong> — 2023 3회 Q8 기출 정답</div>
+  </div>
+
+  <!-- ⑤ static 변수 -->
+  <div class="sec-title" id="static"><span class="sec-num">05</span> static 변수</div>
+
+  <div class="info">static 변수는 함수가 끝나도 <strong>값이 유지</strong>됨. 초기화는 프로그램 시작 시 단 한 번만 실행. 전역 변수처럼 메모리에 남아있지만 접근 범위는 함수 내부로 제한.</div>
+
+  <div class="concept">
+    <h4>static 변수 누적 추적</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">add</span>() {
+<span class="ln">3</span>    <span class="kw">static int</span> s = <span class="num">0</span>;  <span class="cmt">// 딱 한 번만 초기화</span>
+<span class="ln">4</span>    s += <span class="num">5</span>;
+<span class="ln">5</span>    <span class="kw">return</span> s;
+<span class="ln">6</span>}
+<span class="ln">7</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">8</span>    <span class="fn">add</span>(); <span class="fn">add</span>(); <span class="fn">add</span>();
+<span class="ln">9</span>    printf(<span class="str">"%d"</span>, <span class="fn">add</span>());   <span class="cmt">// ?</span>
+<span class="ln">10</span>   <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">11</span>}</pre></div>
+    </div>
+    <div class="trace-wrap">
+      <table class="trace-table">
+        <tr><th>호출 횟수</th><th>s (이전)</th><th>s += 5 후</th><th>return s</th></tr>
+        <tr><td>1번째</td><td>0</td><td class="changed">5</td><td>5</td></tr>
+        <tr><td>2번째</td><td>5</td><td class="changed">10</td><td>10</td></tr>
+        <tr><td>3번째</td><td>10</td><td class="changed">15</td><td>15</td></tr>
+        <tr><td>4번째 (printf)</td><td>15</td><td class="changed">20</td><td class="output">20</td></tr>
+      </table>
+    </div>
+    <div class="warn">⚠️ 일반 지역변수 vs static: 일반이면 매 호출마다 s=0으로 초기화 → 항상 5 출력. static이면 이전 값 유지 → 5, 10, 15, 20 누적.</div>
+  </div>
+
+  <!-- ⑥ 비트 연산 -->
+  <div class="sec-title" id="bit"><span class="sec-num">06</span> 비트 연산</div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>연산자</th><th>이름</th><th>규칙</th><th>예시 (a=12, b=10)</th></tr>
+      <tr><td><code>&amp;</code></td><td>AND</td><td>둘 다 1이어야 1</td><td>12&amp;10 = 1100&amp;1010 = 1000 = <strong>8</strong></td></tr>
+      <tr><td><code>|</code></td><td>OR</td><td>하나라도 1이면 1</td><td>12|10 = 1100|1010 = 1110 = <strong>14</strong></td></tr>
+      <tr><td><code>^</code></td><td>XOR</td><td>다르면 1, 같으면 0</td><td>12^10 = 1100^1010 = 0110 = <strong>6</strong></td></tr>
+      <tr><td><code>~</code></td><td>NOT</td><td>비트 반전</td><td>~12 = <strong>-13</strong> (2의보수)</td></tr>
+      <tr><td><code>&lt;&lt; n</code></td><td>Left Shift</td><td>×2ⁿ</td><td>12&lt;&lt;1 = 11000 = <strong>24</strong></td></tr>
+      <tr><td><code>&gt;&gt; n</code></td><td>Right Shift</td><td>÷2ⁿ</td><td>12&gt;&gt;1 = 0110 = <strong>6</strong></td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>비트 연산 시각화 — 9 &lt;&lt; 4 | 7 = 151</h4>
+    <div style="margin: 0.6rem 0;">
+      <div class="bit-op-label">9 = 00001001₂</div>
+      <div class="bit-grid">
+        <div class="bit-cell off">0</div><div class="bit-cell off">0</div><div class="bit-cell off">0</div>
+        <div class="bit-cell off">0</div><div class="bit-cell off">1</div><div class="bit-cell off">0</div>
+        <div class="bit-cell off">0</div><div class="bit-cell on">1</div>
+      </div>
+      <div class="bit-op-label">9 &lt;&lt; 4 = 10010000₂ = 144</div>
+      <div class="bit-grid">
+        <div class="bit-cell on">1</div><div class="bit-cell off">0</div><div class="bit-cell off">0</div>
+        <div class="bit-cell on">1</div><div class="bit-cell off">0</div><div class="bit-cell off">0</div>
+        <div class="bit-cell off">0</div><div class="bit-cell off">0</div>
+      </div>
+      <div class="bit-op-label">7 = 00000111₂</div>
+      <div class="bit-grid">
+        <div class="bit-cell off">0</div><div class="bit-cell off">0</div><div class="bit-cell off">0</div>
+        <div class="bit-cell off">0</div><div class="bit-cell on">1</div><div class="bit-cell on">1</div>
+        <div class="bit-cell on">1</div><div class="bit-cell on">1</div>
+      </div>
+      <div class="bit-op-label">144 | 7 = 10010111₂ = <strong>151</strong></div>
+      <div class="bit-grid">
+        <div class="bit-cell on">1</div><div class="bit-cell off">0</div><div class="bit-cell off">0</div>
+        <div class="bit-cell on">1</div><div class="bit-cell on">1</div><div class="bit-cell on">1</div>
+        <div class="bit-cell on">1</div><div class="bit-cell on">1</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑦ 문자열 포인터 -->
+  <div class="sec-title" id="string"><span class="sec-num">07</span> 문자열 포인터</div>
+
+  <div class="info">문자열 리터럴은 메모리에 연속 저장됨. <code>char *p = "KOREA"</code> 에서 p는 'K'의 주소.<br>
+  <code>%s</code>: p부터 '\0'까지 출력 &nbsp;|&nbsp; <code>%c</code>: 단일 문자 출력</div>
+
+  <div class="concept">
+    <h4>문자열 포인터 추적 — 2023 3회 Q10 유사</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="tp">char</span> *p = <span class="str">"KOREA"</span>;   <span class="cmt">// K O R E A \0</span>
+<span class="ln">4</span>                          <span class="cmt">// 0 1 2 3 4  5</span>
+<span class="ln">5</span>    printf(<span class="str">"%s\n"</span>, p);     <span class="cmt">// p+0 부터 → KOREA</span>
+<span class="ln">6</span>    printf(<span class="str">"%s\n"</span>, p+<span class="num">1</span>);   <span class="cmt">// p+1 부터 → OREA</span>
+<span class="ln">7</span>    printf(<span class="str">"%c\n"</span>, *p);    <span class="cmt">// p[0] → K</span>
+<span class="ln">8</span>    printf(<span class="str">"%c\n"</span>, *(p+<span class="num">3</span>)); <span class="cmt">// p[3] → E</span>
+<span class="ln">9</span>    printf(<span class="str">"%c\n"</span>, *(p+<span class="num">1</span>)); <span class="cmt">// p[1] → O</span>
+<span class="ln">10</span>   <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">11</span>}</pre></div>
+    </div>
+    <div class="trace-wrap">
+      <table class="trace-table">
+        <tr><th>라인</th><th>포맷</th><th>시작 위치</th><th>출력</th></tr>
+        <tr><td>5</td><td>%s</td><td>p+0 = 'K'</td><td class="output">KOREA</td></tr>
+        <tr><td>6</td><td>%s</td><td>p+1 = 'O'</td><td class="output">OREA</td></tr>
+        <tr><td>7</td><td>%c</td><td>*p = p[0]</td><td class="output">K</td></tr>
+        <tr><td>8</td><td>%c</td><td>*(p+3) = p[3]</td><td class="output">E</td></tr>
+        <tr><td>9</td><td>%c</td><td>*(p+1) = p[1]</td><td class="output">O</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ⑧ 기출 문제 -->
+  <div class="sec-title" id="quiz"><span class="sec-num">08</span> 기출 문제</div>
+
+  <div class="quiz-wrap">
+
+    <!-- Q1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2023 3회 Q8</span>&nbsp;
+          다음 C코드의 출력 결과를 쓰시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="str">#include &lt;stdio.h&gt;</span>
+<span class="tp">int</span> <span class="fn">f</span>(<span class="tp">int</span> n) {
+    <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> <span class="num">1</span>;
+    <span class="kw">return</span> n * <span class="fn">f</span>(n - <span class="num">1</span>);
+}
+<span class="tp">int</span> <span class="fn">main</span>() {
+    printf(<span class="str">"%d"</span>, <span class="fn">f</span>(<span class="num">7</span>));
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">5040</div>
+        <div class="ans-explain">
+          f(7) = 7 × f(6) = 7 × 6 × f(5) = ... = 7! = 7×6×5×4×3×2×1 = <strong>5040</strong><br>
+          f(1) = 1 (기저 조건) → 역으로 곱해 올라옴.
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2024 3회 Q7</span>&nbsp;
+          다음 C코드의 출력 결과를 쓰시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="str">#include &lt;stdio.h&gt;</span>
+<span class="tp">int</span> <span class="fn">add</span>() {
+    <span class="kw">static int</span> s = <span class="num">0</span>;
+    s += <span class="num">5</span>;
+    <span class="kw">return</span> s;
+}
+<span class="tp">int</span> <span class="fn">main</span>() {
+    <span class="fn">add</span>(); <span class="fn">add</span>(); <span class="fn">add</span>();
+    printf(<span class="str">"%d"</span>, <span class="fn">add</span>());
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">20</div>
+        <div class="ans-explain">
+          static s는 호출 간 값 유지:<br>
+          1번째: s=5, 2번째: s=10, 3번째: s=15, 4번째(printf): s=<strong>20</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2024 2회 Q18</span>&nbsp;
+          다음 C코드의 출력 결과를 쓰시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="str">#include &lt;stdio.h&gt;</span>
+<span class="tp">void</span> <span class="fn">swap</span>(<span class="tp">int</span> a, <span class="tp">int</span> b) {
+    <span class="tp">int</span> temp = a;
+    a = b;
+    b = temp;
+}
+<span class="tp">int</span> <span class="fn">main</span>() {
+    <span class="tp">int</span> a = <span class="num">5</span>, b = -<span class="num">13</span>;
+    <span class="fn">swap</span>(a, b);
+    <span class="kw">switch</span> (a) {
+        <span class="kw">case</span>  <span class="num">5</span>: printf(<span class="str">"%d"</span>, b); <span class="kw">break</span>;
+        <span class="kw">case</span> -<span class="num">13</span>: printf(<span class="str">"%d"</span>, a); <span class="kw">break</span>;
+    }
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">-13</div>
+        <div class="ans-explain">
+          <strong>Call by Value</strong>: swap()에 a,b의 복사본이 전달됨. 함수 내부에서 temp를 이용한 교환은 지역 복사본에만 영향 → main의 a, b는 그대로 5, -13.<br>
+          switch(a=5): case 5 → printf(b) → <strong>-13</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2024 1회 Q2 유사</span>&nbsp;
+          다음 C코드의 출력 결과를 쓰시오. (삼항연산자 + 비트 연산)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="str">#include &lt;stdio.h&gt;</span>
+<span class="tp">int</span> <span class="fn">main</span>() {
+    <span class="tp">int</span> a = <span class="num">9</span>, b = <span class="num">4</span>;
+    <span class="tp">int</span> c = (a &gt; b) ? a : b;  <span class="cmt">// 삼항</span>
+    c = (c &lt;&lt; b) | <span class="num">7</span>;         <span class="cmt">// 비트</span>
+    printf(<span class="str">"%d"</span>, c);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">151</div>
+        <div class="ans-explain">
+          a &gt; b (9 &gt; 4) → true → c = a = 9<br>
+          c &lt;&lt; 4 = 9 × 16 = 144 (10010000₂)<br>
+          144 | 7 = 10010000 | 00000111 = 10010111₂ = <strong>151</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2024 3회 Q16 유사</span>&nbsp;
+          다음 C코드의 출력 결과를 쓰시오. (이중 포인터)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="str">#include &lt;stdio.h&gt;</span>
+<span class="tp">int</span> <span class="fn">main</span>() {
+    <span class="tp">int</span> x = <span class="num">4</span>;
+    <span class="tp">int</span>  *p  = &amp;x;   <span class="cmt">// p  → x</span>
+    <span class="tp">int</span> **pp = &amp;p;   <span class="cmt">// pp → p → x</span>
+    **pp = **pp / x;  <span class="cmt">// x = x / x = 4/4 = 1</span>
+    printf(<span class="str">"%d"</span>, x);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">1</div>
+        <div class="ans-explain">
+          **pp는 pp → p → x, 즉 x 자체를 참조.<br>
+          **pp = **pp / x → x = 4 / 4 = 1<br>
+          printf(x) → <strong>1</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2021 3회 Q17 유사</span>&nbsp;
+          다음 C코드의 출력 결과를 쓰시오. (구조체 포인터)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="str">#include &lt;stdio.h&gt;</span>
+<span class="kw">struct</span> Person {
+    <span class="tp">char</span> name[<span class="num">10</span>];
+    <span class="tp">int</span>  age;
+};
+<span class="tp">int</span> <span class="fn">main</span>() {
+    <span class="kw">struct</span> Person p = {<span class="str">"Kim"</span>, <span class="num">25</span>};
+    <span class="kw">struct</span> Person *ptr = &amp;p;
+    printf(<span class="str">"%d"</span>, ptr-&gt;age * <span class="num">20</span> + <span class="num">1</span>);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">501</div>
+        <div class="ans-explain">
+          ptr-&gt;age = p.age = 25<br>
+          25 × 20 + 1 = 500 + 1 = <strong>501</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2023 3회 Q4 유사</span>&nbsp;
+          다음 C코드의 출력 결과를 쓰시오. (완전수 합)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="str">#include &lt;stdio.h&gt;</span>
+<span class="tp">int</span> <span class="fn">main</span>() {
+    <span class="tp">int</span> sum = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> n = <span class="num">1</span>; n &lt;= <span class="num">100</span>; n++) {
+        <span class="tp">int</span> dsum = <span class="num">0</span>;
+        <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">1</span>; i &lt; n; i++)
+            <span class="kw">if</span> (n % i == <span class="num">0</span>) dsum += i;
+        <span class="kw">if</span> (dsum == n) sum += n;  <span class="cmt">// 완전수</span>
+    }
+    printf(<span class="str">"%d"</span>, sum);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">34</div>
+        <div class="ans-explain">
+          완전수: 자기 자신을 제외한 약수의 합 = 자기 자신인 수<br>
+          6 = 1+2+3 ✅ &nbsp;&nbsp; 28 = 1+2+4+7+14 ✅<br>
+          1~100 사이 완전수: 6, 28 → 합 = <strong>34</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">기출 유사</span>&nbsp;
+          다음 C코드의 출력 결과를 쓰시오. (포인터 + 비트 연산 혼합)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="str">#include &lt;stdio.h&gt;</span>
+<span class="tp">int</span> <span class="fn">main</span>() {
+    <span class="tp">int</span> a = <span class="num">12</span>, b = <span class="num">10</span>;
+    <span class="tp">int</span> *p = &amp;a;
+    printf(<span class="str">"%d\n"</span>, *p &amp; b);    <span class="cmt">// AND</span>
+    printf(<span class="str">"%d\n"</span>, *p | b);    <span class="cmt">// OR</span>
+    printf(<span class="str">"%d\n"</span>, *p ^ b);    <span class="cmt">// XOR</span>
+    printf(<span class="str">"%d\n"</span>, *p &gt;&gt; <span class="num">1</span>);  <span class="cmt">// Right Shift</span>
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">8<br>14<br>6<br>6</div>
+        <div class="ans-explain">
+          *p = a = 12 = 1100₂, b = 10 = 1010₂<br>
+          12 &amp; 10 = 1100 &amp; 1010 = 1000 = <strong>8</strong><br>
+          12 | 10 = 1100 | 1010 = 1110 = <strong>14</strong><br>
+          12 ^ 10 = 1100 ^ 1010 = 0110 = <strong>6</strong><br>
+          12 &gt;&gt; 1 = 0110 = <strong>6</strong> (÷2)
+        </div>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">개념 확인</span>&nbsp;
+          Call by Value와 Call by Reference의 차이를 설명하고, C에서 참조 전달을 구현하는 방법을 쓰시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">포인터를 매개변수로 전달</div>
+        <div class="ans-explain">
+          <strong>Call by Value</strong>: 값의 복사본 전달 → 함수 내 변경이 원본에 영향 없음<br>
+          <strong>Call by Reference</strong>: C에는 없음 → 포인터로 구현: <code>void swap(int *a, int *b)</code><br>
+          포인터를 받아 <code>*a</code>, <code>*b</code>로 역참조하면 원본 수정 가능.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+</div><!-- /container -->
+
+<footer style="text-align:center; padding:1.5rem; color:var(--gray); font-size:0.78rem; border-top:1px solid var(--border);">
+  Level-2 · 01 C언어 코드 추적 · <a href="index.html" style="color:var(--accent); text-decoration:none;">← 목록으로</a>
+</footer>
+
+<script>
+function toggle(el) {
+  el.closest('.quiz-card').classList.toggle('open');
+}
+</script>
+</body>
+</html>

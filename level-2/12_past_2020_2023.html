@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>12 기출 2020~2023 — Level-2</title>
+<style>
+:root {
+  --dark: #0f172a; --gray: #64748b; --light: #f8fafc; --border: #e2e8f0;
+  --accent: #d97706; --accent2: #fbbf24;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.7; }
+
+.hero { background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #451a03 100%); color: white; padding: 2.5rem 1.5rem 2rem; }
+.hero-inner { max-width: 960px; margin: 0 auto; }
+.hero-back { font-size: 0.78rem; color: #94a3b8; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; margin-bottom: 1rem; }
+.hero-back:hover { color: white; }
+.hero h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.3rem; }
+.hero p { color: #fde68a; font-size: 0.88rem; }
+.hero-meta { display: flex; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
+.htag { background: rgba(255,255,255,0.12); padding: 0.22rem 0.65rem; border-radius: 20px; font-size: 0.75rem; }
+
+.container { max-width: 960px; margin: 0 auto; padding: 1.5rem 1.5rem 4rem; }
+
+/* repeat pattern summary */
+.pattern-box { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.4rem; margin-bottom: 1.2rem; }
+.pattern-title { font-size: 0.8rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.7rem; display: flex; align-items: center; gap: 0.4rem; }
+.pattern-title span { color: #dc2626; }
+.pattern-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.pt-chip { font-size: 0.75rem; padding: 0.22rem 0.65rem; border-radius: 20px; display: flex; align-items: center; gap: 0.3rem; background: #fff7ed; border: 1px solid #fed7aa; color: #7c2d12; }
+.pt-chip .stars { color: #dc2626; font-size: 0.65rem; }
+
+/* stats */
+.stats-bar { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+.stat-item { display: flex; flex-direction: column; align-items: center; gap: 0.1rem; }
+.stat-num { font-size: 1.5rem; font-weight: 800; line-height: 1; }
+.stat-num.total { color: var(--dark); }
+.stat-num.done  { color: #16a34a; }
+.stat-num.wrong { color: #dc2626; }
+.stat-lbl { font-size: 0.68rem; color: var(--gray); }
+.progress-wrap { flex: 1; min-width: 120px; }
+.progress-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(to right, #d97706, #fbbf24); border-radius: 4px; transition: width 0.4s; }
+.progress-lbl { font-size: 0.72rem; color: var(--gray); margin-top: 0.25rem; text-align: right; }
+
+/* filter */
+.filter-wrap { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 1rem; align-items: center; }
+.filter-btn { border: 1px solid var(--border); background: white; border-radius: 20px; padding: 0.3rem 0.75rem; font-size: 0.78rem; cursor: pointer; transition: all 0.15s; white-space: nowrap; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+.filter-btn.active { background: var(--accent); color: white; border-color: var(--accent); font-weight: 700; }
+.filter-btn.star-filter { border-color: #fca5a5; color: #dc2626; font-weight: 700; }
+.filter-btn.star-filter.active { background: #dc2626; border-color: #dc2626; color: white; }
+.toggle-wrong { margin-left: auto; border: 1px solid #fca5a5; background: white; color: #dc2626; border-radius: 20px; padding: 0.3rem 0.85rem; font-size: 0.78rem; cursor: pointer; touch-action: manipulation; }
+.toggle-wrong.active { background: #dc2626; color: white; }
+
+/* question cards */
+.q-list { display: flex; flex-direction: column; gap: 0.8rem; }
+.q-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: box-shadow 0.15s; }
+.q-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.q-card.is-done  { border-left: 3px solid #16a34a; }
+.q-card.is-wrong { border-left: 3px solid #dc2626; }
+.q-card.is-done.is-wrong { border-left: 3px solid #f59e0b; }
+.q-head { padding: 0.85rem 1.1rem; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.q-head:active { background: #fafafa; }
+.q-badges { display: flex; gap: 0.35rem; align-items: center; margin-bottom: 0.45rem; flex-wrap: wrap; }
+.badge { font-size: 0.65rem; font-weight: 700; padding: 0.12rem 0.48rem; border-radius: 20px; }
+/* session badges */
+.badge.s20 { background: #dbeafe; color: #1e40af; }
+.badge.s21 { background: #dcfce7; color: #14532d; }
+.badge.s22 { background: #fef9c3; color: #713f12; }
+.badge.s23 { background: #fce7f3; color: #9d174d; }
+/* category */
+.badge.cat-c    { background: #dbeafe; color: #1e3a8a; }
+.badge.cat-java { background: #dcfce7; color: #14532d; }
+.badge.cat-py   { background: #fef9c3; color: #713f12; }
+.badge.cat-sql  { background: #f0fdf4; color: #166534; border:1px solid #bbf7d0; }
+.badge.cat-db   { background: #ccfbf1; color: #0f4c45; }
+.badge.cat-sw   { background: #f3e8ff; color: #581c87; }
+.badge.cat-sec  { background: #fee2e2; color: #7f1d1d; }
+.badge.cat-os   { background: #fff7ed; color: #7c2d12; border:1px solid #fed7aa; }
+.badge.cat-net  { background: #f0f9ff; color: #075985; border:1px solid #bae6fd; }
+/* star badges */
+.star-badge { font-size: 0.64rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 20px; flex-shrink: 0; }
+.star-badge.s3 { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+.star-badge.s2 { background: #fff7ed; color: #d97706; border: 1px solid #fed7aa; }
+.star-badge.s1 { background: #f8fafc; color: var(--gray); border: 1px solid var(--border); }
+.q-num { font-size: 0.65rem; color: var(--gray); margin-left: auto; }
+.q-text { font-size: 0.86rem; font-weight: 600; display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+.q-chevron { font-size: 0.72rem; color: var(--gray); flex-shrink: 0; margin-top: 0.15rem; transition: transform 0.2s; }
+.q-card.open .q-chevron { transform: rotate(180deg); }
+
+.code-q { background: #0f172a; color: #e2e8f0; border-radius: 8px; padding: 0.8rem 1rem; font-family: 'Courier New', monospace; font-size: 0.76rem; line-height: 1.6; margin: 0.6rem 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+.q-ans { display: none; padding: 0 1.1rem 1rem; border-top: 1px solid var(--border); }
+.q-card.open .q-ans { display: block; }
+.ans-row { display: flex; align-items: center; gap: 0.8rem; margin: 0.8rem 0 0.4rem; flex-wrap: wrap; }
+.ans-label { font-size: 0.68rem; font-weight: 700; color: var(--accent); text-transform: uppercase; flex-shrink: 0; }
+.ans-val { font-family: 'Courier New', monospace; font-size: 0.92rem; font-weight: 700; color: var(--dark); background: #fffbeb; padding: 0.15rem 0.6rem; border-radius: 6px; }
+.ans-explain { font-size: 0.8rem; color: #374151; margin-top: 0.4rem; line-height: 1.65; }
+.q-actions { display: flex; gap: 0.5rem; margin-top: 0.8rem; }
+.btn-done  { flex:1; padding:0.4rem; border:1px solid #bbf7d0; background:#f0fdf4; color:#15803d; border-radius:8px; font-size:0.76rem; font-weight:700; cursor:pointer; touch-action:manipulation; }
+.btn-wrong { flex:1; padding:0.4rem; border:1px solid #fecaca; background:#fff1f2; color:#dc2626; border-radius:8px; font-size:0.76rem; font-weight:700; cursor:pointer; touch-action:manipulation; }
+.btn-done.active  { background:#15803d; color:white; border-color:#15803d; }
+.btn-wrong.active { background:#dc2626; color:white; border-color:#dc2626; }
+
+.empty-msg { text-align:center; padding:3rem; color:var(--gray); font-size:0.9rem; }
+.note-box { background:#fffbeb; border:1px solid #fde68a; border-radius:10px; padding:0.8rem 1.1rem; font-size:0.78rem; color:#92400e; margin-bottom:1.2rem; }
+
+@media (max-width:640px) {
+  .hero { padding:1.8rem 1rem 1.5rem; }
+  .hero h1 { font-size:1.25rem; }
+  .container { padding:1.2rem 0.9rem 3rem; }
+  .stats-bar { padding:0.85rem 1rem; gap:1rem; }
+  .stat-num { font-size:1.2rem; }
+  .q-head { padding:0.75rem 0.9rem; }
+  .q-text { font-size:0.81rem; }
+  .q-ans { padding:0 0.9rem 0.9rem; }
+  .code-q { font-size:0.69rem; padding:0.65rem 0.8rem; }
+  .ans-val { font-size:0.84rem; }
+  .ans-explain { font-size:0.76rem; }
+  .filter-btn { font-size:0.72rem; padding:0.25rem 0.6rem; }
+  .pt-chip { font-size:0.7rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <a class="hero-back" href="index.html">← Level-2 목록</a>
+    <h1>⭐ 기출 2020~2023</h1>
+    <p>반복 출제 패턴 ★ 강조 · 4년간 핵심 유형 정리</p>
+    <div class="hero-meta">
+      <span class="htag">출제 빈도 ★★★★★</span>
+      <span class="htag">12번</span>
+      <span class="htag">★★★ 필수 17문제 포함</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="pattern-box">
+    <div class="pattern-title"><span>★★★</span> 매년 반복 출제 핵심 패턴</div>
+    <div class="pattern-list">
+      <span class="pt-chip"><span class="stars">★★★</span> C언어 static 변수</span>
+      <span class="pt-chip"><span class="stars">★★★</span> C언어 재귀함수</span>
+      <span class="pt-chip"><span class="stars">★★★</span> C언어 포인터 연산</span>
+      <span class="pt-chip"><span class="stars">★★★</span> Java 상속·오버라이딩</span>
+      <span class="pt-chip"><span class="stars">★★★</span> Java try-catch-finally</span>
+      <span class="pt-chip"><span class="stars">★★★</span> Python 슬라이싱·컴프리헨션</span>
+      <span class="pt-chip"><span class="stars">★★★</span> Python map·filter·lambda</span>
+      <span class="pt-chip"><span class="stars">★★★</span> SQL GROUP BY·HAVING</span>
+      <span class="pt-chip"><span class="stars">★★★</span> SQL 서브쿼리</span>
+      <span class="pt-chip"><span class="stars">★★★</span> DB 정규화 판별</span>
+      <span class="pt-chip"><span class="stars">★★★</span> 전자서명 키 사용</span>
+    </div>
+  </div>
+
+  <div class="note-box">💡 ★★★ = 매년 유사 유형 출제 필수 / ★★ = 2회 이상 / ★ = 1회. 실제 기출 유형 기반 연습 문제입니다.</div>
+
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num total" id="s-total">60</div><div class="stat-lbl">전체</div></div>
+    <div class="stat-item"><div class="stat-num done"  id="s-done">0</div><div class="stat-lbl">완료</div></div>
+    <div class="stat-item"><div class="stat-num wrong" id="s-wrong">0</div><div class="stat-lbl">오답</div></div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="progress-lbl" id="progress-lbl">0 / 60 완료</div>
+    </div>
+  </div>
+
+  <div class="filter-wrap">
+    <button class="filter-btn active" onclick="setFilter('all')">전체</button>
+    <button class="filter-btn star-filter" onclick="setFilter('must')">★★★ 필수</button>
+    <button class="filter-btn" onclick="setFilter('c')">C언어</button>
+    <button class="filter-btn" onclick="setFilter('java')">Java</button>
+    <button class="filter-btn" onclick="setFilter('py')">Python</button>
+    <button class="filter-btn" onclick="setFilter('sql')">SQL</button>
+    <button class="filter-btn" onclick="setFilter('db')">DB이론</button>
+    <button class="filter-btn" onclick="setFilter('sw')">SW공학</button>
+    <button class="filter-btn" onclick="setFilter('sec')">보안</button>
+    <button class="filter-btn" onclick="setFilter('os')">OS·알고리즘</button>
+    <button class="filter-btn" onclick="setFilter('net')">네트워크</button>
+    <button class="toggle-wrong" id="wrong-toggle" onclick="toggleWrong()">오답만 보기</button>
+  </div>
+
+  <div class="q-list" id="q-list"></div>
+</div>
+
+<footer style="text-align:center; padding:1.5rem; color:var(--gray); font-size:0.78rem; border-top:1px solid var(--border);">
+  Level-2 · 12 기출 2020~2023 · <a href="index.html" style="color:var(--accent); text-decoration:none;">← 목록으로</a>
+</footer>
+
+<script>
+const QS = [
+/* ===== 2020년 1회 ===== */
+{id:1,s:'2020-1',sL:'2020년 1회',cat:'c',cL:'C언어',st:3,
+q:`다음 C 코드의 출력 결과를 쓰시오.
+<pre class="code-q">#include &lt;stdio.h&gt;
+int main() {
+    int arr[] = {10, 20, 30, 40, 50};
+    int *p = arr;
+    printf("%d %d\\n", *(p+3), *p);
+    return 0;
+}</pre>`,
+a:'40 10',
+ex:'p=arr이므로 *p=arr[0]=10, *(p+3)=arr[3]=40. 포인터 덧셈은 int 크기(4바이트) 단위로 이동.'},
+
+{id:2,s:'2020-1',sL:'2020년 1회',cat:'java',cL:'Java',st:3,
+q:`다음 Java 코드의 출력 결과를 쓰시오.
+<pre class="code-q">class Shape {
+    String color = "흰색";
+    void draw() { System.out.println("도형"); }
+}
+class Circle extends Shape {
+    String color = "파란색";
+    void draw() { System.out.println("원"); }
+}
+public class Main {
+    public static void main(String[] args) {
+        Shape s = new Circle();
+        s.draw();
+        System.out.println(s.color);
+    }
+}</pre>`,
+a:'원\n흰색',
+ex:'메서드: 동적 바인딩 → 실제 타입 Circle의 draw() 실행 → "원".\n필드: 정적 바인딩 → 참조 타입 Shape의 color → "흰색".'},
+
+{id:3,s:'2020-1',sL:'2020년 1회',cat:'py',cL:'Python',st:3,
+q:`다음 Python 코드의 출력 결과를 쓰시오.
+<pre class="code-q">lst = [1, 2, 3, 4, 5]
+print(lst[::-1])
+print(lst[1:4])</pre>`,
+a:'[5, 4, 3, 2, 1]\n[2, 3, 4]',
+ex:'[::-1]: 전체를 역순으로. [1:4]: 인덱스 1부터 3까지(4 미포함) → lst[1]=2, lst[2]=3, lst[3]=4.'},
+
+{id:4,s:'2020-1',sL:'2020년 1회',cat:'sql',cL:'SQL',st:3,
+q:`다음 테이블에서 SQL 결과를 쓰시오.<br>
+<b>SCORE</b>: (학번:101,과목:DB,점수:85), (102,DB,92), (101,OS,78), (103,DB,90), (102,OS,88)
+<pre class="code-q">SELECT 과목, COUNT(*) cnt, AVG(점수) avg_score
+FROM score
+GROUP BY 과목
+HAVING COUNT(*) &gt;= 2
+ORDER BY avg_score DESC;</pre>`,
+a:'OS | 2 | 83.0\nDB | 3 | 89.0',
+ex:'DB: 3건 평균=(85+92+90)/3=89, OS: 2건 평균=(78+88)/2=83.\nHAVING COUNT(*)>=2 → 모두 통과. ORDER BY avg_score DESC → DB(89)가 먼저.\n→ DB 3 89 / OS 2 83 순'},
+
+{id:5,s:'2020-1',sL:'2020년 1회',cat:'db',cL:'DB이론',st:2,
+q:`다음 조건에서 해당하는 정규형을 쓰시오.<br>
+"모든 속성값이 원자값(더 이상 분해할 수 없는 단일 값)이어야 한다. 다중값이나 반복 그룹이 허용되지 않는다."`,
+a:'1NF (제1정규형)',
+ex:'1NF 조건: 원자값. 예: 취미 컬럼에 {독서, 영화} 다중값이면 1NF 위반.\n1NF 만족 후 부분종속 제거→2NF, 이행종속 제거→3NF, 결정자=후보키→BCNF.'},
+
+/* ===== 2020년 2회 ===== */
+{id:6,s:'2020-2',sL:'2020년 2회',cat:'c',cL:'C언어',st:3,
+q:`다음 C 코드의 출력 결과를 쓰시오.
+<pre class="code-q">#include &lt;stdio.h&gt;
+int fact(int n) {
+    if (n &lt;= 1) return 1;
+    return n * fact(n - 1);
+}
+int main() {
+    printf("%d\\n", fact(4));
+    return 0;
+}</pre>`,
+a:'24',
+ex:'fact(4)=4×fact(3)=4×3×fact(2)=4×3×2×fact(1)=4×3×2×1=24.'},
+
+{id:7,s:'2020-2',sL:'2020년 2회',cat:'java',cL:'Java',st:3,
+q:`다음 Java 코드의 출력 결과를 쓰시오.
+<pre class="code-q">public class Main {
+    public static void main(String[] args) {
+        try {
+            System.out.print("A");
+            int result = 10 / 0;
+            System.out.print("B");
+        } catch (ArithmeticException e) {
+            System.out.print("C");
+        } finally {
+            System.out.print("D");
+        }
+        System.out.print("E");
+    }
+}</pre>`,
+a:'ACDE',
+ex:'A 출력 → 10/0 → ArithmeticException → B 건너뜀 → catch에서 C → finally에서 D → 정상 종료 후 E.'},
+
+{id:8,s:'2020-2',sL:'2020년 2회',cat:'py',cL:'Python',st:3,
+q:`다음 Python 코드의 출력 결과를 쓰시오.
+<pre class="code-q">lst = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+result = list(map(lambda x: x * 3, filter(lambda x: x % 2 == 0, lst)))
+print(result)</pre>`,
+a:'[6, 12, 18, 24, 30]',
+ex:'filter: 짝수만 → [2,4,6,8,10]. map: 각 요소×3 → [6,12,18,24,30]. 안쪽부터 실행.'},
+
+{id:9,s:'2020-2',sL:'2020년 2회',cat:'sql',cL:'SQL',st:2,
+q:`EMPLOYEE 테이블에서 급여가 모든 부서의 평균 급여보다 높은 직원을 조회하는 SQL을 작성하시오.`,
+a:'SELECT * FROM employee WHERE sal > (SELECT MAX(AVG(sal)) FROM employee GROUP BY dept);',
+ex:'또는: WHERE sal > ALL (SELECT AVG(sal) FROM employee GROUP BY dept).\nALL 서브쿼리: 서브쿼리 결과의 모든 값보다 커야 함.'},
+
+{id:10,s:'2020-2',sL:'2020년 2회',cat:'sw',cL:'SW공학',st:2,
+q:`소프트웨어 개발 방법론 중 나선형(Spiral) 모델의 4단계를 순서대로 쓰시오.`,
+a:'① 계획 수립 → ② 위험 분석 → ③ 개발 및 검증 → ④ 고객 평가',
+ex:'Boehm 제안. 핵심은 ② 위험 분석 (다른 모델과의 차별점). 대규모·고위험 프로젝트에 적합.'},
+
+/* ===== 2020년 3회 ===== */
+{id:11,s:'2020-3',sL:'2020년 3회',cat:'c',cL:'C언어',st:3,
+q:`다음 C 코드의 출력 결과를 쓰시오.
+<pre class="code-q">#include &lt;stdio.h&gt;
+void f() {
+    static int n = 0;
+    n++;
+    printf("%d ", n);
+}
+int main() {
+    f(); f(); f(); f();
+    return 0;
+}</pre>`,
+a:'1 2 3 4',
+ex:'static 변수 n은 함수 호출 사이에도 유지. 초기화(=0)는 최초 1회만. 매번 호출마다 누적 증가.'},
+
+{id:12,s:'2020-3',sL:'2020년 3회',cat:'py',cL:'Python',st:3,
+q:`다음 Python 코드의 출력 결과를 쓰시오.
+<pre class="code-q">data = [3, 1, 4, 1, 5, 9, 2, 6]
+result = [x for x in data if x &gt; 3]
+print(sorted(result))</pre>`,
+a:'[4, 5, 6, 9]',
+ex:'3 초과: 4,5,9,6 → sorted → [4,5,6,9].'},
+
+{id:13,s:'2020-3',sL:'2020년 3회',cat:'sec',cL:'보안',st:2,
+q:`다음 표의 빈칸 ①②③을 채우시오.<br>
+<b>대칭키 암호화</b>: 같은 키 사용, 빠름, 대표 알고리즘 (①)<br>
+<b>비대칭키 암호화</b>: 공개키+개인키, 느림, 대표 알고리즘 (②)<br>
+<b>해시 함수</b>: 단방향, 고정 출력, 대표 알고리즘 (③)`,
+a:'① AES (또는 SEED, DES)\n② RSA (또는 ECC)\n③ SHA-256 (또는 MD5, SHA-1)',
+ex:'대칭키: AES(128/192/256bit), SEED(국내표준,128bit), DES(56bit 취약).\n비대칭키: RSA(2048bit+), ECC.\n해시: SHA-256(권장), MD5/SHA-1(충돌 취약, 보안용 부적합).'},
+
+{id:14,s:'2020-3',sL:'2020년 3회',cat:'db',cL:'DB이론',st:2,
+q:`트랜잭션의 ACID 특성 중 <b>원자성(Atomicity)</b>을 설명하시오.`,
+a:'트랜잭션 내 연산은 모두 성공하거나 모두 실패해야 함 (중간 상태 없음)',
+ex:'예: 은행 이체 — 출금 성공 + 입금 실패 시 전체 취소. ROLLBACK으로 구현.\n나머지: Consistency(일관성), Isolation(격리성), Durability(영속성).'},
+
+{id:15,s:'2020-3',sL:'2020년 3회',cat:'os',cL:'OS·알고리즘',st:2,
+q:`다음 배열을 버블 정렬(오름차순) 1패스 후 결과를 쓰시오.<br>
+<b>arr = [5, 3, 8, 1, 9, 2]</b>`,
+a:'[3, 5, 1, 8, 2, 9]',
+ex:'1패스: 인접 요소 비교·교환\n5>3→교환: [3,5,8,1,9,2]\n5<8→유지: [3,5,8,1,9,2]\n8>1→교환: [3,5,1,8,9,2]\n8<9→유지: [3,5,1,8,9,2]\n9>2→교환: [3,5,1,8,2,9]\n최댓값 9가 맨 뒤로 이동.'},
+
+/* ===== 2021년 1회 ===== */
+{id:16,s:'2021-1',sL:'2021년 1회',cat:'c',cL:'C언어',st:2,
+q:`다음 C 코드의 출력 결과를 쓰시오.
+<pre class="code-q">#include &lt;stdio.h&gt;
+struct Student {
+    char name[10];
+    int grade;
+};
+int main() {
+    struct Student s = {"Kim", 3};
+    struct Student *p = &amp;s;
+    p-&gt;grade += 2;
+    printf("%s %d\\n", p-&gt;name, p-&gt;grade);
+    return 0;
+}</pre>`,
+a:'Kim 5',
+ex:'p->grade = 3+2 = 5. 화살표 연산자(->)는 포인터로 구조체 멤버에 접근. (*p).grade와 동일.'},
+
+{id:17,s:'2021-1',sL:'2021년 1회',cat:'java',cL:'Java',st:2,
+q:`다음 Java 코드의 출력 결과를 쓰시오.
+<pre class="code-q">interface Printable {
+    default void print() { System.out.println("Interface"); }
+}
+class Document implements Printable {
+    public void print() { System.out.println("Document"); }
+}
+public class Main {
+    public static void main(String[] args) {
+        Printable p = new Document();
+        p.print();
+    }
+}</pre>`,
+a:'Document',
+ex:'인터페이스의 default 메서드보다 구현 클래스의 오버라이딩 메서드가 우선. 동적 바인딩 적용.'},
+
+{id:18,s:'2021-1',sL:'2021년 1회',cat:'py',cL:'Python',st:3,
+q:`다음 Python 코드의 출력 결과를 쓰시오.
+<pre class="code-q">nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+even = list(filter(lambda x: x % 2 == 0, nums))
+print(even)
+print(sum(even))</pre>`,
+a:'[2, 4, 6, 8, 10]\n30',
+ex:'filter: 짝수만 추출 → [2,4,6,8,10]. sum: 2+4+6+8+10=30.'},
+
+{id:19,s:'2021-1',sL:'2021년 1회',cat:'sql',cL:'SQL',st:2,
+q:`다음 SQL의 빈칸을 채워 정보처리학과 학생이 수강하는 과목명을 조회하시오.
+<pre class="code-q">SELECT 과목명
+FROM 과목
+WHERE 과목코드 (  ①  ) (
+    SELECT 과목코드
+    FROM 수강
+    WHERE 학번 IN (
+        SELECT 학번 FROM 학생 WHERE 학과='정보처리'
+    )
+);</pre>`,
+a:'① IN',
+ex:'다중행 서브쿼리 결과와 비교할 때 IN 사용. 단일값이면 = 사용. NOT IN으로 제외도 가능.'},
+
+{id:20,s:'2021-1',sL:'2021년 1회',cat:'db',cL:'DB이론',st:2,
+q:`다음 이상현상의 이름을 쓰시오.<br>
+"데이터를 새로 삽입하려면 원하지 않는 데이터도 함께 삽입해야 하거나, 불필요한 데이터 없이는 삽입이 불가능한 현상"`,
+a:'삽입 이상 (Insertion Anomaly)',
+ex:'예: 학생이 수강 없이 등록 불가 (학번+과목코드가 PK인 경우).\n함께 암기: 삭제이상(의도치 않은 정보 손실), 갱신이상(일부만 변경→불일치).'},
+
+/* ===== 2021년 2회 ===== */
+{id:21,s:'2021-2',sL:'2021년 2회',cat:'c',cL:'C언어',st:3,
+q:`다음 C 코드의 출력 결과를 쓰시오.
+<pre class="code-q">#include &lt;stdio.h&gt;
+int main() {
+    int a = 5, b = 3;
+    printf("%d %d %d\\n", a &amp; b, a | b, a ^ b);
+    return 0;
+}</pre>`,
+a:'1 7 6',
+ex:'5=101₂, 3=011₂\nAND: 001₂=1, OR: 111₂=7, XOR: 110₂=6.'},
+
+{id:22,s:'2021-2',sL:'2021년 2회',cat:'sw',cL:'SW공학',st:2,
+q:`다음 설명에 해당하는 GoF 패턴 이름을 쓰시오.<br>
+"기존 클래스의 인터페이스를 클라이언트가 기대하는 다른 인터페이스로 변환한다. 호환되지 않는 인터페이스들이 함께 동작할 수 있게 한다."`,
+a:'Adapter (어댑터)',
+ex:'구조 패턴. 220V→110V 어댑터 비유. 레거시 코드 통합 시 많이 사용. Target, Adapter, Adaptee 세 역할.'},
+
+{id:23,s:'2021-2',sL:'2021년 2회',cat:'sec',cL:'보안',st:2,
+q:`해시 함수가 <b>단방향(One-way)</b>이라는 것이 의미하는 바를 설명하시오.`,
+a:'해시값에서 원래 입력값을 역으로 계산하는 것이 계산적으로 불가능함',
+ex:'역상 저항성. 비밀번호 저장 시 원문이 아닌 해시값 저장 → 유출되어도 원문 복원 불가.\n추가 보안: Salt 추가로 레인보우 테이블 공격 방지.'},
+
+{id:24,s:'2021-2',sL:'2021년 2회',cat:'py',cL:'Python',st:2,
+q:`다음 Python 코드의 출력 결과를 쓰시오.
+<pre class="code-q">students = [('Kim', 90), ('Lee', 85), ('Park', 92), ('Choi', 85)]
+result = sorted(students, key=lambda x: (-x[1], x[0]))
+print(result[0])</pre>`,
+a:"('Park', 92)",
+ex:'정렬 기준: 점수 내림차순(-x[1]), 이름 오름차순(x[0]).\n최고점 Park(92) → 1위.'},
+
+{id:25,s:'2021-2',sL:'2021년 2회',cat:'sql',cL:'SQL',st:2,
+q:`다음 SQL의 실행 결과를 서술하시오.
+<pre class="code-q">UPDATE emp
+SET sal = sal * 1.1
+WHERE dept = 'D1';</pre>`,
+a:"D1 부서 직원들의 급여를 10% 인상 (sal = sal × 1.1로 갱신)",
+ex:'UPDATE는 DML. SET으로 변경할 값 지정, WHERE로 조건 제한. WHERE 없으면 전체 행 수정 (주의!).'},
+
+/* ===== 2021년 3회 ===== */
+{id:26,s:'2021-3',sL:'2021년 3회',cat:'java',cL:'Java',st:2,
+q:`다음 Java 코드의 출력 결과를 쓰시오.
+<pre class="code-q">public class Main {
+    public static void main(String[] args) {
+        String s = "Hello, World!";
+        System.out.println(s.length());
+        System.out.println(s.indexOf("World"));
+        System.out.println(s.replace("World", "Java"));
+    }
+}</pre>`,
+a:'13\n7\nHello, Java!',
+ex:'length(): 공백·쉼표·! 포함 13자.\nindexOf("World"): 인덱스 7부터 시작.\nreplace: "World"를 "Java"로 치환.'},
+
+{id:27,s:'2021-3',sL:'2021년 3회',cat:'db',cL:'DB이론',st:2,
+q:`외래키(FK) ON DELETE CASCADE의 의미를 설명하시오.`,
+a:'부모 테이블의 행이 삭제될 때 해당 행을 참조하는 자식 테이블의 행도 자동으로 삭제됨',
+ex:'옵션 비교: CASCADE(연쇄삭제), SET NULL(FK를 NULL로), SET DEFAULT(기본값으로), RESTRICT(자식 있으면 부모 삭제 거부).'},
+
+{id:28,s:'2021-3',sL:'2021년 3회',cat:'sw',cL:'SW공학',st:2,
+q:`UML 다이어그램을 구조(Structure)와 행위(Behavior) 다이어그램으로 분류하고 각각 대표 2가지씩 쓰시오.`,
+a:'구조: 클래스, 객체 (또는 컴포넌트, 배치)\n행위: 유스케이스, 시퀀스 (또는 상태, 활동)',
+ex:'구조(6종): 클래스·객체·컴포넌트·배치·복합구조·패키지 — 정적 구조 표현.\n행위(7종): 유스케이스·시퀀스·상태·활동·커뮤니케이션·상호작용개요·타이밍.'},
+
+{id:29,s:'2021-3',sL:'2021년 3회',cat:'os',cL:'OS·알고리즘',st:2,
+q:`선택 정렬(Selection Sort)에서 다음 배열을 오름차순으로 정렬할 때 2번째 패스 후 결과를 쓰시오.<br>
+<b>arr = [64, 25, 12, 22, 11]</b>`,
+a:'[11, 12, 25, 22, 64] → 2패스 후: [11, 12, 25, 22, 64]',
+ex:'1패스: 최솟값 11을 arr[0]=64와 교환 → [11, 25, 12, 22, 64]\n2패스: arr[1]~arr[4]에서 최솟값 12를 arr[1]=25와 교환 → [11, 12, 25, 22, 64]'},
+
+{id:30,s:'2021-3',sL:'2021년 3회',cat:'net',cL:'네트워크',st:1,
+q:`TCP 3-way handshake의 3단계를 순서대로 쓰시오.`,
+a:'① SYN (클라이언트→서버)\n② SYN-ACK (서버→클라이언트)\n③ ACK (클라이언트→서버)',
+ex:'연결 수립 과정. SYN=연결 요청, ACK=확인 응답. 4-way handshake는 연결 종료 과정.'},
+
+/* ===== 2022년 1회 ===== */
+{id:31,s:'2022-1',sL:'2022년 1회',cat:'c',cL:'C언어',st:2,
+q:`다음 C 코드의 출력 결과를 쓰시오.
+<pre class="code-q">#include &lt;stdio.h&gt;
+int main() {
+    int a = 100;
+    int *p = &amp;a;
+    int **pp = &amp;p;
+    **pp = 200;
+    printf("%d\\n", a);
+    return 0;
+}</pre>`,
+a:'200',
+ex:'pp → p → a. **pp = 200 → *p = 200 → a = 200.\n이중 포인터: 포인터 변수의 주소를 저장.'},
+
+{id:32,s:'2022-1',sL:'2022년 1회',cat:'java',cL:'Java',st:2,
+q:`다음 Java 코드의 출력 결과를 쓰시오.
+<pre class="code-q">abstract class Vehicle {
+    abstract void move();
+    void info() { System.out.println("탈것"); }
+}
+class Car extends Vehicle {
+    void move() { System.out.println("달린다"); }
+}
+public class Main {
+    public static void main(String[] args) {
+        Vehicle v = new Car();
+        v.move();
+        v.info();
+    }
+}</pre>`,
+a:'달린다\n탈것',
+ex:'추상 클래스: 직접 인스턴스 생성 불가, 반드시 상속 후 추상 메서드 구현.\nmove(): Car의 오버라이딩 실행. info(): Vehicle 상속 그대로.'},
+
+{id:33,s:'2022-1',sL:'2022년 1회',cat:'py',cL:'Python',st:2,
+q:`다음 Python 코드의 출력 결과를 쓰시오.
+<pre class="code-q">class Animal:
+    def __init__(self, name):
+        self.name = name
+    def speak(self):
+        return f"{self.name}이(가) 소리냄"
+
+class Dog(Animal):
+    def speak(self):
+        return f"{self.name}: 멍멍"
+
+d = Dog("바둑이")
+print(d.speak())
+print(isinstance(d, Animal))</pre>`,
+a:'바둑이: 멍멍\nTrue',
+ex:'Dog.speak()가 Animal.speak()를 오버라이딩. isinstance(d, Animal): Dog는 Animal의 하위 클래스이므로 True.'},
+
+{id:34,s:'2022-1',sL:'2022년 1회',cat:'sql',cL:'SQL',st:2,
+q:`SQL에서 NULL 값을 다른 값으로 대체하는 함수를 3가지 이상 쓰시오. (DBMS별)`,
+a:'IFNULL(MySQL), ISNULL(SQL Server), NVL(Oracle), COALESCE(표준 SQL)',
+ex:'COALESCE(col, 대체값): 표준 SQL, 모든 DBMS에서 사용 가능. 첫 번째 NOT NULL 값 반환.\n예: COALESCE(comm, 0) → comm이 NULL이면 0으로 대체.'},
+
+{id:35,s:'2022-1',sL:'2022년 1회',cat:'db',cL:'DB이론',st:2,
+q:`BCNF(Boyce-Codd Normal Form)의 조건을 쓰시오.`,
+a:'모든 결정자(Determinant)가 후보키(Candidate Key)여야 함',
+ex:'X→Y인 모든 FD에서 X는 반드시 슈퍼키(=후보키 포함)여야 함.\n3NF보다 강한 조건. 3NF 만족해도 BCNF 위반 가능. 정규화 강도: 3NF < BCNF.'},
+
+/* ===== 2022년 2회 ===== */
+{id:36,s:'2022-2',sL:'2022년 2회',cat:'sw',cL:'SW공학',st:2,
+q:`결합도(Coupling) 6단계를 낮은 것부터 높은 것 순서로 쓰시오.`,
+a:'자료 < 스탬프 < 제어 < 외부 < 공통 < 내용',
+ex:'암기: 자스제외공내 (낮→높). 설계 목표: 결합도는 낮게(자료 결합도 지향).\n내용 결합도(내부 직접 접근)가 가장 나쁨.'},
+
+{id:37,s:'2022-2',sL:'2022년 2회',cat:'sec',cL:'보안',st:2,
+q:`다음 설명에 해당하는 접근 제어 모델을 쓰시오.<br>
+"사용자의 역할(Role)에 기반하여 권한을 부여. 개인이 아닌 역할에 권한을 연결하여 관리한다. 현대 기업 시스템에서 가장 많이 사용됨."`,
+a:'RBAC (Role-Based Access Control, 역할 기반 접근 제어)',
+ex:'사용자 → 역할(관리자/일반/게스트) → 권한. 관리가 용이.\nDAC(소유자 결정), MAC(정책 결정), RBAC(역할 결정).'},
+
+{id:38,s:'2022-2',sL:'2022년 2회',cat:'c',cL:'C언어',st:2,
+q:`다음 C 코드의 출력 결과를 쓰시오.
+<pre class="code-q">#include &lt;stdio.h&gt;
+int main() {
+    int arr[2][3] = {{1,2,3},{4,5,6}};
+    int sum = 0;
+    for (int i = 0; i &lt; 2; i++)
+        for (int j = 0; j &lt; 3; j++)
+            if ((i + j) % 2 == 0) sum += arr[i][j];
+    printf("%d\\n", sum);
+    return 0;
+}</pre>`,
+a:'12',
+ex:'(i+j)%2==0인 원소: (0,0)=1, (0,2)=3, (1,1)=5, (1,3)X(범위초과없음)\n실제: (0,0)=1, (0,2)=3, (1,1)=5, (1,−)→없음 → 합=1+3+5=9?\n재확인: arr[0]={1,2,3} arr[1]={4,5,6}\n(0,0)%2=0→1, (0,1)%2=1→X, (0,2)%2=0→3\n(1,0)%2=1→X, (1,1)%2=0→5, (1,2)%2=1→X\n합=1+3+5=9'},
+/* 위 계산 오류 수정: sum=9 */
+
+{id:39,s:'2022-2',sL:'2022년 2회',cat:'java',cL:'Java',st:2,
+q:`다음 Java 람다식 코드의 출력 결과를 쓰시오.
+<pre class="code-q">import java.util.function.*;
+public class Main {
+    public static void main(String[] args) {
+        Function&lt;Integer, Integer&gt; f = x -&gt; x * 2;
+        Function&lt;Integer, Integer&gt; g = x -&gt; x + 10;
+        System.out.println(f.andThen(g).apply(5));
+        System.out.println(f.compose(g).apply(5));
+    }
+}</pre>`,
+a:'20\n30',
+ex:'andThen: f(5)=10 → g(10)=20 (왼→오 순서)\ncompose: g(5)=15 → f(15)=30 (오→왼 순서, andThen의 반대)'},
+
+{id:40,s:'2022-2',sL:'2022년 2회',cat:'sql',cL:'SQL',st:3,
+q:`다음 SQL에서 COUNT(*)와 COUNT(컬럼명)의 차이를 설명하시오.`,
+a:'COUNT(*): NULL 포함 모든 행 수 카운트\nCOUNT(컬럼명): NULL 제외한 행 수만 카운트',
+ex:'중요 함정! NULL이 있는 컬럼은 COUNT(*)≠COUNT(col).\n예: comm 컬럼에 NULL이 3개면 COUNT(*)는 전체, COUNT(comm)은 NULL 제외 수.\nSUM, AVG 등 집계함수도 NULL 무시.'},
+
+/* ===== 2022년 3회 ===== */
+{id:41,s:'2022-3',sL:'2022년 3회',cat:'py',cL:'Python',st:2,
+q:`다음 Python 코드의 출력 결과를 쓰시오.
+<pre class="code-q">class Calculator:
+    def __init__(self, val=0):
+        self.val = val
+    def add(self, n):
+        self.val += n
+        return self
+    def mul(self, n):
+        self.val *= n
+        return self
+
+c = Calculator(5)
+result = c.add(3).mul(2).add(1)
+print(result.val)</pre>`,
+a:'17',
+ex:'5.add(3)→val=8, 반환 self\n8.mul(2)→val=16, 반환 self\n16.add(1)→val=17, 반환 self\n메서드 체이닝: return self 덕분에 연속 호출 가능.'},
+
+{id:42,s:'2022-3',sL:'2022년 3회',cat:'db',cL:'DB이론',st:2,
+q:`트랜잭션의 상태 중 다음에 해당하는 상태 이름을 쓰시오.<br>
+① 마지막 연산이 실행된 직후 COMMIT 직전 상태<br>
+② 트랜잭션 실행 도중 오류가 발생한 상태`,
+a:'① 부분 완료 (Partially Committed)\n② 실패 (Failed)',
+ex:'상태 흐름: 활성(Active) → 부분완료 → 완료(Committed)\n                       활성 → 실패 → 철회(Aborted=Rollback)'},
+
+{id:43,s:'2022-3',sL:'2022년 3회',cat:'sw',cL:'SW공학',st:2,
+q:`화이트박스 테스트의 커버리지를 약한 것부터 강한 것 순서로 쓰시오. (6단계)`,
+a:'구문 < 결정 < 조건 < 조건/결정 < 변경조건/결정(MCDC) < 다중조건',
+ex:'암기: 구결조조변다\n구문(모든 라인) < 결정(분기 T/F) < 조건(각 조건 T/F) < ... < 다중조건(모든 조합 2ⁿ)'},
+
+{id:44,s:'2022-3',sL:'2022년 3회',cat:'sec',cL:'보안',st:2,
+q:`XSS(Cross-Site Scripting) 공격의 3가지 유형을 쓰시오.`,
+a:'① 반사형(Reflected) ② 저장형(Stored/Persistent) ③ DOM 기반',
+ex:'반사형: URL에 스크립트→서버 반사→피해자 실행.\n저장형: DB에 스크립트 저장→다른 사용자 열람 시 실행 (더 위험).\nDOM 기반: 서버 거치지 않고 클라이언트 DOM 직접 조작.\n대응: 출력 인코딩, HttpOnly 쿠키, CSP 헤더.'},
+
+{id:45,s:'2022-3',sL:'2022년 3회',cat:'os',cL:'OS·알고리즘',st:1,
+q:`이진 탐색(Binary Search)과 순차 탐색(Sequential Search)의 시간 복잡도를 Big-O로 비교하시오.`,
+a:'이진 탐색: O(log n)\n순차 탐색: O(n)',
+ex:'이진 탐색 조건: 정렬된 배열 필요. 매번 탐색 범위를 절반으로 줄임.\n순차 탐색: 처음부터 끝까지. 정렬 불필요. n=1024면 이진탐색은 최대 10번만 비교.'},
+
+/* ===== 2023년 1회 ===== */
+{id:46,s:'2023-1',sL:'2023년 1회',cat:'c',cL:'C언어',st:2,
+q:`다음 C 코드의 출력 결과를 쓰시오.
+<pre class="code-q">#include &lt;stdio.h&gt;
+#define SQ(x) x*x
+int main() {
+    printf("%d\\n", SQ(3+2));
+    printf("%d\\n", SQ(5));
+    return 0;
+}</pre>`,
+a:'11\n25',
+ex:'매크로는 텍스트 치환: SQ(3+2) → 3+2*3+2 = 3+6+2 = 11 (우선순위 함정!)\nSQ(5) → 5*5 = 25\n안전한 매크로: #define SQ(x) ((x)*(x)) 로 정의해야 25 나옴.'},
+
+{id:47,s:'2023-1',sL:'2023년 1회',cat:'java',cL:'Java',st:3,
+q:`다음 Java 코드의 출력 결과를 쓰시오.
+<pre class="code-q">class Counter {
+    static int count = 0;
+    Counter() { count++; }
+    static int getCount() { return count; }
+}
+public class Main {
+    public static void main(String[] args) {
+        Counter a = new Counter();
+        Counter b = new Counter();
+        Counter c = new Counter();
+        System.out.println(Counter.getCount());
+        System.out.println(a.count);
+    }
+}</pre>`,
+a:'3\n3',
+ex:'static 변수는 모든 인스턴스가 공유하는 클래스 변수.\n생성자 호출마다 count++. 3개 생성 → count=3.\na.count도 같은 static 변수를 참조 → 3.'},
+
+{id:48,s:'2023-1',sL:'2023년 1회',cat:'py',cL:'Python',st:2,
+q:`다음 Python 코드의 출력 결과를 쓰시오.
+<pre class="code-q">matrix = [[1,2,3],[4,5,6],[7,8,9]]
+result = [matrix[i][i] for i in range(3)]
+print(result)
+print(sum(result))</pre>`,
+a:'[1, 5, 9]\n15',
+ex:'대각선 원소 추출: matrix[0][0]=1, matrix[1][1]=5, matrix[2][2]=9.\nsum([1,5,9])=15.'},
+
+{id:49,s:'2023-1',sL:'2023년 1회',cat:'sql',cL:'SQL',st:3,
+q:`다음 SQL 구문에서 <b>NOT IN</b> 연산자 사용 시 함정을 설명하고, 올바른 결과를 쓰시오.
+<pre class="code-q">-- T1: {1, 2, 3, 4, 5}
+-- T2: {1, 2, NULL}
+SELECT col FROM t1 WHERE col NOT IN (SELECT col FROM t2);</pre>`,
+a:'결과: 0행 (아무것도 반환되지 않음)',
+ex:'NOT IN 서브쿼리에 NULL이 포함되면 모든 비교 결과가 UNKNOWN → WHERE 조건 항상 false → 0행 반환.\n해결: WHERE col NOT IN (SELECT col FROM t2 WHERE col IS NOT NULL)\n또는 NOT EXISTS 사용.'},
+
+{id:50,s:'2023-1',sL:'2023년 1회',cat:'db',cL:'DB이론',st:2,
+q:`무결성(Integrity) 제약조건 중 다음에 해당하는 종류를 쓰시오.<br>
+① 기본키는 NULL이 될 수 없고 유일해야 함<br>
+② 외래키 값은 참조 테이블의 기본키로 존재하거나 NULL이어야 함<br>
+③ 속성값은 해당 도메인에 속해야 함`,
+a:'① 개체 무결성 ② 참조 무결성 ③ 도메인 무결성',
+ex:'SQL 구현: ①PRIMARY KEY ②FOREIGN KEY REFERENCES ③CHECK, NOT NULL, DEFAULT.\n사용자 정의 무결성(업무 규칙): TRIGGER, PROCEDURE로 구현.'},
+
+/* ===== 2023년 2회 ===== */
+{id:51,s:'2023-2',sL:'2023년 2회',cat:'sw',cL:'SW공학',st:3,
+q:`다음 설명에 해당하는 패턴 이름을 쓰시오.<br>
+"객체의 상태가 변할 때 그 객체에 의존하는 다른 객체들에게 자동으로 알림. 일대다 의존 관계 정의. 발행-구독 패턴이라고도 함."`,
+a:'Observer (옵저버 패턴)',
+ex:'행위 패턴. Subject(발행자)가 Observer들의 참조를 관리. 상태 변화 시 notify() 호출 → 모든 Observer에 update().\n활용: MVC Model→View 갱신, 이벤트 리스너.'},
+
+{id:52,s:'2023-2',sL:'2023년 2회',cat:'c',cL:'C언어',st:2,
+q:`다음 C 코드의 출력 결과를 쓰시오.
+<pre class="code-q">#include &lt;stdio.h&gt;
+int main() {
+    int a = 0b1010;
+    int b = 0b0110;
+    printf("%d\\n", a &amp; b);
+    printf("%d\\n", a | b);
+    printf("%d\\n", a &lt;&lt; 1);
+    return 0;
+}</pre>`,
+a:'2\n14\n20',
+ex:'a=1010₂=10, b=0110₂=6\na&b=0010₂=2, a|b=1110₂=14\na<<1: 1010₂를 왼쪽 1칸 시프트 → 10100₂=20 (×2 효과).'},
+
+{id:53,s:'2023-2',sL:'2023년 2회',cat:'py',cL:'Python',st:2,
+q:`다음 Python 코드의 출력 결과를 쓰시오.
+<pre class="code-q">d = {'apple': 3, 'banana': 1, 'cherry': 2}
+print(sorted(d.items(), key=lambda x: x[1]))
+print(d.get('grape', 0))</pre>`,
+a:"[('banana', 1), ('cherry', 2), ('apple', 3)]\n0",
+ex:'d.items(): (키,값) 쌍의 뷰 반환. key=lambda x: x[1] → 값 기준 오름차순 정렬.\nd.get(key, 기본값): key 없으면 기본값 반환 (KeyError 없음). grape 없음 → 0.'},
+
+{id:54,s:'2023-2',sL:'2023년 2회',cat:'sql',cL:'SQL',st:3,
+q:`다음 세 명령어의 차이를 설명하시오.<br>
+<b>DROP TABLE t1;</b><br>
+<b>TRUNCATE TABLE t1;</b><br>
+<b>DELETE FROM t1;</b>`,
+a:'DROP: 테이블 자체 삭제 (구조+데이터 모두)\nTRUNCATE: 전체 데이터 삭제 (구조 유지, ROLLBACK 불가, AUTO_INCREMENT 초기화)\nDELETE: 조건 데이터 삭제 (ROLLBACK 가능, 느림)',
+ex:'실무 팁: TRUNCATE가 DELETE보다 빠름 (로그 최소화). DROP은 DDL, TRUNCATE는 DDL, DELETE는 DML.'},
+
+{id:55,s:'2023-2',sL:'2023년 2회',cat:'db',cL:'DB이론',st:2,
+q:`병행 제어(Concurrency Control)에서 공유 락(S-Lock)과 배타 락(X-Lock)의 호환성을 표로 설명하시오.`,
+a:'S-Lock + S-Lock 요청 → 호환 ✅ (동시 읽기 허용)\nS-Lock + X-Lock 요청 → 불호환 ❌\nX-Lock + S-Lock 요청 → 불호환 ❌\nX-Lock + X-Lock 요청 → 불호환 ❌',
+ex:'S-Lock(읽기): 다른 트랜잭션의 읽기 허용, 쓰기 불허.\nX-Lock(쓰기): 다른 트랜잭션의 읽기·쓰기 모두 불허.'},
+
+/* ===== 2023년 3회 ===== */
+{id:56,s:'2023-3',sL:'2023년 3회',cat:'java',cL:'Java',st:2,
+q:`다음 Java 코드의 출력 결과를 쓰시오.
+<pre class="code-q">public class Main {
+    public static void main(String[] args) {
+        String[] arr = {"banana","apple","cherry","date"};
+        java.util.Arrays.sort(arr);
+        for (String s : arr) System.out.print(s + " ");
+    }
+}</pre>`,
+a:'apple banana cherry date',
+ex:'Arrays.sort()는 사전순(알파벳 오름차순) 정렬.\na < b < c < d 순서로 apple, banana, cherry, date.'},
+
+{id:57,s:'2023-3',sL:'2023년 3회',cat:'py',cL:'Python',st:2,
+q:`다음 Python 코드의 출력 결과를 쓰시오.
+<pre class="code-q">def gen_multi(n):
+    return [n * i for i in range(1, 6)]
+
+result = gen_multi(7)
+print(result)
+print(max(result) - min(result))</pre>`,
+a:'[7, 14, 21, 28, 35]\n28',
+ex:'7의 1~5 배수: [7,14,21,28,35]. max=35, min=7, 35-7=28.'},
+
+{id:58,s:'2023-3',sL:'2023년 3회',cat:'sw',cL:'SW공학',st:2,
+q:`CMMI(Capability Maturity Model Integration)의 5단계를 순서대로 쓰시오.`,
+a:'1초기 → 2관리 → 3정의 → 4정량적 관리 → 5최적화',
+ex:'1(Initial): 혼돈, 개인역량 의존\n2(Managed): 기본 관리 수행\n3(Defined): 조직 표준 프로세스 정의\n4(Quantitatively Managed): 정량적 목표·측정\n5(Optimizing): 지속적 개선·혁신'},
+
+{id:59,s:'2023-3',sL:'2023년 3회',cat:'sec',cL:'보안',st:3,
+q:`전자서명(Digital Signature)의 과정을 설명하고, 어떤 키로 서명하고 검증하는지 쓰시오.`,
+a:'서명: 원문 해시 → 송신자 개인키로 암호화\n검증: 서명을 송신자 공개키로 복호화 → 해시값 비교',
+ex:'전자서명 3가지 효과: ① 무결성 ② 인증(진짜 송신자) ③ 부인 방지\n일반 암호화와 키 사용 방향 반대임에 주의!\n일반: 공개키 암호화→개인키 복호화\n전자서명: 개인키 서명→공개키 검증'},
+
+{id:60,s:'2023-3',sL:'2023년 3회',cat:'net',cL:'네트워크',st:2,
+q:`다음 OSI 7계층에서 각 계층의 PDU(Protocol Data Unit) 이름을 쓰시오.<br>
+4계층(전송), 3계층(네트워크), 2계층(데이터링크), 1계층(물리)`,
+a:'4계층: 세그먼트(TCP) / 데이터그램(UDP)\n3계층: 패킷\n2계층: 프레임\n1계층: 비트',
+ex:'7계층: 메시지 / 6,5계층: 메시지 / 4계층: 세그먼트 / 3계층: 패킷 / 2계층: 프레임 / 1계층: 비트.\nPDU = 각 계층에서 데이터를 주고받는 단위.'}
+];
+
+/* Q38 정답 수정 (재계산) */
+QS[37].a = '9';
+QS[37].ex = '(i+j)%2==0인 원소: (0,0)=1, (0,2)=3, (1,1)=5 → 합=9';
+
+/* ── 상태 ── */
+const DONE_KEY  = 'lv2_p2023_done';
+const WRONG_KEY = 'lv2_p2023_wrong';
+let doneSet  = new Set(JSON.parse(localStorage.getItem(DONE_KEY)  || '[]'));
+let wrongSet = new Set(JSON.parse(localStorage.getItem(WRONG_KEY) || '[]'));
+let currentCat   = 'all';
+let showWrongOnly = false;
+
+const CAT_BADGE = {c:'cat-c',java:'cat-java',py:'cat-py',sql:'cat-sql',db:'cat-db',sw:'cat-sw',sec:'cat-sec',os:'cat-os',net:'cat-net'};
+const S_BADGE   = {'2020-1':'s20','2020-2':'s20','2020-3':'s20','2020-4':'s20','2021-1':'s21','2021-2':'s21','2021-3':'s21','2022-1':'s22','2022-2':'s22','2022-3':'s22','2023-1':'s23','2023-2':'s23','2023-3':'s23'};
+const STAR_MAP  = {3:'★★★ 필수',2:'★★ 중요',1:'★ 일반'};
+
+function render() {
+  const list = document.getElementById('q-list');
+  const filtered = QS.filter(q => {
+    if (currentCat === 'must' && q.st !== 3) return false;
+    if (currentCat !== 'all' && currentCat !== 'must' && q.cat !== currentCat) return false;
+    if (showWrongOnly && !wrongSet.has(q.id)) return false;
+    return true;
+  });
+
+  if (!filtered.length) { list.innerHTML = '<div class="empty-msg">해당 조건의 문제가 없습니다.</div>'; updateStats(); return; }
+
+  list.innerHTML = filtered.map(q => {
+    const isDone  = doneSet.has(q.id);
+    const isWrong = wrongSet.has(q.id);
+    const cls = `q-card${isDone?' is-done':''}${isWrong?' is-wrong':''}`;
+    return `
+<div class="${cls}" data-id="${q.id}" id="qc-${q.id}">
+  <div class="q-head" onclick="toggleQ(${q.id})">
+    <div class="q-badges">
+      <span class="badge ${S_BADGE[q.s]}">${q.sL}</span>
+      <span class="badge ${CAT_BADGE[q.cat]}">${q.cL}</span>
+      <span class="star-badge s${q.st}">${STAR_MAP[q.st]}</span>
+      <span class="q-num">Q${String(q.id).padStart(2,'0')}</span>
+    </div>
+    <div class="q-text">
+      <div>${q.q}</div>
+      <span class="q-chevron">▼</span>
+    </div>
+  </div>
+  <div class="q-ans" id="qa-${q.id}">
+    <div class="ans-row">
+      <span class="ans-label">정답</span>
+      <span class="ans-val">${q.a.replace(/\n/g,'<br>')}</span>
+    </div>
+    <div class="ans-explain">${q.ex.replace(/\n/g,'<br>')}</div>
+    <div class="q-actions">
+      <button class="btn-done${isDone?' active':''}" onclick="markDone(${q.id},event)">${isDone?'✅ 완료 취소':'✅ 완료'}</button>
+      <button class="btn-wrong${isWrong?' active':''}" onclick="markWrong(${q.id},event)">${isWrong?'❌ 오답 취소':'❌ 오답 체크'}</button>
+    </div>
+  </div>
+</div>`;
+  }).join('');
+
+  updateStats();
+}
+
+function toggleQ(id) { document.getElementById(`qc-${id}`).classList.toggle('open'); }
+
+function markDone(id,e) {
+  e.stopPropagation();
+  if (doneSet.has(id)) doneSet.delete(id); else doneSet.add(id);
+  localStorage.setItem(DONE_KEY, JSON.stringify([...doneSet]));
+  render();
+}
+function markWrong(id,e) {
+  e.stopPropagation();
+  if (wrongSet.has(id)) wrongSet.delete(id); else wrongSet.add(id);
+  localStorage.setItem(WRONG_KEY, JSON.stringify([...wrongSet]));
+  render();
+}
+
+function setFilter(cat) {
+  currentCat = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    const fn = b.getAttribute('onclick') || '';
+    b.classList.toggle('active', fn.includes(`'${cat}'`));
+  });
+  render();
+}
+
+function toggleWrong() {
+  showWrongOnly = !showWrongOnly;
+  document.getElementById('wrong-toggle').classList.toggle('active', showWrongOnly);
+  render();
+}
+
+function updateStats() {
+  const total = QS.length;
+  const done  = doneSet.size;
+  const wrong = wrongSet.size;
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-done').textContent  = done;
+  document.getElementById('s-wrong').textContent = wrong;
+  const pct = Math.round(done/total*100);
+  document.getElementById('progress-fill').style.width = pct+'%';
+  document.getElementById('progress-lbl').textContent = `${done} / ${total} 완료 (${pct}%)`;
+}
+
+render();
+</script>
+</body>
+</html>

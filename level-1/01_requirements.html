@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>01. 요구사항 확인 | 정보처리기사 실기</title>
+<style>
+:root {
+  --primary: #6d28d9;
+  --primary-light: #ede9fe;
+  --secondary: #059669;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --dark: #1e293b;
+  --gray: #64748b;
+  --light: #f8fafc;
+  --border: #e2e8f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.6; }
+
+nav { position: sticky; top: 0; z-index: 100; background: var(--dark); padding: 0.6rem 1.5rem; display: flex; gap: 0.5rem; align-items: center; overflow-x: auto; scrollbar-width: none; }
+nav::-webkit-scrollbar { display: none; }
+nav .nav-title { color: #c4b5fd; font-weight: 700; font-size: 0.82rem; white-space: nowrap; margin-right: 0.5rem; }
+nav a { color: #94a3b8; text-decoration: none; font-size: 0.78rem; white-space: nowrap; padding: 0.3rem 0.7rem; border-radius: 5px; transition: all 0.2s; }
+nav a:hover, nav a.active { color: white; background: #334155; }
+
+.hero { background: linear-gradient(135deg, #3b0764 0%, #1e293b 100%); color: white; padding: 2.5rem 2rem; text-align: center; }
+.hero h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.4rem; }
+.hero .subtitle { color: #c4b5fd; font-size: 0.95rem; margin-bottom: 1rem; }
+.tags { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; }
+.tag { background: rgba(255,255,255,0.12); color: white; padding: 0.2rem 0.65rem; border-radius: 20px; font-size: 0.78rem; }
+
+.container { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem; }
+section { margin-bottom: 3rem; }
+.section-title { font-size: 1.3rem; font-weight: 700; color: var(--dark); margin-bottom: 1.25rem; padding-bottom: 0.6rem; border-bottom: 3px solid var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { width: 30px; height: 30px; background: var(--primary); color: white; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; flex-shrink: 0; }
+
+.card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-bottom: 1rem; }
+.card h3 { font-size: 0.95rem; margin-bottom: 0.75rem; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+
+.tabs { display: flex; gap: 0.4rem; margin-bottom: 1.25rem; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+.tab-btn { padding: 0.45rem 1rem; background: none; border: none; color: var(--gray); cursor: pointer; font-size: 0.85rem; font-weight: 600; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+table.base { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+table.base th { background: var(--dark); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+table.base td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+table.base tr:hover td { background: #faf5ff; }
+
+.hl  { background: #faf5ff; border: 1px solid #e9d5ff; border-left: 4px solid var(--primary); border-radius: 7px; padding: 0.8rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; }
+.hl.warn  { background: #fffbeb; border-color: #fde68a; border-left-color: var(--warning); }
+.hl.ok    { background: #f0fdf4; border-color: #bbf7d0; border-left-color: var(--secondary); }
+
+code.il { background: #f1f5f9; color: #6d28d9; padding: 0.1rem 0.35rem; border-radius: 3px; font-family: monospace; font-size: 0.81rem; font-weight: 700; }
+.badge { display: inline-block; padding: 0.18rem 0.55rem; border-radius: 4px; font-size: 0.73rem; font-weight: 700; }
+.b-struct { background: #dbeafe; color: #1e40af; }
+.b-behav  { background: #fce7f3; color: #9d174d; }
+.b-func   { background: #dcfce7; color: #166534; }
+.b-nfunc  { background: #fef3c7; color: #92400e; }
+
+/* 요구사항 프로세스 시각화 */
+.req-flow { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; justify-content: center; margin-bottom: 1rem; }
+.req-step { padding: 0.6rem 1.2rem; border-radius: 8px; font-size: 0.88rem; font-weight: 800; cursor: pointer; border: 2px solid transparent; transition: all 0.25s; text-align: center; min-width: 90px; }
+.req-step:hover { transform: translateY(-3px); }
+.req-step.active { transform: translateY(-4px); box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
+.rs1 { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+.rs2 { background: #dcfce7; color: #166534; border-color: #86efac; }
+.rs3 { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+.rs4 { background: #fce7f3; color: #9d174d; border-color: #f9a8d4; }
+.req-arrow { color: var(--gray); font-size: 1.2rem; }
+.req-detail { min-height: 80px; padding: 0.9rem 1.1rem; background: #faf5ff; border-left: 4px solid var(--primary); border-radius: 7px; font-size: 0.84rem; }
+
+/* UML 분류 퀴즈 */
+.uml-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.6rem; }
+.uml-item { background: white; border: 2px solid var(--border); border-radius: 9px; padding: 0.7rem; }
+.uml-name { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; }
+.uml-btns { display: flex; gap: 0.4rem; }
+.ul-btn { flex: 1; padding: 0.3rem 0.2rem; border: 2px solid transparent; border-radius: 5px; cursor: pointer; font-size: 0.72rem; font-weight: 700; transition: all 0.2s; }
+.ul-struct { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+.ul-behav  { background: #fce7f3; color: #9d174d; border-color: #f9a8d4; }
+.ul-btn:hover { transform: scale(1.05); }
+.ul-btn.correct { box-shadow: 0 0 0 3px var(--secondary); }
+.ul-btn.wrong { box-shadow: 0 0 0 3px var(--danger); opacity: 0.6; }
+
+/* 기능/비기능 분류 퀴즈 */
+.fn-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.fn-item { display: flex; align-items: center; gap: 0.75rem; background: white; border: 2px solid var(--border); border-radius: 9px; padding: 0.7rem 0.9rem; }
+.fn-desc { flex: 1; font-size: 0.84rem; }
+.fn-btns { display: flex; gap: 0.4rem; flex-shrink: 0; }
+.fn-btn { padding: 0.28rem 0.75rem; border: 2px solid transparent; border-radius: 5px; cursor: pointer; font-size: 0.75rem; font-weight: 700; transition: all 0.2s; }
+.fn-f  { background: #dcfce7; color: #166534; border-color: #86efac; }
+.fn-nf { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+.fn-btn.correct { box-shadow: 0 0 0 3px var(--secondary); }
+.fn-btn.wrong { box-shadow: 0 0 0 3px var(--danger); opacity: 0.55; }
+
+/* 플래시카드 */
+.fc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 0.75rem; }
+.flip-card { height: 130px; perspective: 1000px; cursor: pointer; }
+.flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.55s; transform-style: preserve-3d; }
+.flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+.fc-front, .fc-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0.75rem; text-align: center; }
+.fc-front { background: white; border: 2px solid var(--primary); color: var(--dark); font-weight: 600; font-size: 0.84rem; }
+.fc-back { background: var(--primary); color: white; transform: rotateY(180deg); font-size: 0.77rem; line-height: 1.55; }
+
+/* 퀴즈 */
+.quiz-item { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem; }
+.quiz-q { font-weight: 700; margin-bottom: 0.75rem; font-size: 0.9rem; }
+.opts { display: flex; flex-direction: column; gap: 0.4rem; }
+.opt { padding: 0.6rem 1rem; background: #f8fafc; border: 2px solid var(--border); border-radius: 7px; cursor: pointer; font-size: 0.84rem; transition: all 0.18s; }
+.opt:hover { border-color: var(--primary); background: var(--primary-light); }
+.opt.correct { border-color: var(--secondary); background: #d1fae5; color: #065f46; font-weight: 700; }
+.opt.wrong   { border-color: var(--danger); background: #fee2e2; color: #991b1b; }
+.exp { display: none; margin-top: 0.85rem; padding: 0.7rem 0.9rem; background: #faf5ff; border-left: 4px solid var(--primary); border-radius: 4px; font-size: 0.82rem; line-height: 1.7; }
+.exp.show { display: block; }
+
+.score-box { background: white; border: 2px solid var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; margin-top: 1.25rem; display: none; }
+.score-num { font-size: 2.2rem; font-weight: 800; color: var(--primary); }
+
+.btn { padding: 0.5rem 1.1rem; border: none; border-radius: 7px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: opacity 0.2s; }
+.btn:hover { opacity: 0.85; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-green { background: var(--secondary); color: white; }
+.btn-gray { background: var(--gray); color: white; }
+
+textarea.memo { width: 100%; min-height: 140px; padding: 0.9rem; border: 2px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.88rem; resize: vertical; background: #fffef7; }
+textarea.memo:focus { outline: none; border-color: var(--primary); }
+
+.scroll-top { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--primary); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; }
+.scroll-top.show { display: flex; }
+
+@media (max-width: 700px) {
+  .container { padding: 1rem; }
+  .hero h1 { font-size: 1.35rem; }
+  .card-grid { grid-template-columns: 1fr; }
+  .fc-grid { grid-template-columns: repeat(2, 1fr); }
+  .uml-grid { grid-template-columns: 1fr 1fr; }
+  .fn-item { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">📋 01. 요구사항 확인</span>
+  <a href="#s1">출제기준</a>
+  <a href="#s2">핵심개념</a>
+  <a href="#s3">키워드카드</a>
+  <a href="#s4">개발프로세스</a>
+  <a href="#s5">UML분류</a>
+  <a href="#s6">기능분류</a>
+  <a href="#s7">문제풀이</a>
+  <a href="#s8">미니퀴즈</a>
+  <a href="#s9">오답노트</a>
+</nav>
+
+<div class="hero">
+  <h1>01. 요구사항 확인</h1>
+  <p class="subtitle">현행 시스템 분석 · 요구사항 개발 · UML · 검증</p>
+  <div class="tags">
+    <span class="tag">도출·분석·명세·확인</span>
+    <span class="tag">UML</span>
+    <span class="tag">유스케이스</span>
+    <span class="tag">기능/비기능</span>
+    <span class="tag">인스펙션</span>
+    <span class="tag">미들웨어</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- S1 출제기준 -->
+<section id="s1">
+  <h2 class="section-title"><span class="sec-num">1</span> 출제기준 요약</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3 style="color:var(--primary)">🔍 현행 시스템 분석하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>현행 시스템 파악 항목</li>
+        <li>소프트웨어 아키텍처 현황</li>
+        <li>미들웨어 종류 (WAS, MOM 등)</li>
+        <li>DBMS, OS 현황 파악</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--secondary)">📝 요구사항 확인하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>도출 → 분석 → 명세 → 확인 순서</li>
+        <li>기능적 / 비기능적 요구사항</li>
+        <li>요구사항 검증 기법</li>
+        <li>SRS (소프트웨어 요구사항 명세서)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--warning)">📐 분석모델 확인하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>UML 다이어그램 종류</li>
+        <li>구조 다이어그램 vs 행위 다이어그램</li>
+        <li>유스케이스, 클래스, 시퀀스 다이어그램</li>
+        <li>DFD, ERD</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hl warn">
+    <strong>⚠️ 시험 핵심:</strong>
+    <strong>요구사항 개발 프로세스 4단계 순서</strong>(도출→분석→명세→확인),
+    <strong>UML 다이어그램 구조/행위 구분</strong>,
+    <strong>기능적/비기능적 요구사항 구분</strong>이 자주 출제됩니다.
+  </div>
+</section>
+
+<!-- S2 핵심 개념 -->
+<section id="s2">
+  <h2 class="section-title"><span class="sec-num">2</span> 핵심 개념</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="tab(this,'t-sys')">현행 시스템</button>
+    <button class="tab-btn" onclick="tab(this,'t-req')">요구사항 유형</button>
+    <button class="tab-btn" onclick="tab(this,'t-uml')">UML 다이어그램</button>
+    <button class="tab-btn" onclick="tab(this,'t-valid')">검증 기법</button>
+  </div>
+
+  <!-- 현행 시스템 -->
+  <div id="t-sys" class="tab-content active">
+    <div class="card">
+      <h3>현행 시스템 파악 순서</h3>
+      <table class="base">
+        <tr><th>순서</th><th>파악 항목</th><th>내용</th></tr>
+        <tr><td>1</td><td><strong>구성 현황</strong></td><td>업무 단위, 하위 시스템 구성</td></tr>
+        <tr><td>2</td><td><strong>기능 현황</strong></td><td>각 업무가 처리하는 기능 목록</td></tr>
+        <tr><td>3</td><td><strong>인터페이스 현황</strong></td><td>타 시스템과의 데이터 교환 방식</td></tr>
+        <tr><td>4</td><td><strong>아키텍처 현황</strong></td><td>전체 구조, 계층 구조</td></tr>
+        <tr><td>5</td><td><strong>소프트웨어 현황</strong></td><td>OS, DBMS, 미들웨어 버전</td></tr>
+        <tr><td>6</td><td><strong>하드웨어 현황</strong></td><td>서버 사양, 수량, 위치</td></tr>
+        <tr><td>7</td><td><strong>네트워크 현황</strong></td><td>네트워크 구성도, 회선 종류/용량</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>미들웨어 (Middleware) 종류</h3>
+      <table class="base">
+        <tr><th>종류</th><th>설명</th><th>예시</th></tr>
+        <tr>
+          <td><strong>WAS</strong><br><span style="font-size:0.75rem;color:var(--gray)">Web Application Server</span></td>
+          <td>동적 웹 콘텐츠 처리, 비즈니스 로직 수행</td>
+          <td>Tomcat, WebLogic, WebSphere, JBoss</td>
+        </tr>
+        <tr>
+          <td><strong>MOM</strong><br><span style="font-size:0.75rem;color:var(--gray)">Message Oriented Middleware</span></td>
+          <td>메시지 큐 기반 비동기 통신</td>
+          <td>RabbitMQ, ActiveMQ, Kafka</td>
+        </tr>
+        <tr>
+          <td><strong>TP-Monitor</strong></td>
+          <td>트랜잭션 처리 모니터링, 분산 트랜잭션 관리</td>
+          <td>Tuxedo, CICS</td>
+        </tr>
+        <tr>
+          <td><strong>ORB</strong><br><span style="font-size:0.75rem;color:var(--gray)">Object Request Broker</span></td>
+          <td>분산 환경에서 객체 간 통신 지원</td>
+          <td>CORBA</td>
+        </tr>
+        <tr>
+          <td><strong>RPC</strong><br><span style="font-size:0.75rem;color:var(--gray)">Remote Procedure Call</span></td>
+          <td>원격 프로시저를 로컬처럼 호출</td>
+          <td>gRPC</td>
+        </tr>
+        <tr>
+          <td><strong>DB 미들웨어</strong></td>
+          <td>애플리케이션과 DBMS 사이 연결</td>
+          <td>ODBC, JDBC</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 요구사항 유형 -->
+  <div id="t-req" class="tab-content">
+    <div class="card">
+      <h3>기능적 vs 비기능적 요구사항 (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>구분</th><th>정의</th><th>예시</th></tr>
+        <tr>
+          <td><strong>기능적 요구사항</strong><br><span class="badge b-func">Functional</span></td>
+          <td>시스템이 <u>무엇을 해야 하는가</u><br>기능, 동작, 처리에 관한 요구사항</td>
+          <td>
+            • 로그인/로그아웃 기능<br>
+            • 주문 처리 기능<br>
+            • 보고서 출력 기능<br>
+            • 회원 가입 기능
+          </td>
+        </tr>
+        <tr>
+          <td><strong>비기능적 요구사항</strong><br><span class="badge b-nfunc">Non-Functional</span></td>
+          <td>시스템이 <u>얼마나 잘 해야 하는가</u><br>품질, 제약, 성능에 관한 요구사항</td>
+          <td>
+            • 응답시간 3초 이내<br>
+            • 가용성 99.9% 이상<br>
+            • 보안 암호화 적용<br>
+            • 동시 사용자 1000명 처리
+          </td>
+        </tr>
+      </table>
+      <div class="hl warn" style="margin-top:0.75rem;">
+        비기능적 요구사항 세부: <strong>성능</strong> · <strong>보안</strong> · <strong>가용성</strong> · <strong>유지보수성</strong> · <strong>이식성</strong> · <strong>확장성</strong>
+      </div>
+    </div>
+    <div class="card">
+      <h3>SRS (소프트웨어 요구사항 명세서) 특성</h3>
+      <table class="base">
+        <tr><th>특성</th><th>설명</th></tr>
+        <tr><td><strong>정확성</strong></td><td>요구사항이 정확하게 기술되어야 함</td></tr>
+        <tr><td><strong>완전성</strong></td><td>모든 요구사항이 빠짐없이 포함</td></tr>
+        <tr><td><strong>일관성</strong></td><td>요구사항 간 상충·모순 없어야 함</td></tr>
+        <tr><td><strong>명확성</strong></td><td>누구나 같은 의미로 해석할 수 있어야 함</td></tr>
+        <tr><td><strong>검증 가능성</strong></td><td>테스트를 통해 충족 여부 확인 가능</td></tr>
+        <tr><td><strong>추적 가능성</strong></td><td>출처와 이후 설계·구현에 추적 가능</td></tr>
+        <tr><td><strong>변경 용이성</strong></td><td>요구사항 변경이 용이하게 구조화</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- UML -->
+  <div id="t-uml" class="tab-content">
+    <div class="card">
+      <h3>UML 다이어그램 분류</h3>
+      <table class="base">
+        <tr>
+          <th><span class="badge b-struct">구조 다이어그램</span><br><span style="font-weight:400;font-size:0.78rem;">Structural — 정적 구조</span></th>
+          <th><span class="badge b-behav">행위 다이어그램</span><br><span style="font-weight:400;font-size:0.78rem;">Behavioral — 동적 행위</span></th>
+        </tr>
+        <tr>
+          <td>
+            • <strong>클래스</strong> — 클래스 간 관계<br>
+            • <strong>객체</strong> — 클래스 인스턴스<br>
+            • <strong>컴포넌트</strong> — SW 컴포넌트<br>
+            • <strong>배치</strong> — HW 배치<br>
+            • <strong>패키지</strong> — 패키지 간 관계
+          </td>
+          <td>
+            • <strong>유스케이스</strong> — 기능 요구사항<br>
+            • <strong>시퀀스</strong> — 메시지 시간 순서<br>
+            • <strong>활동</strong> — 처리 흐름<br>
+            • <strong>상태</strong> — 상태 변화<br>
+            • <strong>협력/통신</strong> — 객체 간 관계
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>주요 UML 다이어그램 용도</h3>
+      <table class="base">
+        <tr><th>다이어그램</th><th>분류</th><th>용도</th></tr>
+        <tr>
+          <td><strong>유스케이스</strong></td>
+          <td><span class="badge b-behav">행위</span></td>
+          <td>액터(Actor)와 시스템의 상호작용, 기능 요구사항 표현</td>
+        </tr>
+        <tr>
+          <td><strong>클래스</strong></td>
+          <td><span class="badge b-struct">구조</span></td>
+          <td>클래스 속성·메서드·관계 (집합, 상속, 의존, 연관)</td>
+        </tr>
+        <tr>
+          <td><strong>시퀀스</strong></td>
+          <td><span class="badge b-behav">행위</span></td>
+          <td>객체 간 메시지 교환 순서, 시간 흐름에 따른 상호작용</td>
+        </tr>
+        <tr>
+          <td><strong>활동</strong></td>
+          <td><span class="badge b-behav">행위</span></td>
+          <td>업무 처리 흐름, 조건 분기, 병렬 처리 표현</td>
+        </tr>
+        <tr>
+          <td><strong>상태</strong></td>
+          <td><span class="badge b-behav">행위</span></td>
+          <td>객체의 상태와 상태 전이 조건</td>
+        </tr>
+        <tr>
+          <td><strong>컴포넌트</strong></td>
+          <td><span class="badge b-struct">구조</span></td>
+          <td>소프트웨어 컴포넌트 간 의존 관계</td>
+        </tr>
+        <tr>
+          <td><strong>배치</strong></td>
+          <td><span class="badge b-struct">구조</span></td>
+          <td>하드웨어 노드에 SW 컴포넌트 배치 현황</td>
+        </tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>클래스 다이어그램 관계 종류</h3>
+      <table class="base">
+        <tr><th>관계</th><th>표기</th><th>설명</th></tr>
+        <tr><td><strong>연관 (Association)</strong></td><td>────</td><td>클래스 간 일반적인 관계</td></tr>
+        <tr><td><strong>집합 (Aggregation)</strong></td><td>◇────</td><td>전체-부분 관계 (부분이 독립 존재 가능)</td></tr>
+        <tr><td><strong>복합 (Composition)</strong></td><td>◆────</td><td>강한 전체-부분 (전체 소멸 시 부분도 소멸)</td></tr>
+        <tr><td><strong>일반화 (Generalization)</strong></td><td>△────</td><td>상속 관계 (is-a)</td></tr>
+        <tr><td><strong>의존 (Dependency)</strong></td><td>------&gt;</td><td>한 클래스가 다른 클래스를 일시적으로 사용</td></tr>
+        <tr><td><strong>실체화 (Realization)</strong></td><td>------△</td><td>인터페이스 구현 관계</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 검증 기법 -->
+  <div id="t-valid" class="tab-content">
+    <div class="card">
+      <h3>요구사항 검증 기법 (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>기법</th><th>설명</th><th>특징</th></tr>
+        <tr>
+          <td><strong>동료 검토</strong><br><span style="font-size:0.75rem;color:var(--gray)">Peer Review</span></td>
+          <td>작성자가 명세서를 설명하고 다른 팀원들이 결함을 발견</td>
+          <td>비형식적, 소규모</td>
+        </tr>
+        <tr>
+          <td><strong>워크쓰루</strong><br><span style="font-size:0.75rem;color:var(--gray)">Walkthrough</span></td>
+          <td>개발자가 주도하여 소수의 동료들과 함께 검토</td>
+          <td>비형식적, 개발자 주도</td>
+        </tr>
+        <tr>
+          <td><strong>인스펙션</strong><br><span style="font-size:0.75rem;color:var(--gray)">Inspection</span></td>
+          <td>진행자(Moderator)가 주도, 체크리스트 기반 공식 검토</td>
+          <td><strong>가장 공식적</strong>, 역할 분리 (작성자≠검토자)</td>
+        </tr>
+        <tr>
+          <td><strong>프로토타이핑</strong></td>
+          <td>초기 버전을 빠르게 만들어 사용자 검증</td>
+          <td>사용자 피드백 빠름, 비용 발생</td>
+        </tr>
+        <tr>
+          <td><strong>테스트 설계</strong></td>
+          <td>요구사항 기반으로 테스트 케이스를 미리 작성하여 검증</td>
+          <td>테스트 가능성 확인</td>
+        </tr>
+      </table>
+      <div class="hl warn" style="margin-top:0.75rem;">
+        공식성 순서: <strong>동료검토 &lt; 워크쓰루 &lt; 인스펙션</strong> (인스펙션이 가장 공식적)
+      </div>
+    </div>
+    <div class="card">
+      <h3>요구사항 도출 기법</h3>
+      <table class="base">
+        <tr><th>기법</th><th>설명</th></tr>
+        <tr><td><strong>인터뷰</strong></td><td>이해관계자와 직접 대화하여 요구사항 수집</td></tr>
+        <tr><td><strong>설문조사</strong></td><td>다수를 대상으로 구조화된 질문</td></tr>
+        <tr><td><strong>브레인스토밍</strong></td><td>자유로운 아이디어 제안, 비판 금지</td></tr>
+        <tr><td><strong>프로토타이핑</strong></td><td>시제품 개발로 요구사항 구체화</td></tr>
+        <tr><td><strong>유스케이스</strong></td><td>사용자-시스템 상호작용 시나리오 기반</td></tr>
+        <tr><td><strong>관찰</strong></td><td>사용자 업무 현장 직접 관찰</td></tr>
+        <tr><td><strong>워크샵</strong></td><td>관계자 집합하여 집중적으로 요구사항 도출</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- S3 플래시카드 -->
+<section id="s3">
+  <h2 class="section-title"><span class="sec-num">3</span> 시험용 키워드 플래시카드</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:0.85rem;">카드를 클릭하면 정의가 나옵니다.</p>
+  <div class="fc-grid" id="fc-container"></div>
+</section>
+
+<!-- S4 요구사항 개발 프로세스 -->
+<section id="s4">
+  <h2 class="section-title"><span class="sec-num">4</span> 요구사항 개발 프로세스 시각화</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:1rem;">각 단계를 클릭하면 상세 내용이 나타납니다.</p>
+    <div class="req-flow">
+      <div class="req-step rs1" onclick="showReq(0)" id="rs-0">① 도출</div>
+      <span class="req-arrow">→</span>
+      <div class="req-step rs2" onclick="showReq(1)" id="rs-1">② 분석</div>
+      <span class="req-arrow">→</span>
+      <div class="req-step rs3" onclick="showReq(2)" id="rs-2">③ 명세</div>
+      <span class="req-arrow">→</span>
+      <div class="req-step rs4" onclick="showReq(3)" id="rs-3">④ 확인</div>
+    </div>
+    <div class="req-detail" id="req-detail">단계를 클릭하면 설명이 나타납니다.</div>
+  </div>
+</section>
+
+<!-- S5 UML 분류 퀴즈 -->
+<section id="s5">
+  <h2 class="section-title"><span class="sec-num">5</span> UML 다이어그램 분류 퀴즈</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:1rem;">각 다이어그램이 구조 다이어그램인지 행위 다이어그램인지 선택하세요.</p>
+  <div class="uml-grid" id="uml-container"></div>
+  <div style="display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap;align-items:center;">
+    <button class="btn btn-primary" onclick="checkUML()">채점하기</button>
+    <button class="btn btn-gray" onclick="resetUML()">다시 시작</button>
+    <span id="uml-score" style="font-size:0.9rem;font-weight:700;color:var(--primary);"></span>
+  </div>
+</section>
+
+<!-- S6 기능/비기능 분류 퀴즈 -->
+<section id="s6">
+  <h2 class="section-title"><span class="sec-num">6</span> 기능적 / 비기능적 요구사항 분류</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:1rem;">각 요구사항이 기능적인지 비기능적인지 선택하세요.</p>
+  <div class="fn-list" id="fn-container"></div>
+  <div style="display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap;align-items:center;">
+    <button class="btn btn-primary" onclick="checkFN()">채점하기</button>
+    <button class="btn btn-gray" onclick="resetFN()">다시 시작</button>
+    <span id="fn-score" style="font-size:0.9rem;font-weight:700;color:var(--primary);"></span>
+  </div>
+</section>
+
+<!-- S7 문제 풀이 -->
+<section id="s7">
+  <h2 class="section-title"><span class="sec-num">7</span> 대표 문제 유형</h2>
+  <div id="oq-container"></div>
+  <div class="score-box" id="oq-score">
+    <div class="score-num" id="oq-snum">0/0</div>
+    <p style="color:var(--gray);margin-top:0.4rem;" id="oq-smsg"></p>
+  </div>
+  <button class="btn btn-primary" style="margin-top:1rem;" onclick="resetOQ()">다시 풀기</button>
+</section>
+
+<!-- S8 미니 퀴즈 -->
+<section id="s8">
+  <h2 class="section-title"><span class="sec-num">8</span> 미니 퀴즈</h2>
+  <div id="mq-container"></div>
+  <button class="btn btn-green" style="margin-top:0.85rem;" onclick="checkMQ()">채점하기</button>
+  <div id="mq-result" style="display:none;margin-top:1rem;"></div>
+</section>
+
+<!-- S9 오답노트 -->
+<section id="s9">
+  <h2 class="section-title"><span class="sec-num">9</span> 오답 노트</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.7rem;">틀린 문제나 헷갈리는 개념을 기록하세요. (자동 저장)</p>
+    <textarea class="memo" id="memo" placeholder="예) 요구사항 개발: 도출→분석→명세→확인 (도분명확)&#10;예) 검증 공식성: 동료검토 < 워크쓰루 < 인스펙션&#10;예) 유스케이스·시퀀스·활동·상태 → 행위 다이어그램&#10;예) 클래스·컴포넌트·배치·패키지 → 구조 다이어그램&#10;예) 기능 요구사항: 무엇을(What) / 비기능: 얼마나 잘(How well)"></textarea>
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.5rem;">
+      <button class="btn btn-primary" onclick="saveMemo()">저장</button>
+      <span id="memo-ok" style="font-size:0.8rem;color:#059669;display:none;">✓ 저장됨</span>
+    </div>
+  </div>
+</section>
+
+</div>
+<button class="scroll-top" id="stbtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ── 요구사항 프로세스 데이터 ──────────────────────────────
+const reqSteps = [
+  {
+    title:'① 도출 (Elicitation)',
+    desc:'이해관계자(고객, 사용자)로부터 요구사항을 수집하는 단계',
+    methods:'인터뷰, 설문조사, 브레인스토밍, 유스케이스, 관찰, 워크샵, 프로토타이핑',
+    output:'요구사항 목록 초안',
+    key:'가장 어려운 단계 — 이해관계자의 요구가 불명확할 수 있음',
+  },
+  {
+    title:'② 분석 (Analysis)',
+    desc:'도출된 요구사항의 상충 관계를 파악하고 우선순위를 결정하는 단계',
+    methods:'DFD(데이터 흐름도), ERD(개체-관계 다이어그램), 유스케이스 다이어그램',
+    output:'분석 모델 (DFD, ERD, 유스케이스)',
+    key:'기능적/비기능적 요구사항 분류, 충돌 요구사항 해결',
+  },
+  {
+    title:'③ 명세 (Specification)',
+    desc:'요구사항을 체계적으로 문서화하는 단계',
+    methods:'SRS 작성 (정확성, 완전성, 일관성, 명확성, 추적 가능성)',
+    output:'SRS (Software Requirements Specification, 소프트웨어 요구사항 명세서)',
+    key:'SRS 품질 특성: 정확성·완전성·일관성·명확성·검증가능성',
+  },
+  {
+    title:'④ 확인/검증 (Validation)',
+    desc:'명세된 요구사항이 실제 요구를 올바르게 반영했는지 검증하는 단계',
+    methods:'동료 검토, 워크쓰루, 인스펙션, 프로토타이핑, 테스트 설계',
+    output:'검토 완료된 SRS, 변경 요청 목록',
+    key:'검증 공식성: 동료검토 < 워크쓰루 < 인스펙션',
+  },
+];
+
+// ── 플래시카드 데이터 ──────────────────────────────────────
+const fcData = [
+  { f:'요구사항 개발\n4단계 순서',    b:'도출 → 분석 → 명세 → 확인\n암기: 도분명확' },
+  { f:'기능적 요구사항',              b:'시스템이 무엇을 해야 하는가\n로그인·주문·보고서 기능\nWhat' },
+  { f:'비기능적 요구사항',            b:'얼마나 잘 해야 하는가\n성능·보안·가용성·유지보수성\nHow well' },
+  { f:'인스펙션 (Inspection)',        b:'가장 공식적인 검토 기법\n진행자(Moderator)가 주도\n체크리스트 기반' },
+  { f:'워크쓰루 (Walkthrough)',       b:'개발자 주도 비형식 검토\n소수 동료와 함께 진행\n인스펙션보다 덜 공식적' },
+  { f:'SRS',                          b:'소프트웨어 요구사항 명세서\n명세 단계 산출물\n정확성·완전성·일관성 필수' },
+  { f:'유스케이스 다이어그램',         b:'행위 다이어그램\n액터와 시스템 상호작용\n기능 요구사항 표현' },
+  { f:'시퀀스 다이어그램',             b:'행위 다이어그램\n객체 간 메시지 시간 순서\n수직 방향 = 시간 흐름' },
+  { f:'클래스 다이어그램',             b:'구조 다이어그램\n클래스 속성·메서드·관계\n상속·집합·복합·의존' },
+  { f:'활동 다이어그램',               b:'행위 다이어그램\n처리 흐름, 조건 분기\n업무 처리 순서 표현' },
+  { f:'WAS',                          b:'Web Application Server\n동적 웹 콘텐츠 처리\nTomcat, WebLogic, JBoss' },
+  { f:'MOM',                          b:'Message Oriented Middleware\n메시지 큐 기반 비동기 통신\nRabbitMQ, Kafka' },
+  { f:'집합 vs 복합 관계',             b:'집합(◇): 부분이 독립 존재 가능\n복합(◆): 전체 소멸 시 부분도 소멸\nhas-a 관계' },
+  { f:'일반화 (Generalization)',       b:'클래스 다이어그램 관계\n상속 관계 (is-a)\n△ 화살표 표기' },
+  { f:'배치 다이어그램',               b:'구조 다이어그램\nHW 노드에 SW 배치 현황\n서버·PC·장비 구성도' },
+  { f:'브레인스토밍',                  b:'요구사항 도출 기법\n자유로운 아이디어 제안\n비판 금지 규칙' },
+];
+
+// ── UML 분류 퀴즈 데이터 ─────────────────────────────────
+const umlData = [
+  { name:'클래스 다이어그램',   type:'S' },
+  { name:'유스케이스 다이어그램', type:'B' },
+  { name:'시퀀스 다이어그램',   type:'B' },
+  { name:'컴포넌트 다이어그램', type:'S' },
+  { name:'활동 다이어그램',     type:'B' },
+  { name:'배치 다이어그램',     type:'S' },
+  { name:'상태 다이어그램',     type:'B' },
+  { name:'패키지 다이어그램',   type:'S' },
+  { name:'협력 다이어그램',     type:'B' },
+  { name:'객체 다이어그램',     type:'S' },
+];
+
+// ── 기능/비기능 분류 데이터 ───────────────────────────────
+const fnData = [
+  { desc:'사용자는 아이디와 비밀번호로 로그인할 수 있어야 한다',                 type:'F' },
+  { desc:'시스템은 3초 이내에 검색 결과를 반환해야 한다',                        type:'NF' },
+  { desc:'관리자는 사용자 목록을 조회하고 삭제할 수 있어야 한다',                 type:'F' },
+  { desc:'시스템은 99.9% 이상의 가용성을 유지해야 한다',                         type:'NF' },
+  { desc:'사용자는 장바구니에 상품을 추가하고 주문할 수 있어야 한다',              type:'F' },
+  { desc:'모든 개인정보는 AES-256 암호화로 저장되어야 한다',                      type:'NF' },
+  { desc:'시스템은 월별 판매 보고서를 PDF로 출력할 수 있어야 한다',               type:'F' },
+  { desc:'동시 접속자 1,000명을 처리할 수 있어야 한다',                           type:'NF' },
+];
+
+// ── 대표 문제 데이터 ─────────────────────────────────────
+const oqData = [
+  {
+    q:'요구사항 개발 프로세스의 순서로 올바른 것은?',
+    opts:[
+      '분석 → 도출 → 확인 → 명세',
+      '도출 → 분석 → 명세 → 확인',
+      '도출 → 명세 → 분석 → 확인',
+      '명세 → 도출 → 분석 → 확인',
+    ], ans:1,
+    exp:'요구사항 개발 프로세스: 도출 → 분석 → 명세 → 확인\n암기: 도분명확\n① 도출: 인터뷰, 브레인스토밍으로 수집\n② 분석: DFD, ERD, 유스케이스로 분석\n③ 명세: SRS 작성\n④ 확인: 인스펙션, 워크쓰루로 검증',
+  },
+  {
+    q:'"시스템 응답시간은 2초 이내여야 한다"는 어떤 요구사항에 해당하는가?',
+    opts:['기능적 요구사항','비기능적 요구사항','기술적 요구사항','사용자 요구사항'], ans:1,
+    exp:'비기능적 요구사항: "얼마나 잘 해야 하는가" — 성능, 보안, 가용성, 유지보수성\n기능적 요구사항: "무엇을 해야 하는가" — 로그인, 주문, 조회 기능\n응답시간, 처리량, 가용성 → 비기능적',
+  },
+  {
+    q:'UML 다이어그램 중 구조(정적) 다이어그램이 아닌 것은?',
+    opts:['클래스 다이어그램','컴포넌트 다이어그램','유스케이스 다이어그램','배치 다이어그램'], ans:2,
+    exp:'유스케이스 다이어그램은 행위(동적) 다이어그램입니다.\n구조 다이어그램: 클래스, 객체, 컴포넌트, 배치, 패키지\n행위 다이어그램: 유스케이스, 시퀀스, 활동, 상태, 협력',
+  },
+  {
+    q:'가장 공식적인 요구사항 검증 기법으로, 진행자(Moderator)가 역할을 맡아 체크리스트 기반으로 진행하는 검토 기법은?',
+    opts:['동료 검토','워크쓰루','인스펙션','프로토타이핑'], ans:2,
+    exp:'검증 기법 공식성 순서: 동료검토 < 워크쓰루 < 인스펙션\n인스펙션: 가장 공식적, 진행자(Moderator) 역할 분리\n워크쓰루: 비형식적, 개발자 주도\n동료 검토: 작성자가 설명, 팀원 검토',
+  },
+  {
+    q:'UML 시퀀스 다이어그램(Sequence Diagram)에 대한 설명으로 옳은 것은?',
+    opts:[
+      '클래스 간의 정적인 구조 관계를 표현한다',
+      '시스템의 하드웨어 배치를 표현한다',
+      '객체 간 메시지 교환의 시간 순서를 표현한다',
+      '업무 처리 흐름과 조건 분기를 표현한다',
+    ], ans:2,
+    exp:'시퀀스 다이어그램: 객체 간 메시지 교환의 시간 순서\n수직 방향 = 시간 흐름, 수평 방향 = 메시지\n행위(동적) 다이어그램\n활동 다이어그램: 처리 흐름/조건 분기\n배치 다이어그램: 하드웨어 배치',
+  },
+  {
+    q:'소프트웨어 요구사항 명세서(SRS)의 특성으로 옳지 않은 것은?',
+    opts:['정확성','완전성','모호성','추적 가능성'], ans:2,
+    exp:'SRS 품질 특성: 정확성, 완전성, 일관성, 명확성, 검증가능성, 추적가능성, 변경용이성\n모호성(Ambiguity)은 SRS의 특성이 아니라 피해야 할 결함입니다.\n명확성(Unambiguity)이 올바른 특성 — 누구나 같은 의미로 해석',
+  },
+  {
+    q:'WAS(Web Application Server)에 해당하지 않는 것은?',
+    opts:['Apache Tomcat','WebLogic','Apache HTTP Server','JBoss'], ans:2,
+    exp:'Apache HTTP Server는 웹 서버(정적 콘텐츠)이며 WAS가 아닙니다.\nWAS: Tomcat, WebLogic, WebSphere, JBoss, Undertow\n웹 서버: Apache HTTP Server, Nginx (정적 콘텐츠 처리)',
+  },
+  {
+    q:'클래스 다이어그램에서 ◆(채워진 다이아몬드)로 표현하는 관계는?',
+    opts:['집합 (Aggregation)','복합 (Composition)','의존 (Dependency)','일반화 (Generalization)'], ans:1,
+    exp:'◇ 빈 다이아몬드 = 집합(Aggregation): 부분이 독립 존재 가능\n◆ 채운 다이아몬드 = 복합(Composition): 전체 소멸 시 부분도 소멸\n△ 삼각형 = 일반화(상속)\n점선 화살표 = 의존(Dependency)',
+  },
+];
+
+// ── 미니퀴즈 데이터 ───────────────────────────────────────
+const mqData = [
+  { q:'요구사항 개발 프로세스에서 SRS를 작성하는 단계는?', opts:['도출','분석','명세','확인'], ans:2 },
+  { q:'행위(동적) 다이어그램이 아닌 것은?', opts:['유스케이스','시퀀스','클래스','활동'], ans:2 },
+  { q:'"동시접속자 500명 처리"는 어떤 요구사항인가?', opts:['기능적','비기능적','사용자','시스템'], ans:1 },
+  { q:'가장 공식적인 요구사항 검증 기법은?', opts:['동료검토','워크쓰루','인스펙션','브레인스토밍'], ans:2 },
+  { q:'메시지 큐 기반 비동기 통신을 지원하는 미들웨어는?', opts:['WAS','MOM','TP-Monitor','ORB'], ans:1 },
+  { q:'클래스 다이어그램에서 상속(is-a) 관계를 나타내는 것은?', opts:['집합','복합','일반화','의존'], ans:2 },
+  { q:'시퀀스 다이어그램이 표현하는 것은?', opts:['클래스 정적 구조','하드웨어 배치','메시지 시간 순서','처리 흐름'], ans:2 },
+  { q:'요구사항 도출 기법 중 비판 금지 규칙을 적용하는 기법은?', opts:['인터뷰','워크쓰루','브레인스토밍','인스펙션'], ans:2 },
+];
+
+// ── 렌더링 ────────────────────────────────────────────────
+function renderFC() {
+  document.getElementById('fc-container').innerHTML = fcData.map(c =>
+    `<div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-inner">
+        <div class="fc-front">${c.f.replace(/\n/g,'<br>')}</div>
+        <div class="fc-back">${c.b.replace(/\n/g,'<br>')}</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+let activeReq = -1;
+function showReq(i) {
+  document.querySelectorAll('.req-step').forEach((el, j) => el.classList.toggle('active', j === i));
+  const s = reqSteps[i];
+  const det = document.getElementById('req-detail');
+  if (activeReq === i) {
+    det.textContent = '단계를 클릭하면 설명이 나타납니다.';
+    document.getElementById(`rs-${i}`).classList.remove('active');
+    activeReq = -1; return;
+  }
+  det.innerHTML = `
+    <strong>${s.title}</strong><br>
+    <p style="margin-top:0.45rem;">${s.desc}</p>
+    <p style="margin-top:0.45rem;"><strong>기법:</strong> ${s.methods}</p>
+    <p style="margin-top:0.45rem;"><strong>산출물:</strong> ${s.output}</p>
+    <div class="hl" style="margin-top:0.6rem;font-size:0.8rem;">${s.key}</div>`;
+  activeReq = i;
+}
+
+let umlSelected = {};
+function renderUML() {
+  umlSelected = {};
+  document.getElementById('uml-score').textContent = '';
+  document.getElementById('uml-container').innerHTML = umlData.map((item, i) =>
+    `<div class="uml-item">
+      <div class="uml-name">${item.name}</div>
+      <div class="uml-btns">
+        <button class="ul-btn ul-struct" onclick="pickUML(${i},'S',this)" id="ub-${i}-S">구조</button>
+        <button class="ul-btn ul-behav"  onclick="pickUML(${i},'B',this)" id="ub-${i}-B">행위</button>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function pickUML(i, type, el) {
+  ['S','B'].forEach(t => {
+    const b = document.getElementById(`ub-${i}-${t}`);
+    if (b) { b.classList.remove('correct','wrong'); b.style.outline='none'; }
+  });
+  umlSelected[i] = type;
+  el.style.outline = '3px solid #6d28d9';
+}
+
+function checkUML() {
+  let sc = 0;
+  umlData.forEach((item, i) => {
+    ['S','B'].forEach(t => {
+      const b = document.getElementById(`ub-${i}-${t}`);
+      if (b) { b.classList.remove('correct','wrong'); b.style.outline='none'; }
+    });
+    document.getElementById(`ub-${i}-${item.type}`).classList.add('correct');
+    if (umlSelected[i] && umlSelected[i] !== item.type)
+      document.getElementById(`ub-${i}-${umlSelected[i]}`).classList.add('wrong');
+    if (umlSelected[i] === item.type) sc++;
+  });
+  document.getElementById('uml-score').textContent = `${sc}/${umlData.length} 정답`;
+}
+
+function resetUML() { renderUML(); }
+
+let fnSelected = {};
+function renderFN() {
+  fnSelected = {};
+  document.getElementById('fn-score').textContent = '';
+  document.getElementById('fn-container').innerHTML = fnData.map((item, i) =>
+    `<div class="fn-item">
+      <div class="fn-desc">${item.desc}</div>
+      <div class="fn-btns">
+        <button class="fn-btn fn-f"  onclick="pickFN(${i},'F',this)"  id="fb-${i}-F">기능</button>
+        <button class="fn-btn fn-nf" onclick="pickFN(${i},'NF',this)" id="fb-${i}-NF">비기능</button>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function pickFN(i, type, el) {
+  ['F','NF'].forEach(t => {
+    const b = document.getElementById(`fb-${i}-${t}`);
+    if (b) { b.classList.remove('correct','wrong'); b.style.outline='none'; }
+  });
+  fnSelected[i] = type;
+  el.style.outline = '3px solid #6d28d9';
+}
+
+function checkFN() {
+  let sc = 0;
+  fnData.forEach((item, i) => {
+    ['F','NF'].forEach(t => {
+      const b = document.getElementById(`fb-${i}-${t}`);
+      if (b) { b.classList.remove('correct','wrong'); b.style.outline='none'; }
+    });
+    document.getElementById(`fb-${i}-${item.type}`).classList.add('correct');
+    if (fnSelected[i] && fnSelected[i] !== item.type)
+      document.getElementById(`fb-${i}-${fnSelected[i]}`).classList.add('wrong');
+    if (fnSelected[i] === item.type) sc++;
+  });
+  document.getElementById('fn-score').textContent = `${sc}/${fnData.length} 정답`;
+}
+
+function resetFN() { renderFN(); }
+
+let oqAnswered = {}, oqSelected = {};
+function renderOQ() {
+  oqAnswered = {}; oqSelected = {};
+  document.getElementById('oq-container').innerHTML = oqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi+1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<div class="opt" onclick="pickOQ(${qi},${oi},this)" id="oq-${qi}-${oi}">${o}</div>`
+      ).join('')}</div>
+      <div class="exp" id="exp-${qi}">${q.exp.replace(/\n/g,'<br>')}</div>
+    </div>`
+  ).join('');
+  document.getElementById('oq-score').style.display = 'none';
+}
+
+function pickOQ(qi, oi, el) {
+  if (oqAnswered[qi]) return;
+  oqAnswered[qi] = true; oqSelected[qi] = oi;
+  const correct = oqData[qi].ans;
+  document.getElementById(`oq-${qi}-${correct}`).classList.add('correct');
+  if (oi !== correct) el.classList.add('wrong');
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  if (Object.keys(oqAnswered).length === oqData.length) {
+    const sc = oqData.filter((_, i) => oqSelected[i] === oqData[i].ans).length;
+    document.getElementById('oq-snum').textContent = `${sc}/${oqData.length}`;
+    document.getElementById('oq-smsg').textContent = sc === oqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 오답노트에 기록하세요!';
+    document.getElementById('oq-score').style.display = 'block';
+  }
+}
+
+function resetOQ() { renderOQ(); }
+
+function renderMQ() {
+  document.getElementById('mq-container').innerHTML = mqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi+1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<label style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;background:#f8fafc;border:2px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.84rem;" id="mql-${qi}-${oi}">
+          <input type="radio" name="mq${qi}" value="${oi}" style="margin:0;flex-shrink:0;">${o}
+        </label>`
+      ).join('')}</div>
+    </div>`
+  ).join('');
+  document.getElementById('mq-result').style.display = 'none';
+}
+
+function checkMQ() {
+  let sc = 0;
+  mqData.forEach((q, qi) => {
+    const sel = document.querySelector(`input[name="mq${qi}"]:checked`);
+    const v = sel ? +sel.value : -1;
+    const lbl = id => document.getElementById(`mql-${qi}-${id}`);
+    lbl(q.ans).style.cssText += ';border-color:#059669;background:#d1fae5;';
+    if (v !== -1 && v !== q.ans) lbl(v).style.cssText += ';border-color:#dc2626;background:#fee2e2;';
+    if (v === q.ans) sc++;
+  });
+  const r = document.getElementById('mq-result');
+  r.style.display = 'block';
+  r.innerHTML = `<div class="card" style="text-align:center;">
+    <div class="score-num">${sc}/${mqData.length}</div>
+    <p style="color:var(--gray);margin-top:0.4rem;">${sc === mqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 다시 복습하세요!'}</p>
+  </div>`;
+}
+
+function tab(btn, id) {
+  btn.closest('section').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.closest('section').querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+function saveMemo() {
+  localStorage.setItem('req_memo', document.getElementById('memo').value);
+  const ok = document.getElementById('memo-ok');
+  ok.style.display = 'inline';
+  setTimeout(() => { ok.style.display = 'none'; }, 2000);
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('stbtn').classList.toggle('show', window.scrollY > 300);
+  let cur = '';
+  document.querySelectorAll('section[id]').forEach(s => { if (window.scrollY >= s.offsetTop - 110) cur = s.id; });
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderFC();
+  renderUML();
+  renderFN();
+  renderOQ();
+  renderMQ();
+  const m = localStorage.getItem('req_memo');
+  if (m) document.getElementById('memo').value = m;
+  document.getElementById('memo').addEventListener('input', () =>
+    localStorage.setItem('req_memo', document.getElementById('memo').value)
+  );
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>02 Java 코드 추적 — Level-2</title>
+<style>
+:root {
+  --dark: #0f172a; --gray: #64748b; --light: #f8fafc; --border: #e2e8f0;
+  --accent: #1d4ed8; --accent2: #3b82f6;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.7; }
+
+/* ── HERO ── */
+.hero { background: linear-gradient(135deg, #030712 0%, #0f172a 50%, #1e3a8a 100%); color: white; padding: 2.5rem 1.5rem 2rem; }
+.hero-inner { max-width: 900px; margin: 0 auto; }
+.hero-back { font-size: 0.78rem; color: #94a3b8; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; margin-bottom: 1rem; }
+.hero-back:hover { color: white; }
+.hero h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.3rem; }
+.hero p { color: #bfdbfe; font-size: 0.88rem; }
+.hero-meta { display: flex; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
+.htag { background: rgba(255,255,255,0.12); padding: 0.22rem 0.65rem; border-radius: 20px; font-size: 0.75rem; }
+
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+/* ── TOC ── */
+.toc { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.5rem; margin-bottom: 2rem; }
+.toc-title { font-size: 0.78rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.7rem; }
+.toc-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.toc-list a { font-size: 0.8rem; color: var(--accent); text-decoration: none; border: 1px solid #bfdbfe; background: #eff6ff; padding: 0.2rem 0.6rem; border-radius: 8px; }
+.toc-list a:hover { background: #dbeafe; }
+
+/* ── SECTION TITLE ── */
+.sec-title { font-size: 1.3rem; font-weight: 800; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 20px; }
+
+/* ── ALERT BOXES ── */
+.info  { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #1e40af; margin: 1rem 0; }
+.warn  { background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #713f12; margin: 1rem 0; }
+.tip   { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #166534; margin: 1rem 0; }
+.red   { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #991b1b; margin: 1rem 0; }
+
+/* ── CODE ── */
+.code-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; margin: 0.8rem 0; border-radius: 10px; }
+.code-block { background: #0f172a; border-radius: 10px; padding: 1.1rem 1.3rem; min-width: 480px; }
+.code-block pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.84rem; line-height: 1.65; color: #e2e8f0; }
+.ln  { color: #334155; user-select: none; margin-right: 0.8rem; font-size: 0.76rem; }
+.kw  { color: #93c5fd; }
+.tp  { color: #67e8f9; }
+.fn  { color: #fbbf24; }
+.str { color: #86efac; }
+.num { color: #f9a8d4; }
+.cmt { color: #475569; font-style: italic; }
+.ann { color: #c4b5fd; }    /* annotations @Override */
+.cls { color: #34d399; }    /* class names */
+
+/* ── TRACE TABLE ── */
+.trace-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; margin: 1rem 0; }
+.trace-wrap::before { content: '← 좌우 스크롤'; display: none; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.3rem; }
+.trace-table { border-collapse: collapse; font-size: 0.82rem; font-family: 'Courier New', monospace; white-space: nowrap; }
+.trace-table th { background: #0f172a; color: #93c5fd; padding: 0.45rem 0.9rem; text-align: center; font-size: 0.74rem; font-weight: 700; }
+.trace-table td { padding: 0.4rem 0.9rem; border-bottom: 1px solid var(--border); text-align: center; }
+.trace-table tr:hover td { background: #eff6ff; }
+.changed { background: #fef3c7 !important; color: #92400e; font-weight: 700; }
+.output  { background: #dcfce7 !important; color: #15803d; font-weight: 700; }
+.active  { background: #dbeafe !important; }
+.skip    { background: #fee2e2 !important; color: #991b1b; text-decoration: line-through; }
+
+/* ── CONCEPT CARD ── */
+.concept { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1rem; }
+.concept h4 { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.4rem; }
+.concept h4::before { content: '▸'; color: var(--accent); }
+
+/* ── DISPATCH TABLE ── */
+.dispatch { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 10px; overflow: hidden; margin: 1rem 0; font-size: 0.82rem; }
+.dispatch-cell { background: white; padding: 0.65rem 0.9rem; }
+.dispatch-cell.head { background: #0f172a; color: #93c5fd; font-weight: 700; font-size: 0.76rem; }
+.dispatch-cell.parent { background: #eff6ff; color: #1e40af; }
+.dispatch-cell.child  { background: #f0fdf4; color: #166534; }
+.dispatch-cell.result { background: #fef3c7; color: #92400e; font-weight: 700; }
+
+/* ── CALL STACK ── */
+.call-stack { display: flex; flex-direction: column; gap: 2px; max-width: 380px; }
+.call-frame { background: white; border: 1px solid var(--border); border-radius: 6px; padding: 0.45rem 0.9rem; font-family: monospace; font-size: 0.82rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+.call-frame.base { border-color: #22c55e; background: #f0fdf4; }
+.call-frame.ret  { border-color: var(--accent2); }
+.call-frame.skip { border-color: #fca5a5; background: #fef2f2; }
+.call-arrow { font-size: 0.72rem; color: var(--gray); white-space: nowrap; }
+
+/* ── FLOW BOX ── */
+.flow { display: flex; gap: 0; align-items: center; flex-wrap: wrap; margin: 0.8rem 0; }
+.flow-box { background: white; border: 2px solid var(--accent); border-radius: 8px; padding: 0.45rem 0.75rem; font-size: 0.82rem; font-weight: 700; white-space: nowrap; }
+.flow-box.try-b  { border-color: #2563eb; background: #eff6ff; color: #1e40af; }
+.flow-box.catch-b{ border-color: #f59e0b; background: #fef3c7; color: #92400e; }
+.flow-box.fin-b  { border-color: #16a34a; background: #f0fdf4; color: #166534; }
+.flow-box.skip-b { border-color: #ef4444; background: #fef2f2; color: #991b1b; text-decoration: line-through; opacity: 0.6; }
+.flow-arrow { color: var(--gray); padding: 0 0.3rem; font-size: 0.9rem; }
+
+/* ── TABLE ── */
+.tbl-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+.tbl-wrap::before { content: '← 좌우 스크롤'; display: none; font-size: 0.68rem; color: var(--gray); text-align: right; padding: 0.3rem 0; }
+table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+th { background: #0f172a; color: #93c5fd; padding: 0.5rem 0.8rem; text-align: left; font-size: 0.77rem; font-weight: 700; }
+td { padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--border); }
+tr:nth-child(even) td { background: #fafafa; }
+tr:hover td { background: #eff6ff; }
+code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.82rem; }
+
+/* ── QUIZ ── */
+.quiz-wrap { display: flex; flex-direction: column; gap: 1.1rem; margin-top: 1rem; }
+.quiz-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.quiz-q {
+  padding: 1rem 1.2rem; font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; min-height: 52px;
+}
+.quiz-q:hover { background: #fafafa; }
+.quiz-q:active { background: #eff6ff; }
+.quiz-badge { font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.quiz-badge.year { background: #bfdbfe; color: #1e40af; }
+.quiz-badge.sim  { background: #e0e7ff; color: #4338ca; }
+.quiz-chevron { font-size: 0.75rem; color: var(--gray); flex-shrink: 0; margin-top: 0.1rem; transition: transform 0.2s; }
+.quiz-card.open .quiz-chevron { transform: rotate(180deg); }
+.quiz-ans { display: none; padding: 0 1.2rem 1.1rem; border-top: 1px solid var(--border); }
+.quiz-card.open .quiz-ans { display: block; }
+.ans-label { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin: 0.8rem 0 0.3rem; }
+.ans-val   { font-size: 1rem; font-weight: 700; color: var(--dark); font-family: monospace; }
+.ans-explain { font-size: 0.82rem; color: #374151; margin-top: 0.5rem; line-height: 1.65; }
+.ans-code-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.7rem 0; border-radius: 8px; }
+.ans-code { background: #0f172a; border-radius: 8px; padding: 0.9rem 1.1rem; min-width: 360px; }
+.ans-code pre { margin: 0; font-family: 'Courier New', monospace; font-size: 0.8rem; line-height: 1.6; color: #e2e8f0; }
+
+/* ── MOBILE ── */
+@media (max-width: 640px) {
+  .hero { padding: 1.8rem 1rem 1.5rem; }
+  .hero h1 { font-size: 1.25rem; }
+  .hero p { font-size: 0.84rem; }
+
+  .container { padding: 1.5rem 0.9rem 3rem; }
+  .toc { padding: 0.9rem 1rem; }
+  .toc-list a { font-size: 0.74rem; }
+  .sec-title { font-size: 1.1rem; margin: 2rem 0 0.85rem; }
+
+  .code-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.3rem; }
+  .code-block { padding: 0.9rem 1rem; }
+  .code-block pre { font-size: 0.74rem; }
+
+  .trace-wrap::before { display: block; }
+  .trace-table { font-size: 0.72rem; }
+  .trace-table th { padding: 0.35rem 0.6rem; font-size: 0.66rem; }
+  .trace-table td { padding: 0.3rem 0.6rem; }
+
+  .tbl-wrap::before { display: block; }
+  table { font-size: 0.76rem; }
+  th, td { padding: 0.35rem 0.6rem; }
+
+  .dispatch { font-size: 0.74rem; }
+  .dispatch-cell { padding: 0.5rem 0.7rem; }
+
+  .info, .warn, .tip, .red { font-size: 0.8rem; padding: 0.85rem 1rem; }
+  .concept { padding: 1rem; }
+
+  .flow { gap: 0; }
+  .flow-box { font-size: 0.74rem; padding: 0.35rem 0.55rem; }
+
+  .call-frame { font-size: 0.74rem; padding: 0.38rem 0.7rem; }
+
+  .quiz-q { padding: 0.9rem 1rem; font-size: 0.83rem; }
+  .quiz-ans { padding: 0 1rem 1rem; }
+  .ans-val { font-size: 0.92rem; }
+  .ans-explain { font-size: 0.79rem; }
+  .ans-code-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.2rem; }
+  .ans-code pre { font-size: 0.72rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <a class="hero-back" href="index.html">← Level-2 목록</a>
+    <h1>☕ Java 코드 추적</h1>
+    <p>상속 · 오버라이딩 · 다형성 · 예외처리 · static · 람다</p>
+    <div class="hero-meta">
+      <span class="htag">출제 빈도 ★★★★★</span>
+      <span class="htag">02번</span>
+      <span class="htag">매회 2~4문제 출제</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="toc">
+    <div class="toc-title">목차</div>
+    <div class="toc-list">
+      <a href="#inherit">상속 & 오버라이딩</a>
+      <a href="#poly">다형성</a>
+      <a href="#constructor">생성자 체이닝</a>
+      <a href="#exception">예외처리</a>
+      <a href="#static">static</a>
+      <a href="#interface">인터페이스</a>
+      <a href="#lambda">람다식</a>
+      <a href="#quiz">기출 문제</a>
+    </div>
+  </div>
+
+  <!-- ① 상속 & 오버라이딩 -->
+  <div class="sec-title" id="inherit"><span class="sec-num">01</span> 상속 & 오버라이딩</div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>키워드</th><th>의미</th><th>예시</th></tr>
+      <tr><td><code>extends</code></td><td>부모 클래스 상속</td><td><code>class Dog extends Animal</code></td></tr>
+      <tr><td><code>@Override</code></td><td>부모 메서드 재정의 (선언은 동일, 구현만 변경)</td><td><code>@Override void speak() { ... }</code></td></tr>
+      <tr><td><code>super.method()</code></td><td>부모 클래스의 메서드 호출</td><td><code>super.speak();</code></td></tr>
+      <tr><td><code>super.field</code></td><td>부모 클래스의 필드 접근</td><td><code>System.out.print(super.name);</code></td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>상속 + super 키워드 추적</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln"> 1</span><span class="kw">class</span> <span class="cls">Parent</span> {
+<span class="ln"> 2</span>    <span class="tp">int</span> x = <span class="num">10</span>;
+<span class="ln"> 3</span>    <span class="tp">void</span> <span class="fn">show</span>() { System.out.<span class="fn">print</span>(<span class="str">"P:"</span> + x + <span class="str">" "</span>); }
+<span class="ln"> 4</span>}
+<span class="ln"> 5</span><span class="kw">class</span> <span class="cls">Child</span> <span class="kw">extends</span> <span class="cls">Parent</span> {
+<span class="ln"> 6</span>    <span class="tp">int</span> x = <span class="num">20</span>;
+<span class="ln"> 7</span>    <span class="ann">@Override</span>
+<span class="ln"> 8</span>    <span class="tp">void</span> <span class="fn">show</span>() {
+<span class="ln"> 9</span>        <span class="kw">super</span>.<span class="fn">show</span>();           <span class="cmt">// Parent의 show()</span>
+<span class="ln">10</span>        System.out.<span class="fn">print</span>(<span class="str">"C:"</span> + x + <span class="str">" "</span>);     <span class="cmt">// Child의 x</span>
+<span class="ln">11</span>        System.out.<span class="fn">print</span>(<span class="str">"S:"</span> + <span class="kw">super</span>.x);    <span class="cmt">// Parent의 x</span>
+<span class="ln">12</span>    }
+<span class="ln">13</span>}
+<span class="ln">14</span><span class="kw">new</span> <span class="cls">Child</span>().<span class="fn">show</span>();</pre></div>
+    </div>
+    <div class="trace-wrap">
+      <table class="trace-table">
+        <tr><th>실행 순서</th><th>호출 대상</th><th>출력</th></tr>
+        <tr><td>①</td><td>Child.show() 진입</td><td></td></tr>
+        <tr><td>②</td><td>super.show() → Parent의 show(): x=10 (Parent의 x)</td><td class="output">P:10 </td></tr>
+        <tr><td>③</td><td>Child.x = 20 출력</td><td class="output">C:20 </td></tr>
+        <tr><td>④</td><td>super.x = Parent.x = 10 출력</td><td class="output">S:10</td></tr>
+      </table>
+    </div>
+    <div class="tip">✅ super.show() 내부에서 x는 Parent의 x(10). Child의 x(20)는 Child 스코프에서만 보임.</div>
+  </div>
+
+  <!-- ② 다형성 -->
+  <div class="sec-title" id="poly"><span class="sec-num">02</span> 다형성 — 메서드 vs 필드 바인딩</div>
+
+  <div class="red">🚨 <strong>시험 최빈출 함정!</strong> 업캐스팅 시 <strong>메서드</strong>는 자식 클래스 것이 실행되지만, <strong>필드</strong>는 선언 타입(부모) 기준으로 접근된다.</div>
+
+  <div class="dispatch">
+    <div class="dispatch-cell head">구분</div>
+    <div class="dispatch-cell head">결과</div>
+    <div class="dispatch-cell">메서드 호출 <code>obj.method()</code></div>
+    <div class="dispatch-cell child">→ 실제 타입(Child) 메서드 실행 <br><small>런타임 동적 바인딩</small></div>
+    <div class="dispatch-cell">필드 접근 <code>obj.field</code></div>
+    <div class="dispatch-cell parent">→ 선언 타입(Parent) 필드 접근 <br><small>컴파일 타임 정적 바인딩</small></div>
+  </div>
+
+  <div class="concept">
+    <h4>업캐스팅 다형성 추적</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln"> 1</span><span class="kw">class</span> <span class="cls">A</span> {
+<span class="ln"> 2</span>    <span class="tp">String</span> s = <span class="str">"A-field"</span>;
+<span class="ln"> 3</span>    <span class="tp">String</span> <span class="fn">name</span>() { <span class="kw">return</span> <span class="str">"A"</span>; }
+<span class="ln"> 4</span>}
+<span class="ln"> 5</span><span class="kw">class</span> <span class="cls">B</span> <span class="kw">extends</span> <span class="cls">A</span> {
+<span class="ln"> 6</span>    <span class="tp">String</span> s = <span class="str">"B-field"</span>;
+<span class="ln"> 7</span>    <span class="ann">@Override</span>
+<span class="ln"> 8</span>    <span class="tp">String</span> <span class="fn">name</span>() { <span class="kw">return</span> <span class="str">"B"</span>; }
+<span class="ln"> 9</span>}
+<span class="ln">10</span><span class="cls">A</span> obj = <span class="kw">new</span> <span class="cls">B</span>();  <span class="cmt">// 업캐스팅: 선언타입=A, 실제타입=B</span>
+<span class="ln">11</span>System.out.<span class="fn">println</span>(obj.<span class="fn">name</span>()); <span class="cmt">// 메서드: B의 name()</span>
+<span class="ln">12</span>System.out.<span class="fn">println</span>(obj.s);      <span class="cmt">// 필드: A의 s</span></pre></div>
+    </div>
+    <div class="trace-wrap">
+      <table class="trace-table">
+        <tr><th>라인</th><th>접근 대상</th><th>바인딩</th><th>출력</th></tr>
+        <tr><td>11</td><td>obj.name()</td><td>동적 → B의 name()</td><td class="output">B</td></tr>
+        <tr><td>12</td><td>obj.s</td><td>정적 → A의 s</td><td class="output">A-field</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ③ 생성자 체이닝 -->
+  <div class="sec-title" id="constructor"><span class="sec-num">03</span> 생성자 체이닝</div>
+
+  <div class="info">
+    <strong>this()</strong>: 같은 클래스의 다른 생성자 호출 (반드시 첫 줄)<br>
+    <strong>super()</strong>: 부모 클래스 생성자 호출 (명시 없으면 자동으로 super() 삽입)<br>
+    실행 순서: 부모 생성자 → 자식 생성자 (위에서 아래로)
+  </div>
+
+  <div class="concept">
+    <h4>생성자 체이닝 추적</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln"> 1</span><span class="kw">class</span> <span class="cls">A</span> {
+<span class="ln"> 2</span>    <span class="fn">A</span>() {
+<span class="ln"> 3</span>        <span class="kw">this</span>(<span class="num">10</span>);                      <span class="cmt">// → A(10) 호출</span>
+<span class="ln"> 4</span>        System.out.<span class="fn">print</span>(<span class="str">"A0 "</span>);
+<span class="ln"> 5</span>    }
+<span class="ln"> 6</span>    <span class="fn">A</span>(<span class="tp">int</span> n) {
+<span class="ln"> 7</span>        System.out.<span class="fn">print</span>(<span class="str">"A"</span> + n + <span class="str">" "</span>); <span class="cmt">// A10</span>
+<span class="ln"> 8</span>    }
+<span class="ln"> 9</span>}
+<span class="ln">10</span><span class="kw">class</span> <span class="cls">B</span> <span class="kw">extends</span> <span class="cls">A</span> {
+<span class="ln">11</span>    <span class="fn">B</span>() {
+<span class="ln">12</span>        <span class="kw">super</span>();                        <span class="cmt">// → A() 호출</span>
+<span class="ln">13</span>        System.out.<span class="fn">print</span>(<span class="str">"B "</span>);
+<span class="ln">14</span>    }
+<span class="ln">15</span>}
+<span class="ln">16</span><span class="kw">new</span> <span class="cls">B</span>();</pre></div>
+    </div>
+    <div style="margin: 0.8rem 0;">
+      <div style="font-size:0.78rem; color:var(--gray); font-weight:700; margin-bottom:0.4rem;">호출 순서 (들어가기)</div>
+      <div class="call-stack">
+        <div class="call-frame"><span>new B()</span><span class="call-arrow">→ B() 진입</span></div>
+        <div class="call-frame"><span>B(): super()</span><span class="call-arrow">→ A() 진입</span></div>
+        <div class="call-frame"><span>A(): this(10)</span><span class="call-arrow">→ A(10) 진입</span></div>
+        <div class="call-frame base"><span>A(10)</span><span class="call-arrow">→ 출력: "A10 " 후 리턴</span></div>
+      </div>
+      <div style="font-size:0.78rem; color:var(--gray); font-weight:700; margin: 0.6rem 0 0.4rem;">리턴 순서 (나오기)</div>
+      <div class="call-stack">
+        <div class="call-frame ret"><span>A(): this(10) 후</span><span class="call-arrow">→ 출력: "A0 " 후 리턴</span></div>
+        <div class="call-frame ret"><span>B(): super() 후</span><span class="call-arrow">→ 출력: "B " 후 리턴</span></div>
+      </div>
+    </div>
+    <div class="tip">✅ 최종 출력: <strong>A10 A0 B</strong></div>
+  </div>
+
+  <!-- ④ 예외처리 -->
+  <div class="sec-title" id="exception"><span class="sec-num">04</span> 예외처리 — try-catch-finally</div>
+
+  <div class="warn">⚠️ <strong>finally는 반드시 실행됨!</strong> return이 있어도, 예외가 발생해도, catch가 처리해도 finally는 무조건 실행.</div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>상황</th><th>try</th><th>catch</th><th>finally</th><th>출력 순서</th></tr>
+      <tr><td>예외 없음</td><td>전체 실행</td><td>실행 안됨</td><td>실행됨</td><td>try → finally</td></tr>
+      <tr><td>예외 발생, catch 처리</td><td>예외 지점까지만</td><td>실행됨</td><td>실행됨</td><td>try(부분) → catch → finally</td></tr>
+      <tr><td>예외 발생, catch 없음</td><td>예외 지점까지만</td><td>—</td><td>실행됨</td><td>try(부분) → finally → 예외전파</td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>예외처리 실행 순서 추적</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln"> 1</span><span class="kw">try</span> {
+<span class="ln"> 2</span>    System.out.<span class="fn">print</span>(<span class="str">"A"</span>);        <span class="cmt">// ① 실행</span>
+<span class="ln"> 3</span>    <span class="tp">int</span> r = <span class="num">10</span> / <span class="num">0</span>;              <span class="cmt">// ② ArithmeticException 발생!</span>
+<span class="ln"> 4</span>    System.out.<span class="fn">print</span>(<span class="str">"B"</span>);        <span class="cmt">// ③ 실행 안됨 (건너뜀)</span>
+<span class="ln"> 5</span>} <span class="kw">catch</span> (<span class="cls">ArithmeticException</span> e) {
+<span class="ln"> 6</span>    System.out.<span class="fn">print</span>(<span class="str">"C"</span>);        <span class="cmt">// ④ 실행 (예외 처리)</span>
+<span class="ln"> 7</span>} <span class="kw">finally</span> {
+<span class="ln"> 8</span>    System.out.<span class="fn">print</span>(<span class="str">"D"</span>);        <span class="cmt">// ⑤ 무조건 실행</span>
+<span class="ln"> 9</span>}</pre></div>
+    </div>
+    <div style="margin: 0.8rem 0;">
+      <div class="flow">
+        <div class="flow-box try-b">A (try 시작)</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box skip-b">10/0 예외!</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box skip-b">B (건너뜀)</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box catch-b">C (catch)</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box fin-b">D (finally)</div>
+      </div>
+    </div>
+    <div class="tip">✅ 출력: <strong>ACD</strong> &nbsp;(B는 예외 발생 후 건너뜀)</div>
+  </div>
+
+  <div class="concept">
+    <h4>try 안에 return이 있어도 finally 실행</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln"> 1</span><span class="kw">static</span> <span class="tp">int</span> <span class="fn">test</span>() {
+<span class="ln"> 2</span>    <span class="kw">try</span> {
+<span class="ln"> 3</span>        System.out.<span class="fn">print</span>(<span class="str">"T"</span>);
+<span class="ln"> 4</span>        <span class="kw">return</span> <span class="num">1</span>;          <span class="cmt">// return 전에 finally 먼저!</span>
+<span class="ln"> 5</span>    } <span class="kw">finally</span> {
+<span class="ln"> 6</span>        System.out.<span class="fn">print</span>(<span class="str">"F"</span>); <span class="cmt">// return보다 먼저 실행</span>
+<span class="ln"> 7</span>    }
+<span class="ln"> 8</span>}
+<span class="ln"> 9</span><span class="fn">test</span>(); <span class="cmt">// 출력: TF, 반환값: 1</span></pre></div>
+    </div>
+  </div>
+
+  <!-- ⑤ static -->
+  <div class="sec-title" id="static"><span class="sec-num">05</span> static 변수 & 메서드</div>
+
+  <div class="info">
+    static 멤버는 <strong>클래스 단위</strong>로 하나만 존재. 모든 인스턴스가 공유.<br>
+    인스턴스 없이 <code>ClassName.member</code>로 직접 접근 가능.
+  </div>
+
+  <div class="concept">
+    <h4>static 변수 공유 추적</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln"> 1</span><span class="kw">class</span> <span class="cls">Counter</span> {
+<span class="ln"> 2</span>    <span class="kw">static</span> <span class="tp">int</span> count = <span class="num">0</span>;   <span class="cmt">// 클래스 공유 변수</span>
+<span class="ln"> 3</span>    <span class="tp">int</span> id;
+<span class="ln"> 4</span>    <span class="fn">Counter</span>() {
+<span class="ln"> 5</span>        count++;
+<span class="ln"> 6</span>        id = count;
+<span class="ln"> 7</span>    }
+<span class="ln"> 8</span>}
+<span class="ln"> 9</span><span class="cls">Counter</span> a = <span class="kw">new</span> <span class="cls">Counter</span>();
+<span class="ln">10</span><span class="cls">Counter</span> b = <span class="kw">new</span> <span class="cls">Counter</span>();
+<span class="ln">11</span><span class="cls">Counter</span> c = <span class="kw">new</span> <span class="cls">Counter</span>();
+<span class="ln">12</span>System.out.<span class="fn">println</span>(<span class="cls">Counter</span>.count);  <span class="cmt">// ?</span>
+<span class="ln">13</span>System.out.<span class="fn">println</span>(a.id + b.id + c.id); <span class="cmt">// ?</span></pre></div>
+    </div>
+    <div class="trace-wrap">
+      <table class="trace-table">
+        <tr><th>이벤트</th><th>count (공유)</th><th>인스턴스.id</th></tr>
+        <tr><td>new Counter() for a</td><td class="changed">1</td><td>a.id = 1</td></tr>
+        <tr><td>new Counter() for b</td><td class="changed">2</td><td>b.id = 2</td></tr>
+        <tr><td>new Counter() for c</td><td class="changed">3</td><td>c.id = 3</td></tr>
+        <tr><td>Counter.count</td><td colspan="2" class="output">3</td></tr>
+        <tr><td>a.id + b.id + c.id</td><td colspan="2" class="output">1 + 2 + 3 = 6</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ⑥ 인터페이스 & 추상클래스 -->
+  <div class="sec-title" id="interface"><span class="sec-num">06</span> 인터페이스 & 추상클래스</div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>구분</th><th>추상클래스 (abstract)</th><th>인터페이스 (interface)</th></tr>
+      <tr><td>상속</td><td>단일 상속 (<code>extends</code>)</td><td>다중 구현 (<code>implements</code>)</td></tr>
+      <tr><td>생성자</td><td>있음 (직접 객체화 불가)</td><td>없음</td></tr>
+      <tr><td>일반 메서드</td><td>가능</td><td>default 메서드로만 가능 (Java 8+)</td></tr>
+      <tr><td>필드</td><td>일반 필드 가능</td><td>public static final 상수만</td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>인터페이스 default 메서드 추적</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln"> 1</span><span class="kw">interface</span> <span class="cls">Greet</span> {
+<span class="ln"> 2</span>    <span class="kw">default</span> <span class="tp">String</span> <span class="fn">hello</span>() { <span class="kw">return</span> <span class="str">"Hi"</span>; }
+<span class="ln"> 3</span>    <span class="tp">String</span> <span class="fn">name</span>();              <span class="cmt">// 추상 메서드 (구현 필수)</span>
+<span class="ln"> 4</span>}
+<span class="ln"> 5</span><span class="kw">class</span> <span class="cls">Korean</span> <span class="kw">implements</span> <span class="cls">Greet</span> {
+<span class="ln"> 6</span>    <span class="ann">@Override</span>
+<span class="ln"> 7</span>    <span class="kw">public</span> <span class="tp">String</span> <span class="fn">name</span>() { <span class="kw">return</span> <span class="str">"Korea"</span>; }
+<span class="ln"> 8</span>    <span class="cmt">// hello()는 default 사용 → "Hi"</span>
+<span class="ln"> 9</span>}
+<span class="ln">10</span><span class="cls">Greet</span> g = <span class="kw">new</span> <span class="cls">Korean</span>();
+<span class="ln">11</span>System.out.<span class="fn">println</span>(g.<span class="fn">hello</span>() + g.<span class="fn">name</span>());</pre></div>
+    </div>
+    <div class="tip">✅ 출력: <strong>HiKorea</strong><br>
+    Korean이 hello()를 오버라이드하지 않았으므로 Greet의 default hello()가 실행됨.</div>
+  </div>
+
+  <!-- ⑦ 람다식 -->
+  <div class="sec-title" id="lambda"><span class="sec-num">07</span> 람다식 (Lambda)</div>
+
+  <div class="info">람다식 = 함수형 인터페이스(추상 메서드가 1개인 인터페이스)의 구현체를 간결하게 표현.<br>
+  <code>(매개변수) -> 실행문</code> 또는 <code>(매개변수) -> { 실행블록; return 값; }</code></div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>함수형 인터페이스</th><th>추상 메서드</th><th>람다 예시</th></tr>
+      <tr><td><code>Runnable</code></td><td><code>void run()</code></td><td><code>() -> System.out.print("Hi")</code></td></tr>
+      <tr><td><code>Supplier&lt;T&gt;</code></td><td><code>T get()</code></td><td><code>() -> 42</code></td></tr>
+      <tr><td><code>Consumer&lt;T&gt;</code></td><td><code>void accept(T)</code></td><td><code>x -> System.out.print(x)</code></td></tr>
+      <tr><td><code>Function&lt;T,R&gt;</code></td><td><code>R apply(T)</code></td><td><code>x -> x * 2</code></td></tr>
+      <tr><td><code>Predicate&lt;T&gt;</code></td><td><code>boolean test(T)</code></td><td><code>x -> x > 0</code></td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>사용자 정의 함수형 인터페이스 + 람다 추적</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="ln"> 1</span><span class="kw">interface</span> <span class="cls">Calc</span> {
+<span class="ln"> 2</span>    <span class="tp">int</span> <span class="fn">operate</span>(<span class="tp">int</span> a, <span class="tp">int</span> b);  <span class="cmt">// 추상 메서드 1개</span>
+<span class="ln"> 3</span>}
+<span class="ln"> 4</span><span class="cls">Calc</span> add = (a, b) -> a + b;
+<span class="ln"> 5</span><span class="cls">Calc</span> mul = (a, b) -> a * b;
+<span class="ln"> 6</span><span class="cls">Calc</span> max = (a, b) -> (a &gt; b) ? a : b;
+<span class="ln"> 7</span>
+<span class="ln"> 8</span>System.out.<span class="fn">println</span>(add.<span class="fn">operate</span>(<span class="num">3</span>, <span class="num">5</span>));  <span class="cmt">// 8</span>
+<span class="ln"> 9</span>System.out.<span class="fn">println</span>(mul.<span class="fn">operate</span>(<span class="num">3</span>, <span class="num">5</span>));  <span class="cmt">// 15</span>
+<span class="ln">10</span>System.out.<span class="fn">println</span>(max.<span class="fn">operate</span>(<span class="num">3</span>, <span class="num">5</span>));  <span class="cmt">// 5</span></pre></div>
+    </div>
+  </div>
+
+  <!-- ⑧ 기출 문제 -->
+  <div class="sec-title" id="quiz"><span class="sec-num">08</span> 기출 문제</div>
+
+  <div class="quiz-wrap">
+
+    <!-- Q1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          다음 Java 코드의 출력 결과를 쓰시오. (상속 + 오버라이딩 + super)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">class</span> <span class="cls">Animal</span> {
+    <span class="tp">String</span> type = <span class="str">"동물"</span>;
+    <span class="tp">void</span> <span class="fn">sound</span>() { System.out.<span class="fn">print</span>(<span class="str">"..."</span>); }
+}
+<span class="kw">class</span> <span class="cls">Dog</span> <span class="kw">extends</span> <span class="cls">Animal</span> {
+    <span class="tp">String</span> type = <span class="str">"강아지"</span>;
+    <span class="ann">@Override</span>
+    <span class="tp">void</span> <span class="fn">sound</span>() {
+        System.out.<span class="fn">print</span>(<span class="kw">super</span>.type + <span class="str">":"</span>);
+        System.out.<span class="fn">print</span>(<span class="str">"멍"</span>);
+    }
+}
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="tp">String</span>[] args) {
+        <span class="cls">Animal</span> a = <span class="kw">new</span> <span class="cls">Dog</span>();
+        a.<span class="fn">sound</span>();
+        System.out.<span class="fn">print</span>(<span class="str">" "</span> + a.type);
+    }
+}</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">동물:멍 동물</div>
+        <div class="ans-explain">
+          a.sound() → 동적 바인딩 → Dog의 sound() 실행<br>
+          super.type = Animal의 type = "동물", 이어서 "멍" 출력 → <strong>동물:멍</strong><br>
+          a.type → 정적 바인딩 → Animal의 type = <strong>"동물"</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          다음 Java 코드의 출력 결과를 쓰시오. (try-catch-finally)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">public class</span> <span class="cls">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="tp">String</span>[] args) {
+        <span class="kw">try</span> {
+            System.out.<span class="fn">print</span>(<span class="str">"A"</span>);
+            <span class="kw">if</span> (<span class="num">1</span> == <span class="num">1</span>) <span class="kw">throw new</span> <span class="cls">Exception</span>();
+            System.out.<span class="fn">print</span>(<span class="str">"B"</span>);
+        } <span class="kw">catch</span> (<span class="cls">Exception</span> e) {
+            System.out.<span class="fn">print</span>(<span class="str">"C"</span>);
+            <span class="kw">return</span>;
+        } <span class="kw">finally</span> {
+            System.out.<span class="fn">print</span>(<span class="str">"D"</span>);
+        }
+        System.out.<span class="fn">print</span>(<span class="str">"E"</span>);
+    }
+}</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">ACD</div>
+        <div class="ans-explain">
+          A 출력 → throw Exception → B 건너뜀 → catch → C 출력 → return 실행 직전 finally → D 출력 → 메서드 종료 → E 실행 안됨<br>
+          catch의 return이 있어도 finally는 반드시 실행됨.
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          다음 Java 코드의 출력 결과를 쓰시오. (생성자 체이닝)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">class</span> <span class="cls">Parent</span> {
+    <span class="fn">Parent</span>() {
+        System.out.<span class="fn">print</span>(<span class="str">"P0 "</span>);
+    }
+    <span class="fn">Parent</span>(<span class="tp">int</span> n) {
+        System.out.<span class="fn">print</span>(<span class="str">"P"</span> + n + <span class="str">" "</span>);
+    }
+}
+<span class="kw">class</span> <span class="cls">Child</span> <span class="kw">extends</span> <span class="cls">Parent</span> {
+    <span class="fn">Child</span>() {
+        <span class="kw">this</span>(<span class="num">7</span>);
+        System.out.<span class="fn">print</span>(<span class="str">"C0"</span>);
+    }
+    <span class="fn">Child</span>(<span class="tp">int</span> n) {
+        <span class="kw">super</span>(n);
+        System.out.<span class="fn">print</span>(<span class="str">"C"</span> + n + <span class="str">" "</span>);
+    }
+}
+<span class="kw">new</span> <span class="cls">Child</span>();</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">P7 C7 C0</div>
+        <div class="ans-explain">
+          new Child() → Child() 진입 → this(7) → Child(7) 진입 → super(7) → Parent(7) → "P7 " 출력 → 리턴 → "C7 " 출력 → Child(7) 리턴 → "C0" 출력
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          다음 Java 코드의 출력 결과를 쓰시오. (static 변수 공유)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">class</span> <span class="cls">Box</span> {
+    <span class="kw">static</span> <span class="tp">int</span> total = <span class="num">0</span>;
+    <span class="tp">int</span> size;
+    <span class="fn">Box</span>(<span class="tp">int</span> s) {
+        size = s;
+        total += s;
+    }
+}
+<span class="kw">public class</span> <span class="cls">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="tp">String</span>[] args) {
+        <span class="kw">new</span> <span class="cls">Box</span>(<span class="num">3</span>);
+        <span class="kw">new</span> <span class="cls">Box</span>(<span class="num">5</span>);
+        <span class="cls">Box</span> b = <span class="kw">new</span> <span class="cls">Box</span>(<span class="num">7</span>);
+        System.out.<span class="fn">println</span>(<span class="cls">Box</span>.total);
+        System.out.<span class="fn">println</span>(b.size);
+    }
+}</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">15<br>7</div>
+        <div class="ans-explain">
+          total: 0 → +3=3 → +5=8 → +7=15 (모든 인스턴스가 공유)<br>
+          Box.total = 15, b.size = 7
+        </div>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2024 1회 Q4 유사</span>&nbsp;
+          다음 Java 코드의 출력 결과를 쓰시오. (문자열 인덱스 역순)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">public class</span> <span class="cls">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="tp">String</span>[] args) {
+        <span class="tp">String</span> str = <span class="str">"ABCDEFG"</span>;
+        <span class="tp">String</span> result = <span class="str">""</span>;
+        <span class="kw">for</span> (<span class="tp">int</span> i = str.<span class="fn">length</span>() - <span class="num">1</span>; i &gt;= <span class="num">0</span>; i -= <span class="num">2</span>) {
+            result += str.<span class="fn">charAt</span>(i);
+        }
+        System.out.<span class="fn">print</span>(result);
+    }
+}</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">GECA</div>
+        <div class="ans-explain">
+          str = "ABCDEFG" (인덱스 0~6)<br>
+          i=6: charAt(6)='G' → i=4: charAt(4)='E' → i=2: charAt(2)='C' → i=0: charAt(0)='A' → i=-2: 종료<br>
+          result = "G"+"E"+"C"+"A" = <strong>GECA</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">개념 확인</span>&nbsp;
+          다음 Java 코드의 출력 결과를 쓰시오. (예외 catch 순서 — 좁은 예외 먼저)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">public class</span> <span class="cls">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="tp">String</span>[] args) {
+        <span class="kw">try</span> {
+            <span class="tp">int</span>[] arr = <span class="kw">new</span> <span class="tp">int</span>[<span class="num">3</span>];
+            arr[<span class="num">5</span>] = <span class="num">10</span>;  <span class="cmt">// ArrayIndexOutOfBoundsException</span>
+        } <span class="kw">catch</span> (<span class="cls">ArrayIndexOutOfBoundsException</span> e) {
+            System.out.<span class="fn">print</span>(<span class="str">"범위초과"</span>);
+        } <span class="kw">catch</span> (<span class="cls">RuntimeException</span> e) {
+            System.out.<span class="fn">print</span>(<span class="str">"런타임"</span>);
+        } <span class="kw">catch</span> (<span class="cls">Exception</span> e) {
+            System.out.<span class="fn">print</span>(<span class="str">"예외"</span>);
+        } <span class="kw">finally</span> {
+            System.out.<span class="fn">print</span>(<span class="str">"+종료"</span>);
+        }
+    }
+}</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">범위초과+종료</div>
+        <div class="ans-explain">
+          ArrayIndexOutOfBoundsException 발생 → 첫 번째 catch가 정확히 일치 → "범위초과" 출력<br>
+          catch는 위에서 아래로 순서대로 매칭, 먼저 걸리면 나머지는 실행 안됨.<br>
+          ⚠️ Exception(부모)을 먼저 쓰면 컴파일 에러! → 좁은 예외 타입을 항상 먼저 작성.
+        </div>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">기출 유사</span>&nbsp;
+          다음 Java 코드의 출력 결과를 쓰시오. (추상 클래스 + 오버라이딩)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">abstract class</span> <span class="cls">Shape</span> {
+    <span class="kw">abstract</span> <span class="tp">double</span> <span class="fn">area</span>();
+    <span class="tp">void</span> <span class="fn">print</span>() {
+        System.out.<span class="fn">printf</span>(<span class="str">"넓이=%.0f\n"</span>, <span class="fn">area</span>());
+    }
+}
+<span class="kw">class</span> <span class="cls">Rectangle</span> <span class="kw">extends</span> <span class="cls">Shape</span> {
+    <span class="tp">int</span> w, h;
+    <span class="fn">Rectangle</span>(<span class="tp">int</span> w, <span class="tp">int</span> h) { <span class="kw">this</span>.w=w; <span class="kw">this</span>.h=h; }
+    <span class="ann">@Override</span>
+    <span class="tp">double</span> <span class="fn">area</span>() { <span class="kw">return</span> w * h; }
+}
+<span class="kw">public class</span> <span class="cls">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="tp">String</span>[] args) {
+        <span class="cls">Shape</span> s = <span class="kw">new</span> <span class="cls">Rectangle</span>(<span class="num">5</span>, <span class="num">4</span>);
+        s.<span class="fn">print</span>();
+    }
+}</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">넓이=20</div>
+        <div class="ans-explain">
+          s.print() → Shape의 print() 실행 → 내부에서 area() 호출<br>
+          area()는 동적 바인딩 → Rectangle의 area() = 5×4 = 20<br>
+          printf("넓이=%.0f\n", 20.0) → <strong>넓이=20</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">기출 유사</span>&nbsp;
+          다음 Java 람다식 코드의 출력 결과를 쓰시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="str">import java.util.function.*;</span>
+
+<span class="kw">public class</span> <span class="cls">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="tp">String</span>[] args) {
+        <span class="cls">Function</span>&lt;<span class="cls">Integer</span>, <span class="cls">Integer</span>&gt; dbl = x -> x * <span class="num">2</span>;
+        <span class="cls">Function</span>&lt;<span class="cls">Integer</span>, <span class="cls">Integer</span>&gt; sq  = x -> x * x;
+
+        <span class="tp">int</span> a = dbl.<span class="fn">apply</span>(<span class="num">3</span>);           <span class="cmt">// 3*2 = 6</span>
+        <span class="tp">int</span> b = sq.<span class="fn">apply</span>(a);            <span class="cmt">// 6*6 = 36</span>
+        <span class="tp">int</span> c = dbl.<span class="fn">andThen</span>(sq).<span class="fn">apply</span>(<span class="num">3</span>); <span class="cmt">// dbl(3)=6, sq(6)=36</span>
+
+        System.out.<span class="fn">println</span>(a + <span class="str">" "</span> + b + <span class="str">" "</span> + c);
+    }
+}</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">6 36 36</div>
+        <div class="ans-explain">
+          dbl.apply(3) = 3×2 = 6 → a=6<br>
+          sq.apply(6) = 6×6 = 36 → b=36<br>
+          dbl.andThen(sq).apply(3): 먼저 dbl(3)=6, 그 결과를 sq(6)=36 → c=36<br>
+          출력: <strong>6 36 36</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">개념 확인</span>&nbsp;
+          오버로딩(Overloading)과 오버라이딩(Overriding)의 차이를 설명하시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">매개변수 다름 vs 상속 후 재정의</div>
+        <div class="ans-explain">
+          <strong>오버로딩 (Overloading)</strong>: 같은 클래스에서 메서드 이름은 같고, 매개변수(타입/개수)가 다른 메서드를 여러 개 정의.<br>
+          → <code>print(int)</code>, <code>print(String)</code>, <code>print(int, int)</code><br><br>
+          <strong>오버라이딩 (Overriding)</strong>: 상속 관계에서 부모 메서드를 자식이 재정의. 이름·매개변수·반환타입 모두 동일, 구현만 변경.<br>
+          → <code>@Override void speak() { ... }</code>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+</div><!-- /container -->
+
+<footer style="text-align:center; padding:1.5rem; color:var(--gray); font-size:0.78rem; border-top:1px solid var(--border);">
+  Level-2 · 02 Java 코드 추적 · <a href="index.html" style="color:var(--accent); text-decoration:none;">← 목록으로</a>
+</footer>
+
+<script>
+function toggle(el) {
+  el.closest('.quiz-card').classList.toggle('open');
+}
+</script>
+</body>
+</html>

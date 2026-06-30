@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>02. 데이터 입출력 구현 | 정보처리기사 실기</title>
+<style>
+:root {
+  --primary: #15803d;
+  --primary-light: #dcfce7;
+  --secondary: #2563eb;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --dark: #1e293b;
+  --gray: #64748b;
+  --light: #f8fafc;
+  --border: #e2e8f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.6; }
+
+nav { position: sticky; top: 0; z-index: 100; background: var(--dark); padding: 0.6rem 1.5rem; display: flex; gap: 0.5rem; align-items: center; overflow-x: auto; scrollbar-width: none; }
+nav::-webkit-scrollbar { display: none; }
+nav .nav-title { color: #86efac; font-weight: 700; font-size: 0.82rem; white-space: nowrap; margin-right: 0.5rem; }
+nav a { color: #94a3b8; text-decoration: none; font-size: 0.78rem; white-space: nowrap; padding: 0.3rem 0.7rem; border-radius: 5px; transition: all 0.2s; }
+nav a:hover, nav a.active { color: white; background: #334155; }
+
+.hero { background: linear-gradient(135deg, #14532d 0%, #1e293b 100%); color: white; padding: 2.5rem 2rem; text-align: center; }
+.hero h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.4rem; }
+.hero .subtitle { color: #86efac; font-size: 0.95rem; margin-bottom: 1rem; }
+.tags { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; }
+.tag { background: rgba(255,255,255,0.12); color: white; padding: 0.2rem 0.65rem; border-radius: 20px; font-size: 0.78rem; }
+
+.container { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem; }
+section { margin-bottom: 3rem; }
+.section-title { font-size: 1.3rem; font-weight: 700; color: var(--dark); margin-bottom: 1.25rem; padding-bottom: 0.6rem; border-bottom: 3px solid var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { width: 30px; height: 30px; background: var(--primary); color: white; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; flex-shrink: 0; }
+
+.card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-bottom: 1rem; }
+.card h3 { font-size: 0.95rem; margin-bottom: 0.75rem; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+
+.tabs { display: flex; gap: 0.4rem; margin-bottom: 1.25rem; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+.tab-btn { padding: 0.45rem 1rem; background: none; border: none; color: var(--gray); cursor: pointer; font-size: 0.85rem; font-weight: 600; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+table.base { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+table.base th { background: var(--dark); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+table.base td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+table.base tr:hover td { background: #f0fdf4; }
+
+table.eg { border-collapse: collapse; font-size: 0.8rem; }
+table.eg th { background: #166534; color: white; padding: 0.35rem 0.7rem; }
+table.eg td { padding: 0.32rem 0.7rem; border: 1px solid #d1fae5; }
+table.eg tr:nth-child(even) td { background: #f0fdf4; }
+
+.hl  { background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid var(--primary); border-radius: 7px; padding: 0.8rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; }
+.hl.warn   { background: #fffbeb; border-color: #fde68a; border-left-color: var(--warning); }
+.hl.danger { background: #fef2f2; border-color: #fecaca; border-left-color: var(--danger); }
+.hl.blue   { background: #eff6ff; border-color: #bfdbfe; border-left-color: var(--secondary); }
+
+code.il { background: #f1f5f9; color: #15803d; padding: 0.1rem 0.35rem; border-radius: 3px; font-family: monospace; font-size: 0.81rem; font-weight: 700; }
+
+/* 정규화 단계 시각화 */
+.nf-steps { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; justify-content: center; margin-bottom: 1rem; }
+.nf-step { padding: 0.55rem 0.9rem; border-radius: 8px; font-size: 0.85rem; font-weight: 800; cursor: pointer; border: 2px solid transparent; transition: all 0.25s; min-width: 72px; text-align: center; }
+.nf-step:hover { transform: translateY(-2px); }
+.nf-step.active { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+.ns0 { background: #fef2f2; color: #991b1b; border-color: #fca5a5; }
+.ns1 { background: #fff7ed; color: #9a3412; border-color: #fdba74; }
+.ns2 { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+.ns3 { background: #dcfce7; color: #166534; border-color: #86efac; }
+.ns4 { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+.nf-arrow { color: var(--gray); font-size: 1.1rem; }
+.nf-detail { min-height: 90px; padding: 0.9rem 1.1rem; background: #f0fdf4; border-left: 4px solid var(--primary); border-radius: 7px; font-size: 0.84rem; }
+
+/* ACID 카드 */
+.acid-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.85rem; }
+.acid-card { padding: 1.1rem; border-radius: 10px; cursor: pointer; transition: all 0.25s; border: 2px solid transparent; }
+.acid-card:hover { transform: translateY(-2px); }
+.acid-card.active { border-color: var(--dark); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.acid-letter { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.3rem; }
+.acid-name   { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.2rem; }
+.acid-kr     { font-size: 0.78rem; opacity: 0.8; }
+.acid-detail { display: none; margin-top: 0.85rem; padding: 0.85rem; background: white; border-left: 4px solid var(--primary); border-radius: 7px; font-size: 0.84rem; }
+.acid-detail.show { display: block; }
+
+/* 플래시카드 */
+.fc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 0.75rem; }
+.flip-card { height: 132px; perspective: 1000px; cursor: pointer; }
+.flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.55s; transform-style: preserve-3d; }
+.flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+.fc-front, .fc-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0.75rem; text-align: center; }
+.fc-front { background: white; border: 2px solid var(--primary); color: var(--dark); font-weight: 600; font-size: 0.84rem; }
+.fc-back { background: var(--primary); color: white; transform: rotateY(180deg); font-size: 0.77rem; line-height: 1.55; }
+
+/* 이상현상 분류 퀴즈 */
+.anom-list { display: flex; flex-direction: column; gap: 0.65rem; }
+.anom-item { display: flex; align-items: flex-start; gap: 0.75rem; background: white; border: 2px solid var(--border); border-radius: 9px; padding: 0.8rem; }
+.anom-desc { flex: 1; font-size: 0.84rem; }
+.anom-btns { display: flex; gap: 0.4rem; flex-shrink: 0; flex-direction: column; }
+.an-btn { padding: 0.28rem 0.65rem; border: 2px solid transparent; border-radius: 5px; cursor: pointer; font-size: 0.73rem; font-weight: 700; transition: all 0.18s; white-space: nowrap; }
+.an-ins { background: #fce7f3; color: #9d174d; border-color: #f9a8d4; }
+.an-del { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+.an-upd { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+.an-btn.correct { box-shadow: 0 0 0 3px #15803d; }
+.an-btn.wrong   { box-shadow: 0 0 0 3px var(--danger); opacity: 0.5; }
+
+/* 퀴즈 */
+.quiz-item { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem; }
+.quiz-q { font-weight: 700; margin-bottom: 0.75rem; font-size: 0.9rem; }
+.opts { display: flex; flex-direction: column; gap: 0.4rem; }
+.opt { padding: 0.6rem 1rem; background: #f8fafc; border: 2px solid var(--border); border-radius: 7px; cursor: pointer; font-size: 0.84rem; transition: all 0.18s; }
+.opt:hover { border-color: var(--primary); background: var(--primary-light); }
+.opt.correct { border-color: var(--primary); background: #d1fae5; color: #065f46; font-weight: 700; }
+.opt.wrong   { border-color: var(--danger); background: #fee2e2; color: #991b1b; }
+.exp { display: none; margin-top: 0.85rem; padding: 0.7rem 0.9rem; background: #f0fdf4; border-left: 4px solid var(--primary); border-radius: 4px; font-size: 0.82rem; line-height: 1.7; }
+.exp.show { display: block; }
+
+.score-box { background: white; border: 2px solid var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; margin-top: 1.25rem; display: none; }
+.score-num { font-size: 2.2rem; font-weight: 800; color: var(--primary); }
+
+.btn { padding: 0.5rem 1.1rem; border: none; border-radius: 7px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: opacity 0.2s; }
+.btn:hover { opacity: 0.85; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-blue    { background: var(--secondary); color: white; }
+.btn-gray    { background: var(--gray); color: white; }
+
+textarea.memo { width: 100%; min-height: 140px; padding: 0.9rem; border: 2px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.88rem; resize: vertical; background: #fffef7; }
+textarea.memo:focus { outline: none; border-color: var(--primary); }
+
+.scroll-top { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--primary); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; }
+.scroll-top.show { display: flex; }
+
+@media (max-width: 700px) {
+  .container { padding: 1rem; }
+  .hero h1 { font-size: 1.35rem; }
+  .card-grid { grid-template-columns: 1fr; }
+  .fc-grid { grid-template-columns: repeat(2, 1fr); }
+  .acid-grid { grid-template-columns: 1fr 1fr; }
+  .anom-item { flex-direction: column; }
+  .anom-btns { flex-direction: row; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">🗄️ 02. 데이터 입출력</span>
+  <a href="#s1">출제기준</a>
+  <a href="#s2">핵심개념</a>
+  <a href="#s3">키워드카드</a>
+  <a href="#s4">정규화단계</a>
+  <a href="#s5">ACID</a>
+  <a href="#s6">이상현상</a>
+  <a href="#s7">문제풀이</a>
+  <a href="#s8">미니퀴즈</a>
+  <a href="#s9">오답노트</a>
+</nav>
+
+<div class="hero">
+  <h1>02. 데이터 입출력 구현</h1>
+  <p class="subtitle">데이터 모델링 · 정규화 · 트랜잭션 · 인덱스 · 최적화</p>
+  <div class="tags">
+    <span class="tag">ERD</span>
+    <span class="tag">정규화 1NF~BCNF</span>
+    <span class="tag">이상현상</span>
+    <span class="tag">ACID</span>
+    <span class="tag">인덱스</span>
+    <span class="tag">반정규화</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- S1 출제기준 -->
+<section id="s1">
+  <h2 class="section-title"><span class="sec-num">1</span> 출제기준 요약</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3 style="color:var(--primary)">📐 논리 데이터저장소 확인</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>개념/논리/물리 데이터 모델</li>
+        <li>ERD 구성요소 (개체·속성·관계)</li>
+        <li>카디널리티 (1:1, 1:N, M:N)</li>
+        <li>정규화 (1NF~BCNF)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--secondary)">🏗️ 물리 데이터저장소 설계</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>반정규화 (테이블 병합·분할·중복)</li>
+        <li>인덱스 설계</li>
+        <li>파티셔닝</li>
+        <li>뷰(View)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--warning)">⚡ 프로시저 작성·최적화</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>트랜잭션 ACID 특성</li>
+        <li>잠금(Lock), 교착상태</li>
+        <li>성능 저하 원인 분석</li>
+        <li>쿼리 최적화, 인덱스 활용</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hl warn">
+    <strong>⚠️ 시험 핵심:</strong>
+    <strong>정규화 단계별 조건</strong> (1NF~BCNF),
+    <strong>이상현상 3종류</strong> (삽입·삭제·갱신),
+    <strong>트랜잭션 ACID 4특성</strong>이 매회 출제됩니다.
+  </div>
+</section>
+
+<!-- S2 핵심 개념 -->
+<section id="s2">
+  <h2 class="section-title"><span class="sec-num">2</span> 핵심 개념</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="tab(this,'t-model')">데이터 모델링</button>
+    <button class="tab-btn" onclick="tab(this,'t-norm')">정규화</button>
+    <button class="tab-btn" onclick="tab(this,'t-denorm')">반정규화·인덱스</button>
+    <button class="tab-btn" onclick="tab(this,'t-tx')">트랜잭션</button>
+  </div>
+
+  <!-- 데이터 모델링 -->
+  <div id="t-model" class="tab-content active">
+    <div class="card">
+      <h3>데이터 모델링 3단계</h3>
+      <table class="base">
+        <tr><th>단계</th><th>명칭</th><th>표현 방법</th><th>특징</th></tr>
+        <tr>
+          <td>1단계</td>
+          <td><strong>개념적 모델링</strong></td>
+          <td>ERD (Entity-Relationship Diagram)</td>
+          <td>현실 세계를 추상화, DBMS 독립적</td>
+        </tr>
+        <tr>
+          <td>2단계</td>
+          <td><strong>논리적 모델링</strong></td>
+          <td>관계형 스키마 (테이블, 속성, 키)</td>
+          <td>DBMS 종류에 맞게 변환, 정규화 수행</td>
+        </tr>
+        <tr>
+          <td>3단계</td>
+          <td><strong>물리적 모델링</strong></td>
+          <td>실제 DB 스키마 (DDL)</td>
+          <td>인덱스, 파티션, 저장 구조 결정</td>
+        </tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>ERD 구성요소 및 카디널리티</h3>
+      <table class="base">
+        <tr><th>요소</th><th>표기</th><th>설명</th></tr>
+        <tr><td><strong>개체 (Entity)</strong></td><td>□ 사각형</td><td>데이터로 저장할 대상 (학생, 과목)</td></tr>
+        <tr><td><strong>속성 (Attribute)</strong></td><td>○ 타원</td><td>개체가 갖는 특성 (학번, 이름)</td></tr>
+        <tr><td><strong>관계 (Relationship)</strong></td><td>◇ 마름모</td><td>개체 간 연관성 (수강)</td></tr>
+      </table>
+      <div style="margin-top:0.75rem;">
+        <table class="base">
+          <tr><th>카디널리티</th><th>의미</th><th>예시</th><th>M:N 처리</th></tr>
+          <tr><td><strong>1 : 1</strong></td><td>하나 대 하나</td><td>직원 : 사원증</td><td>-</td></tr>
+          <tr><td><strong>1 : N</strong></td><td>하나 대 여럿</td><td>부서 : 직원</td><td>-</td></tr>
+          <tr><td><strong>M : N</strong></td><td>여럿 대 여럿</td><td>학생 : 과목</td><td>중간 테이블 생성 필수</td></tr>
+        </table>
+      </div>
+      <div class="hl warn" style="margin-top:0.75rem;">
+        <strong>M:N 관계</strong>는 관계형 DB에서 직접 표현 불가 → <strong>중간(교차) 테이블</strong>로 1:N 두 개로 분리
+      </div>
+    </div>
+  </div>
+
+  <!-- 정규화 -->
+  <div id="t-norm" class="tab-content">
+    <div class="card">
+      <h3>이상현상 (Anomaly) — 정규화의 필요성</h3>
+      <table class="base">
+        <tr><th>이상현상</th><th>설명</th><th>예시</th></tr>
+        <tr>
+          <td><strong>삽입 이상</strong><br><span style="font-size:0.75rem;color:var(--gray)">Insertion Anomaly</span></td>
+          <td>데이터 삽입 시 <u>불필요한 데이터</u>도 함께 삽입해야 하는 현상</td>
+          <td>과목 없는 학생 등록 불가</td>
+        </tr>
+        <tr>
+          <td><strong>삭제 이상</strong><br><span style="font-size:0.75rem;color:var(--gray)">Deletion Anomaly</span></td>
+          <td>데이터 삭제 시 <u>의도치 않은 데이터</u>도 함께 삭제되는 현상</td>
+          <td>학생 삭제 시 과목 정보도 삭제</td>
+        </tr>
+        <tr>
+          <td><strong>갱신 이상</strong><br><span style="font-size:0.75rem;color:var(--gray)">Update Anomaly</span></td>
+          <td>데이터 수정 시 <u>일부만 수정</u>되어 데이터 불일치 발생</td>
+          <td>교수 이름 수정 시 일부 행만 변경</td>
+        </tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>정규화 단계별 조건 (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>정규형</th><th>조건 (= 제거 대상)</th></tr>
+        <tr>
+          <td><strong>비정규 → 1NF</strong></td>
+          <td>모든 속성값이 <strong>원자값(Atomic)</strong>이어야 함<br>
+            <span style="font-size:0.78rem;color:var(--gray)">다중값·반복 그룹 제거 (ex: 전화번호를 여러 개 가진 경우)</span></td>
+        </tr>
+        <tr>
+          <td><strong>1NF → 2NF</strong></td>
+          <td><strong>부분 함수 종속</strong> 제거 (완전 함수 종속만 허용)<br>
+            <span style="font-size:0.78rem;color:var(--gray)">복합키 일부에만 종속된 속성을 분리</span></td>
+        </tr>
+        <tr>
+          <td><strong>2NF → 3NF</strong></td>
+          <td><strong>이행 함수 종속</strong> 제거<br>
+            <span style="font-size:0.78rem;color:var(--gray)">A→B→C (A와 C의 이행 종속) 분리</span></td>
+        </tr>
+        <tr>
+          <td><strong>3NF → BCNF</strong></td>
+          <td>모든 <strong>결정자가 후보키</strong>여야 함<br>
+            <span style="font-size:0.78rem;color:var(--gray)">후보키가 아닌 속성이 결정자인 경우 분리</span></td>
+        </tr>
+        <tr>
+          <td><strong>BCNF → 4NF</strong></td>
+          <td><strong>다치 종속</strong> 제거</td>
+        </tr>
+        <tr>
+          <td><strong>4NF → 5NF</strong></td>
+          <td><strong>조인 종속</strong> 제거 (완전 정규화)</td>
+        </tr>
+      </table>
+      <div class="hl" style="margin-top:0.75rem;">
+        <strong>시험 범위:</strong> 주로 1NF → 2NF → 3NF → BCNF까지 출제<br>
+        <strong>함수 종속 기호:</strong> A → B (A가 B를 결정: A를 알면 B를 알 수 있음)
+      </div>
+    </div>
+    <div class="card">
+      <h3>함수 종속 예시</h3>
+      <p style="font-size:0.82rem;color:var(--gray);margin-bottom:0.65rem;">수강 테이블: <strong>(학번, 과목코드)</strong> → 성적, 과목명, 교수명, 학생명</p>
+      <table class="base">
+        <tr><th>종속 유형</th><th>예시</th><th>문제</th></tr>
+        <tr>
+          <td>완전 함수 종속</td>
+          <td>(학번, 과목코드) → 성적</td>
+          <td>정상 (2NF 만족)</td>
+        </tr>
+        <tr>
+          <td><strong>부분 함수 종속 ← 2NF 위반</strong></td>
+          <td>학번 → 학생명<br>과목코드 → 과목명</td>
+          <td>복합키 일부에만 종속 → 분리</td>
+        </tr>
+        <tr>
+          <td><strong>이행 함수 종속 ← 3NF 위반</strong></td>
+          <td>과목코드 → 교수명<br>교수명 → 학과</td>
+          <td>과목코드 → 학과 이행 종속 → 분리</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 반정규화·인덱스 -->
+  <div id="t-denorm" class="tab-content">
+    <div class="card">
+      <h3>반정규화 (Denormalization)</h3>
+      <table class="base">
+        <tr><th>구분</th><th>방법</th><th>설명</th></tr>
+        <tr>
+          <td rowspan="2"><strong>테이블</strong></td>
+          <td>테이블 병합</td>
+          <td>1:1, 1:N 관계 테이블을 합쳐 JOIN 제거</td>
+        </tr>
+        <tr>
+          <td>테이블 분할</td>
+          <td>자주 접근하는 컬럼과 그렇지 않은 컬럼 분리 (수직 분할)</td>
+        </tr>
+        <tr>
+          <td rowspan="2"><strong>컬럼</strong></td>
+          <td>중복 컬럼 추가</td>
+          <td>자주 JOIN하는 테이블의 컬럼을 중복 저장</td>
+        </tr>
+        <tr>
+          <td>파생 컬럼 추가</td>
+          <td>계산값을 미리 저장 (합계, 평균 등)</td>
+        </tr>
+      </table>
+      <div class="hl warn" style="margin-top:0.75rem;">
+        반정규화는 <strong>조회 성능을 향상</strong>시키지만 <strong>데이터 무결성이 저하</strong>되고 저장 공간이 증가합니다.
+      </div>
+    </div>
+    <div class="card">
+      <h3>인덱스 (Index)</h3>
+      <table class="base">
+        <tr><th>구분</th><th>설명</th></tr>
+        <tr><td><strong>클러스터형</strong></td><td>테이블 데이터를 인덱스 순서로 물리적 정렬 (테이블당 1개)</td></tr>
+        <tr><td><strong>비클러스터형</strong></td><td>별도 인덱스 구조 유지, 포인터로 데이터 참조 (여러 개 가능)</td></tr>
+        <tr><td><strong>B-Tree 인덱스</strong></td><td>범위 검색에 효율적, 가장 일반적</td></tr>
+        <tr><td><strong>Hash 인덱스</strong></td><td>등치(=) 검색에 효율적, 범위 검색 불가</td></tr>
+      </table>
+      <div class="hl" style="margin-top:0.75rem;">
+        <strong>인덱스 장점:</strong> SELECT 성능 향상<br>
+        <strong>인덱스 단점:</strong> INSERT/UPDATE/DELETE 성능 저하, 추가 저장 공간 필요<br>
+        <strong>인덱스 생성 기준:</strong> WHERE·JOIN·ORDER BY에 자주 사용되는 컬럼
+      </div>
+    </div>
+    <div class="card">
+      <h3>뷰 (View) · 파티셔닝 (Partitioning)</h3>
+      <table class="base">
+        <tr><th>구분</th><th>설명</th></tr>
+        <tr>
+          <td><strong>뷰 (View)</strong></td>
+          <td>실제 데이터를 갖지 않는 <strong>가상 테이블</strong><br>
+            장점: 보안(일부 컬럼만 노출), 복잡한 쿼리 단순화<br>
+            단점: 독립적인 인덱스 생성 불가, 삽입·수정·삭제 제한</td>
+        </tr>
+        <tr>
+          <td><strong>수평 파티셔닝</strong></td>
+          <td><strong>행(Row)</strong> 기준 분할 (Range, Hash, List)</td>
+        </tr>
+        <tr>
+          <td><strong>수직 파티셔닝</strong></td>
+          <td><strong>컬럼(Column)</strong> 기준 분할</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 트랜잭션 -->
+  <div id="t-tx" class="tab-content">
+    <div class="card">
+      <h3>트랜잭션 ACID 특성 (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>특성</th><th>영문</th><th>설명</th></tr>
+        <tr>
+          <td><strong>원자성</strong></td>
+          <td>Atomicity</td>
+          <td>트랜잭션은 전부 수행되거나 전혀 수행되지 않음 (All or Nothing)<br>
+            <span style="font-size:0.78rem;color:var(--gray)">COMMIT 또는 ROLLBACK</span></td>
+        </tr>
+        <tr>
+          <td><strong>일관성</strong></td>
+          <td>Consistency</td>
+          <td>트랜잭션 수행 후에도 DB가 일관된 상태를 유지<br>
+            <span style="font-size:0.78rem;color:var(--gray)">제약조건, 무결성 규칙 항상 만족</span></td>
+        </tr>
+        <tr>
+          <td><strong>격리성</strong></td>
+          <td>Isolation</td>
+          <td>동시 실행 중인 트랜잭션이 서로 간섭하지 않음<br>
+            <span style="font-size:0.78rem;color:var(--gray)">격리 수준: READ UNCOMMITTED ~ SERIALIZABLE</span></td>
+        </tr>
+        <tr>
+          <td><strong>지속성</strong></td>
+          <td>Durability</td>
+          <td>성공한 트랜잭션 결과는 영구적으로 저장<br>
+            <span style="font-size:0.78rem;color:var(--gray)">장애 후에도 COMMIT된 데이터는 유지</span></td>
+        </tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>잠금(Lock)과 병행 제어</h3>
+      <table class="base">
+        <tr><th>개념</th><th>설명</th></tr>
+        <tr><td><strong>공유 잠금</strong> (S-Lock)</td><td>읽기 전용 잠금, 여러 트랜잭션 동시 읽기 가능</td></tr>
+        <tr><td><strong>배타 잠금</strong> (X-Lock)</td><td>읽기·쓰기 잠금, 다른 트랜잭션 접근 차단</td></tr>
+        <tr><td><strong>교착상태 (Deadlock)</strong></td><td>두 트랜잭션이 서로의 잠금을 기다리는 상태</td></tr>
+        <tr><td><strong>2단계 잠금 (2PL)</strong></td><td>직렬성 보장 프로토콜: 확장 단계 → 축소 단계</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>병행 제어 문제</h3>
+      <table class="base">
+        <tr><th>문제</th><th>설명</th></tr>
+        <tr><td><strong>갱신 손실</strong></td><td>같은 데이터를 두 트랜잭션이 갱신할 때 하나가 손실</td></tr>
+        <tr><td><strong>오손 읽기</strong> (Dirty Read)</td><td>ROLLBACK될 데이터를 읽음</td></tr>
+        <tr><td><strong>반복 불가 읽기</strong></td><td>같은 쿼리를 두 번 실행하면 결과가 다름</td></tr>
+        <tr><td><strong>유령 읽기</strong> (Phantom Read)</td><td>없던 행이 나타나거나 있던 행이 사라짐</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- S3 플래시카드 -->
+<section id="s3">
+  <h2 class="section-title"><span class="sec-num">3</span> 시험용 키워드 플래시카드</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:0.85rem;">카드를 클릭하면 정의가 나옵니다.</p>
+  <div class="fc-grid" id="fc-container"></div>
+</section>
+
+<!-- S4 정규화 단계 시각화 -->
+<section id="s4">
+  <h2 class="section-title"><span class="sec-num">4</span> 정규화 단계 시각화</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:1rem;">각 정규형을 클릭하면 조건과 제거 대상이 나타납니다.</p>
+    <div class="nf-steps">
+      <div class="nf-step ns0" onclick="showNF(0)" id="nf-0">비정규</div>
+      <span class="nf-arrow">→</span>
+      <div class="nf-step ns1" onclick="showNF(1)" id="nf-1">1NF</div>
+      <span class="nf-arrow">→</span>
+      <div class="nf-step ns2" onclick="showNF(2)" id="nf-2">2NF</div>
+      <span class="nf-arrow">→</span>
+      <div class="nf-step ns3" onclick="showNF(3)" id="nf-3">3NF</div>
+      <span class="nf-arrow">→</span>
+      <div class="nf-step ns4" onclick="showNF(4)" id="nf-4">BCNF</div>
+    </div>
+    <div class="nf-detail" id="nf-detail">단계를 클릭하면 설명이 나타납니다.</div>
+  </div>
+</section>
+
+<!-- S5 ACID 인터랙션 -->
+<section id="s5">
+  <h2 class="section-title"><span class="sec-num">5</span> 트랜잭션 ACID 특성</h2>
+  <div class="acid-grid" id="acid-container"></div>
+  <div class="acid-detail" id="acid-detail"></div>
+</section>
+
+<!-- S6 이상현상 분류 퀴즈 -->
+<section id="s6">
+  <h2 class="section-title"><span class="sec-num">6</span> 이상현상 분류 퀴즈</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:1rem;">각 상황이 삽입 이상·삭제 이상·갱신 이상 중 무엇인지 선택하세요.</p>
+  <div class="anom-list" id="anom-container"></div>
+  <div style="display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap;align-items:center;">
+    <button class="btn btn-primary" onclick="checkAnom()">채점하기</button>
+    <button class="btn btn-gray" onclick="resetAnom()">다시 시작</button>
+    <span id="anom-score" style="font-size:0.9rem;font-weight:700;color:var(--primary);"></span>
+  </div>
+</section>
+
+<!-- S7 문제 풀이 -->
+<section id="s7">
+  <h2 class="section-title"><span class="sec-num">7</span> 대표 문제 유형</h2>
+  <div id="oq-container"></div>
+  <div class="score-box" id="oq-score">
+    <div class="score-num" id="oq-snum">0/0</div>
+    <p style="color:var(--gray);margin-top:0.4rem;" id="oq-smsg"></p>
+  </div>
+  <button class="btn btn-primary" style="margin-top:1rem;" onclick="resetOQ()">다시 풀기</button>
+</section>
+
+<!-- S8 미니 퀴즈 -->
+<section id="s8">
+  <h2 class="section-title"><span class="sec-num">8</span> 미니 퀴즈</h2>
+  <div id="mq-container"></div>
+  <button class="btn btn-blue" style="margin-top:0.85rem;" onclick="checkMQ()">채점하기</button>
+  <div id="mq-result" style="display:none;margin-top:1rem;"></div>
+</section>
+
+<!-- S9 오답노트 -->
+<section id="s9">
+  <h2 class="section-title"><span class="sec-num">9</span> 오답 노트</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.7rem;">틀린 문제나 헷갈리는 개념을 기록하세요. (자동 저장)</p>
+    <textarea class="memo" id="memo" placeholder="예) 정규화: 비정규→1NF(원자값)→2NF(부분종속제거)→3NF(이행종속제거)→BCNF(결정자=후보키)&#10;예) 이상현상: 삽입(불필요 데이터), 삭제(의도치 않은 삭제), 갱신(불일치)&#10;예) ACID: 원자성·일관성·격리성·지속성&#10;예) M:N관계 → 중간 테이블 필수&#10;예) 반정규화: 성능↑ but 무결성↓"></textarea>
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.5rem;">
+      <button class="btn btn-primary" onclick="saveMemo()">저장</button>
+      <span id="memo-ok" style="font-size:0.8rem;color:#15803d;display:none;">✓ 저장됨</span>
+    </div>
+  </div>
+</section>
+
+</div>
+<button class="scroll-top" id="stbtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ── 정규화 단계 데이터 ────────────────────────────────────
+const nfData = [
+  {
+    title:'비정규 (Unnormalized)',
+    cond:'정규화되지 않은 초기 상태',
+    remove:'다중값 속성, 반복 그룹',
+    ex:'전화번호가 010-1234, 02-5678처럼 여러 개 → 하나의 셀에 여러 값',
+    prob:'이상현상(삽입·삭제·갱신)이 발생할 가능성 높음',
+  },
+  {
+    title:'제1정규형 (1NF)',
+    cond:'모든 속성값이 <strong>원자값(Atomic)</strong>이어야 함',
+    remove:'다중값 속성, 반복 그룹 제거',
+    ex:'전화번호를 별도 행으로 분리 (1개 셀 = 1개 값)',
+    prob:'아직 부분 함수 종속 존재 → 이상현상 발생 가능',
+  },
+  {
+    title:'제2정규형 (2NF)',
+    cond:'1NF + <strong>부분 함수 종속 제거</strong> (완전 함수 종속만 허용)',
+    remove:'복합키의 일부에만 종속된 속성 분리',
+    ex:'(학번, 과목코드) → 학생명은 학번에만 종속 → 학생 테이블 분리',
+    prob:'아직 이행 함수 종속 존재할 수 있음',
+  },
+  {
+    title:'제3정규형 (3NF)',
+    cond:'2NF + <strong>이행 함수 종속 제거</strong>',
+    remove:'A→B→C 형태의 이행 종속 분리',
+    ex:'과목코드→교수→학과 (과목코드→학과 이행종속) → 교수 테이블 분리',
+    prob:'결정자이면서 후보키가 아닌 속성 존재할 수 있음',
+  },
+  {
+    title:'보이스-코드 정규형 (BCNF)',
+    cond:'3NF + <strong>모든 결정자가 후보키</strong>여야 함',
+    remove:'후보키가 아닌 속성이 결정자인 경우 분리',
+    ex:'교수→과목 (교수가 결정자지만 후보키 아님) → 분리',
+    prob:'실무에서 대부분 BCNF까지 정규화하면 충분',
+  },
+];
+
+// ── ACID 데이터 ───────────────────────────────────────────
+const acidData = [
+  {
+    letter:'A', name:'Atomicity', kr:'원자성',
+    bg:'#fee2e2', color:'#991b1b',
+    desc:'트랜잭션의 연산은 <strong>전부 수행되거나 전혀 수행되지 않아야</strong> 합니다.',
+    detail:'계좌 이체 예시:\n• A 계좌 출금 + B 계좌 입금 → 둘 다 성공하거나\n• 둘 다 실패 (ROLLBACK)\n→ 중간 상태 없음 (All or Nothing)',
+  },
+  {
+    letter:'C', name:'Consistency', kr:'일관성',
+    bg:'#fef3c7', color:'#92400e',
+    desc:'트랜잭션 수행 전후에 DB가 <strong>일관된 상태</strong>를 유지해야 합니다.',
+    detail:'무결성 제약조건, 비즈니스 규칙이 항상 만족되어야 함\n예) 잔액 >= 0 조건이 트랜잭션 전후 모두 유지',
+  },
+  {
+    letter:'I', name:'Isolation', kr:'격리성',
+    bg:'#dcfce7', color:'#166534',
+    desc:'동시에 실행 중인 트랜잭션들이 <strong>서로 간섭하지 않아야</strong> 합니다.',
+    detail:'격리 수준 (낮을수록 성능↑, 높을수록 일관성↑):\nREAD UNCOMMITTED → READ COMMITTED\n→ REPEATABLE READ → SERIALIZABLE',
+  },
+  {
+    letter:'D', name:'Durability', kr:'지속성',
+    bg:'#dbeafe', color:'#1e40af',
+    desc:'성공한 트랜잭션 결과는 <strong>영구적으로 DB에 저장</strong>되어야 합니다.',
+    detail:'COMMIT된 데이터는 시스템 장애 후에도 유지\n→ 로그(WAL: Write-Ahead Logging)로 보장',
+  },
+];
+
+// ── 이상현상 퀴즈 데이터 ─────────────────────────────────
+const anomData = [
+  { desc:'수강 정보가 없는 신입생을 DB에 등록하려 하니, 과목코드 컬럼이 NOT NULL이라 등록이 불가능했다.', type:'INS' },
+  { desc:'A 교수의 이름을 수정했더니 일부 과목에서는 변경되었지만 다른 과목에서는 여전히 이전 이름이 남아있다.', type:'UPD' },
+  { desc:'한 학생이 수강한 마지막 과목을 취소하니, 그 학생의 모든 개인정보도 함께 사라졌다.', type:'DEL' },
+  { desc:'새로운 과목을 개설했지만 아직 수강 신청한 학생이 없어 DB에 등록이 불가능하다.', type:'INS' },
+  { desc:'특정 상품의 가격을 수정했는데, 여러 주문 테이블 중 일부에만 새 가격이 반영되었다.', type:'UPD' },
+  { desc:'고객 한 명의 유일한 주문을 삭제했더니, 해당 고객의 회원 정보까지 사라져버렸다.', type:'DEL' },
+];
+
+// ── 대표 문제 ─────────────────────────────────────────────
+const oqData = [
+  {
+    q:'다음 중 제2정규형(2NF)에서 제3정규형(3NF)으로 변환할 때 제거하는 종속성은?',
+    opts:['부분 함수 종속','이행 함수 종속','다치 종속','조인 종속'], ans:1,
+    exp:'정규화 각 단계에서 제거하는 종속:\n1NF: 다중값 (원자값 보장)\n2NF: 부분 함수 종속 제거\n3NF: 이행 함수 종속 제거\nBCNF: 결정자가 후보키가 아닌 경우 제거',
+  },
+  {
+    q:'데이터베이스의 이상현상(Anomaly) 중 "데이터를 삽입할 때 불필요한 데이터도 함께 삽입해야 하는 현상"은?',
+    opts:['갱신 이상','삭제 이상','삽입 이상','검색 이상'], ans:2,
+    exp:'이상현상 3종류:\n삽입 이상: 불필요한 데이터도 함께 삽입해야 함\n삭제 이상: 의도치 않은 데이터도 함께 삭제됨\n갱신 이상: 일부만 수정되어 데이터 불일치 발생',
+  },
+  {
+    q:'트랜잭션의 ACID 특성 중 "트랜잭션이 완료된 후에도 장애가 발생해도 영구적으로 유지된다"는 특성은?',
+    opts:['원자성 (Atomicity)','일관성 (Consistency)','격리성 (Isolation)','지속성 (Durability)'], ans:3,
+    exp:'ACID 4특성:\nA(Atomicity) 원자성: All or Nothing\nC(Consistency) 일관성: 무결성 유지\nI(Isolation) 격리성: 트랜잭션 간 간섭 없음\nD(Durability) 지속성: 영구 저장 (장애 후에도 유지)',
+  },
+  {
+    q:'ERD에서 M:N 관계를 관계형 데이터베이스로 변환할 때 취하는 방법은?',
+    opts:[
+      '왼쪽 테이블에 외래키 추가',
+      '오른쪽 테이블에 외래키 추가',
+      '중간(교차) 테이블을 생성',
+      '두 테이블을 하나로 병합',
+    ], ans:2,
+    exp:'M:N 관계는 관계형 DB에서 직접 표현 불가\n→ 중간(교차, Junction) 테이블을 생성하여\n   M:N을 1:N 두 개로 분리\n예) 학생-과목 M:N → 수강(학번 FK + 과목코드 FK) 테이블 추가',
+  },
+  {
+    q:'BCNF(Boyce-Codd Normal Form)의 조건으로 옳은 것은?',
+    opts:[
+      '모든 속성값이 원자값이어야 한다',
+      '부분 함수 종속이 없어야 한다',
+      '이행 함수 종속이 없어야 한다',
+      '모든 결정자가 후보키여야 한다',
+    ], ans:3,
+    exp:'BCNF: 3NF + "모든 결정자가 후보키"\n3NF를 만족해도 결정자이면서 후보키가 아닌 속성이 존재하면 BCNF 위반\n\n1NF: 원자값\n2NF: 부분 함수 종속 제거\n3NF: 이행 함수 종속 제거\nBCNF: 결정자 = 후보키',
+  },
+  {
+    q:'인덱스(Index)에 대한 설명으로 옳지 않은 것은?',
+    opts:[
+      'SELECT 성능을 향상시킨다',
+      'INSERT/UPDATE/DELETE 성능이 저하될 수 있다',
+      '클러스터형 인덱스는 테이블당 여러 개 생성 가능하다',
+      '추가적인 저장 공간이 필요하다',
+    ], ans:2,
+    exp:'클러스터형 인덱스: 테이블 데이터를 물리적으로 정렬 → 테이블당 1개만 가능\n비클러스터형 인덱스: 포인터로 참조 → 여러 개 가능\n\n인덱스 장점: SELECT 성능 향상\n인덱스 단점: DML 성능 저하, 저장 공간 추가 필요',
+  },
+  {
+    q:'반정규화(Denormalization)에 대한 설명으로 옳은 것은?',
+    opts:[
+      '데이터 무결성을 향상시킨다',
+      '조회(SELECT) 성능 향상을 위해 수행한다',
+      '저장 공간을 절약하기 위해 수행한다',
+      '이상현상을 제거하기 위해 수행한다',
+    ], ans:1,
+    exp:'반정규화(역정규화):\n목적: 조회(SELECT) 성능 향상\n방법: 테이블 병합, 중복 컬럼 추가, 파생 컬럼 추가\n부작용: 데이터 무결성 저하, 저장 공간 증가\n이상현상 제거 = 정규화의 목적',
+  },
+  {
+    q:'트랜잭션의 격리성(Isolation)과 관련하여, 아직 COMMIT되지 않은 데이터를 다른 트랜잭션이 읽는 현상은?',
+    opts:['유령 읽기 (Phantom Read)','오손 읽기 (Dirty Read)','갱신 손실','반복 불가 읽기'], ans:1,
+    exp:'Dirty Read (오손 읽기): ROLLBACK될 수 있는 미완성 데이터를 읽음\n→ READ UNCOMMITTED 격리 수준에서 발생\n\n반복 불가 읽기: 같은 쿼리 실행 시 결과가 다름\n유령 읽기: 없던 행이 나타나거나 있던 행이 사라짐',
+  },
+];
+
+// ── 미니 퀴즈 ─────────────────────────────────────────────
+const mqData = [
+  { q:'1NF의 조건은?', opts:['원자값','완전 함수 종속','이행 종속 제거','결정자=후보키'], ans:0 },
+  { q:'데이터 삭제 시 의도치 않은 데이터도 함께 사라지는 현상은?', opts:['삽입 이상','삭제 이상','갱신 이상','검색 이상'], ans:1 },
+  { q:'ACID에서 "All or Nothing"을 의미하는 특성은?', opts:['일관성','격리성','원자성','지속성'], ans:2 },
+  { q:'M:N 관계를 관계형 DB로 변환하는 방법은?', opts:['왼쪽 테이블에 FK 추가','중간 테이블 생성','오른쪽 테이블에 FK 추가','테이블 병합'], ans:1 },
+  { q:'모든 결정자가 후보키여야 하는 정규형은?', opts:['2NF','3NF','BCNF','4NF'], ans:2 },
+  { q:'클러스터형 인덱스는 테이블당 몇 개 생성 가능한가?', opts:['1개','2개','제한 없음','3개'], ans:0 },
+  { q:'조회 성능 향상을 위해 일부러 데이터를 중복 저장하는 기법은?', opts:['정규화','반정규화','인덱싱','파티셔닝'], ans:1 },
+  { q:'뷰(View)의 특징으로 옳지 않은 것은?', opts:['가상 테이블','독립적인 인덱스 생성 가능','보안 강화','복잡한 쿼리 단순화'], ans:1 },
+];
+
+// ── 렌더링 ────────────────────────────────────────────────
+function renderFC() {
+  const fcData = [
+    { f:'정규화 목적',            b:'데이터 중복 최소화\n이상현상(삽입·삭제·갱신) 제거\n데이터 무결성 유지' },
+    { f:'1NF 조건',               b:'모든 속성값이 원자값\n다중값·반복 그룹 제거\n한 셀에 하나의 값' },
+    { f:'2NF 조건',               b:'1NF + 부분 함수 종속 제거\n복합키 일부에만 종속된 속성 분리\n완전 함수 종속만 허용' },
+    { f:'3NF 조건',               b:'2NF + 이행 함수 종속 제거\nA→B→C 형태 분리\n비키 속성이 다른 비키 속성 결정 불가' },
+    { f:'BCNF 조건',              b:'3NF + 모든 결정자 = 후보키\n결정자가 후보키가 아니면 분리\n3NF보다 강한 조건' },
+    { f:'원자성 (Atomicity)',      b:'All or Nothing\nCOMMIT 또는 ROLLBACK\n중간 상태 없음' },
+    { f:'격리성 (Isolation)',      b:'트랜잭션 간 간섭 없음\nDirty Read 방지\nREAD UNCOMMITTED~SERIALIZABLE' },
+    { f:'삽입 이상',               b:'불필요한 데이터도\n함께 삽입해야 하는 현상\n학번 없이 과목 등록 불가' },
+    { f:'갱신 이상',               b:'일부 행만 수정되어\n데이터 불일치 발생\n교수 이름 일부만 수정됨' },
+    { f:'반정규화',                b:'성능 향상 위해 중복 허용\n테이블 병합, 중복컬럼 추가\n무결성 저하 부작용' },
+    { f:'클러스터형 인덱스',        b:'테이블당 1개\n물리적 정렬 순서\n범위 검색에 효율적' },
+    { f:'부분 함수 종속',          b:'복합키의 일부 속성에만\n종속되는 경우\n2NF에서 제거 대상' },
+    { f:'이행 함수 종속',          b:'A→B→C 형태\nA가 C를 간접 결정\n3NF에서 제거 대상' },
+    { f:'뷰 (View)',               b:'실제 데이터 없는 가상 테이블\n보안·단순성 장점\n독립 인덱스 불가' },
+    { f:'Dirty Read',             b:'오손 읽기\nCOMMIT 안 된 데이터를 읽음\n가장 낮은 격리 수준에서 발생' },
+    { f:'카디널리티',              b:'개체 간 대응 관계\n1:1 / 1:N / M:N\nM:N → 중간 테이블 필수' },
+  ];
+  document.getElementById('fc-container').innerHTML = fcData.map(c =>
+    `<div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-inner">
+        <div class="fc-front">${c.f.replace(/\n/g,'<br>')}</div>
+        <div class="fc-back">${c.b.replace(/\n/g,'<br>')}</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+let activeNF = -1;
+function showNF(i) {
+  document.querySelectorAll('.nf-step').forEach((el, j) => el.classList.toggle('active', j === i));
+  const det = document.getElementById('nf-detail');
+  if (activeNF === i) {
+    det.textContent = '단계를 클릭하면 설명이 나타납니다.';
+    document.getElementById(`nf-${i}`).classList.remove('active');
+    activeNF = -1; return;
+  }
+  const d = nfData[i];
+  det.innerHTML = `<strong>${d.title}</strong><br>
+    <p style="margin-top:0.45rem;">📌 <strong>조건:</strong> ${d.cond}</p>
+    <p style="margin-top:0.35rem;">✂️ <strong>제거 대상:</strong> ${d.remove}</p>
+    <p style="margin-top:0.35rem;">💡 <strong>예시:</strong> ${d.ex}</p>
+    <div class="hl" style="margin-top:0.6rem;font-size:0.8rem;">${d.prob}</div>`;
+  activeNF = i;
+}
+
+function renderACID() {
+  document.getElementById('acid-container').innerHTML = acidData.map((a, i) =>
+    `<div class="acid-card" style="background:${a.bg};color:${a.color};" onclick="showACID(${i})" id="ac-${i}">
+      <div class="acid-letter">${a.letter}</div>
+      <div class="acid-name">${a.name}</div>
+      <div class="acid-kr">${a.kr}</div>
+      <p style="font-size:0.8rem;margin-top:0.5rem;">${a.desc}</p>
+    </div>`
+  ).join('');
+}
+
+let activeACID = -1;
+function showACID(i) {
+  document.querySelectorAll('.acid-card').forEach((el, j) => el.classList.toggle('active', j === i));
+  const det = document.getElementById('acid-detail');
+  if (activeACID === i) { det.classList.remove('show'); activeACID = -1; return; }
+  const a = acidData[i];
+  det.innerHTML = `<strong>${a.letter} — ${a.name} (${a.kr})</strong><br>
+    <div style="margin-top:0.5rem;">${a.detail.replace(/\n/g,'<br>')}</div>`;
+  det.classList.add('show');
+  activeACID = i;
+}
+
+let anomSelected = {};
+function renderAnom() {
+  anomSelected = {};
+  document.getElementById('anom-score').textContent = '';
+  document.getElementById('anom-container').innerHTML = anomData.map((item, i) =>
+    `<div class="anom-item">
+      <div class="anom-desc">${item.desc}</div>
+      <div class="anom-btns">
+        <button class="an-btn an-ins" onclick="pickAnom(${i},'INS',this)" id="an-${i}-INS">삽입 이상</button>
+        <button class="an-btn an-del" onclick="pickAnom(${i},'DEL',this)" id="an-${i}-DEL">삭제 이상</button>
+        <button class="an-btn an-upd" onclick="pickAnom(${i},'UPD',this)" id="an-${i}-UPD">갱신 이상</button>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function pickAnom(i, type, el) {
+  ['INS','DEL','UPD'].forEach(t => {
+    const b = document.getElementById(`an-${i}-${t}`);
+    if (b) { b.classList.remove('correct','wrong'); b.style.outline='none'; }
+  });
+  anomSelected[i] = type;
+  el.style.outline = '3px solid #15803d';
+}
+
+function checkAnom() {
+  let sc = 0;
+  anomData.forEach((item, i) => {
+    ['INS','DEL','UPD'].forEach(t => {
+      const b = document.getElementById(`an-${i}-${t}`);
+      if (b) { b.classList.remove('correct','wrong'); b.style.outline='none'; }
+    });
+    document.getElementById(`an-${i}-${item.type}`).classList.add('correct');
+    if (anomSelected[i] && anomSelected[i] !== item.type)
+      document.getElementById(`an-${i}-${anomSelected[i]}`).classList.add('wrong');
+    if (anomSelected[i] === item.type) sc++;
+  });
+  document.getElementById('anom-score').textContent = `${sc}/${anomData.length} 정답`;
+}
+
+function resetAnom() { renderAnom(); }
+
+let oqAnswered = {}, oqSelected = {};
+function renderOQ() {
+  oqAnswered = {}; oqSelected = {};
+  document.getElementById('oq-container').innerHTML = oqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi+1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<div class="opt" onclick="pickOQ(${qi},${oi},this)" id="oq-${qi}-${oi}">${o}</div>`
+      ).join('')}</div>
+      <div class="exp" id="exp-${qi}">${q.exp.replace(/\n/g,'<br>')}</div>
+    </div>`
+  ).join('');
+  document.getElementById('oq-score').style.display = 'none';
+}
+
+function pickOQ(qi, oi, el) {
+  if (oqAnswered[qi]) return;
+  oqAnswered[qi] = true; oqSelected[qi] = oi;
+  const correct = oqData[qi].ans;
+  document.getElementById(`oq-${qi}-${correct}`).classList.add('correct');
+  if (oi !== correct) el.classList.add('wrong');
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  if (Object.keys(oqAnswered).length === oqData.length) {
+    const sc = oqData.filter((_, i) => oqSelected[i] === oqData[i].ans).length;
+    document.getElementById('oq-snum').textContent = `${sc}/${oqData.length}`;
+    document.getElementById('oq-smsg').textContent = sc === oqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 오답노트에 기록하세요!';
+    document.getElementById('oq-score').style.display = 'block';
+  }
+}
+
+function resetOQ() { renderOQ(); }
+
+function renderMQ() {
+  document.getElementById('mq-container').innerHTML = mqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi+1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<label style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;background:#f8fafc;border:2px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.84rem;" id="mql-${qi}-${oi}">
+          <input type="radio" name="mq${qi}" value="${oi}" style="margin:0;flex-shrink:0;">${o}
+        </label>`
+      ).join('')}</div>
+    </div>`
+  ).join('');
+  document.getElementById('mq-result').style.display = 'none';
+}
+
+function checkMQ() {
+  let sc = 0;
+  mqData.forEach((q, qi) => {
+    const sel = document.querySelector(`input[name="mq${qi}"]:checked`);
+    const v = sel ? +sel.value : -1;
+    const lbl = id => document.getElementById(`mql-${qi}-${id}`);
+    lbl(q.ans).style.cssText += ';border-color:#15803d;background:#d1fae5;';
+    if (v !== -1 && v !== q.ans) lbl(v).style.cssText += ';border-color:#dc2626;background:#fee2e2;';
+    if (v === q.ans) sc++;
+  });
+  const r = document.getElementById('mq-result');
+  r.style.display = 'block';
+  r.innerHTML = `<div class="card" style="text-align:center;">
+    <div class="score-num">${sc}/${mqData.length}</div>
+    <p style="color:var(--gray);margin-top:0.4rem;">${sc === mqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 다시 복습하세요!'}</p>
+  </div>`;
+}
+
+function tab(btn, id) {
+  btn.closest('section').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.closest('section').querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+function saveMemo() {
+  localStorage.setItem('dio_memo', document.getElementById('memo').value);
+  const ok = document.getElementById('memo-ok');
+  ok.style.display = 'inline';
+  setTimeout(() => { ok.style.display = 'none'; }, 2000);
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('stbtn').classList.toggle('show', window.scrollY > 300);
+  let cur = '';
+  document.querySelectorAll('section[id]').forEach(s => { if (window.scrollY >= s.offsetTop - 110) cur = s.id; });
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderFC();
+  renderACID();
+  renderAnom();
+  renderOQ();
+  renderMQ();
+  const m = localStorage.getItem('dio_memo');
+  if (m) document.getElementById('memo').value = m;
+  document.getElementById('memo').addEventListener('input', () =>
+    localStorage.setItem('dio_memo', document.getElementById('memo').value)
+  );
+});
+</script>
+</body>
+</html>

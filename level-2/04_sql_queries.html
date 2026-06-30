@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>04 SQL 쿼리 실전 — Level-2</title>
+<style>
+:root {
+  --dark: #0f172a; --gray: #64748b; --light: #f8fafc; --border: #e2e8f0;
+  --accent: #0f766e; --accent2: #14b8a6;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.7; }
+
+/* ── HERO ── */
+.hero { background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #134e4a 100%); color: white; padding: 2.5rem 1.5rem 2rem; }
+.hero-inner { max-width: 960px; margin: 0 auto; }
+.hero-back { font-size: 0.78rem; color: #94a3b8; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; margin-bottom: 1rem; }
+.hero-back:hover { color: white; }
+.hero h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.3rem; }
+.hero p { color: #99f6e4; font-size: 0.88rem; }
+.hero-meta { display: flex; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
+.htag { background: rgba(255,255,255,0.12); padding: 0.22rem 0.65rem; border-radius: 20px; font-size: 0.75rem; }
+
+.container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+/* ── TOC ── */
+.toc { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.5rem; margin-bottom: 2rem; }
+.toc-title { font-size: 0.78rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.7rem; }
+.toc-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.toc-list a { font-size: 0.8rem; color: var(--accent); text-decoration: none; border: 1px solid #99f6e4; background: #f0fdfa; padding: 0.2rem 0.6rem; border-radius: 8px; }
+.toc-list a:hover { background: #ccfbf1; }
+
+/* ── SECTION ── */
+.sec-title { font-size: 1.3rem; font-weight: 800; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 20px; }
+
+/* ── ALERT ── */
+.info  { background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #134e4a; margin: 1rem 0; }
+.warn  { background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #713f12; margin: 1rem 0; }
+.tip   { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #166534; margin: 1rem 0; }
+.red   { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #991b1b; margin: 1rem 0; }
+
+/* ── SQL CODE ── */
+.code-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; margin: 0.8rem 0; border-radius: 10px; }
+.code-block { background: #0f172a; border-radius: 10px; padding: 1.1rem 1.3rem; min-width: 480px; }
+.code-block pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.84rem; line-height: 1.7; color: #e2e8f0; }
+.ln  { color: #334155; user-select: none; margin-right: 0.7rem; font-size: 0.76rem; }
+.kw  { color: #67e8f9; font-weight: 700; }   /* SQL keywords */
+.fn  { color: #fbbf24; }                       /* functions */
+.str { color: #86efac; }                       /* strings */
+.num { color: #f9a8d4; }                       /* numbers */
+.cmt { color: #475569; font-style: italic; }   /* comments */
+.tb  { color: #c4b5fd; }                       /* table names */
+.op  { color: #fb923c; }                       /* operators */
+
+/* ── DATA TABLE ── */
+.tbl-wrap { overflow-x: auto; margin: 0.7rem 0; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+.tbl-wrap::before { content: '← 좌우 스크롤'; display: none; font-size: 0.68rem; color: var(--gray); text-align: right; padding: 0.3rem 0; }
+.d-table { border-collapse: collapse; font-size: 0.82rem; min-width: 280px; }
+.d-table th { background: var(--accent); color: white; padding: 0.45rem 0.85rem; text-align: center; font-size: 0.76rem; font-weight: 700; }
+.d-table td { padding: 0.38rem 0.85rem; border-bottom: 1px solid var(--border); text-align: center; }
+.d-table tr:nth-child(even) td { background: #f0fdfa; }
+.d-table tr:hover td { background: #ccfbf1; }
+.d-table .null-v { color: #94a3b8; font-style: italic; font-size: 0.75rem; }
+.d-table .hi { background: #fef3c7 !important; font-weight: 700; }
+.d-table .no { background: #fee2e2 !important; color: #991b1b; text-decoration: line-through; }
+
+/* ── GENERAL TABLE ── */
+.g-tbl { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+.g-tbl th { background: #0f172a; color: #99f6e4; padding: 0.5rem 0.8rem; text-align: left; font-size: 0.77rem; font-weight: 700; }
+.g-tbl td { padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--border); }
+.g-tbl tr:nth-child(even) td { background: #fafafa; }
+.g-tbl tr:hover td { background: #f0fdfa; }
+code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.82rem; }
+
+/* ── CONCEPT CARD ── */
+.concept { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1.1rem; }
+.concept h4 { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.4rem; }
+.concept h4::before { content: '▸'; color: var(--accent); }
+
+/* ── JOIN LAYOUT ── */
+.join-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0.8rem 0; }
+.join-box { }
+.join-box .j-label { font-size: 0.76rem; font-weight: 700; color: var(--gray); margin-bottom: 0.4rem; }
+
+/* ── JOIN VENN ── */
+.venn-row { display: flex; gap: 1rem; align-items: center; margin: 0.8rem 0; flex-wrap: wrap; }
+.venn-item { text-align: center; }
+.venn-item .venn-pic { width: 90px; height: 60px; position: relative; margin: 0 auto 0.3rem; }
+.venn-item .vl { width: 50px; height: 50px; border-radius: 50%; position: absolute; border: 2px solid; }
+.venn-item .vl.A { left: 0; top: 5px; }
+.venn-item .vl.B { left: 35px; top: 5px; }
+.inner .vl.A { background: rgba(15,118,110,0.15); border-color: var(--accent); }
+.inner .vl.B { background: rgba(15,118,110,0.15); border-color: var(--accent); }
+.left-j .vl.A { background: rgba(15,118,110,0.35); border-color: var(--accent); }
+.left-j .vl.B { background: rgba(15,118,110,0.1); border-color: var(--accent2); }
+.right-j .vl.A { background: rgba(15,118,110,0.1); border-color: var(--accent2); }
+.right-j .vl.B { background: rgba(15,118,110,0.35); border-color: var(--accent); }
+.full-j .vl.A { background: rgba(15,118,110,0.35); border-color: var(--accent); }
+.full-j .vl.B { background: rgba(15,118,110,0.35); border-color: var(--accent); }
+.venn-item .v-name { font-size: 0.72rem; font-weight: 700; color: var(--dark); }
+.venn-item .v-sql  { font-size: 0.68rem; color: var(--gray); margin-top: 0.15rem; font-family: monospace; }
+
+/* ── ORDER FLOW ── */
+.flow-list { display: flex; gap: 0; flex-wrap: wrap; align-items: center; margin: 0.5rem 0; }
+.fl-item { display: flex; align-items: center; }
+.fl-box { background: #f0fdfa; border: 1px solid #99f6e4; color: #134e4a; font-size: 0.75rem; font-weight: 700; padding: 0.3rem 0.6rem; border-radius: 6px; white-space: nowrap; font-family: monospace; }
+.fl-arrow { color: var(--gray); padding: 0 0.3rem; font-size: 0.85rem; }
+.fl-num { background: var(--accent); color: white; font-size: 0.6rem; font-weight: 700; padding: 0.05rem 0.3rem; border-radius: 10px; margin-left: 0.2rem; vertical-align: top; }
+
+/* ── RELATIONAL ALGEBRA ── */
+.ra-table { border-collapse: collapse; font-size: 0.84rem; width: 100%; }
+.ra-table th { background: #134e4a; color: #99f6e4; padding: 0.5rem 0.9rem; font-size: 0.76rem; font-weight: 700; }
+.ra-table td { padding: 0.45rem 0.9rem; border-bottom: 1px solid var(--border); font-family: serif; }
+.ra-table td:first-child { font-size: 1.1rem; color: var(--accent); font-weight: 700; text-align: center; }
+.ra-table td:nth-child(2) { font-family: 'Courier New', monospace; font-size: 0.8rem; }
+.ra-table tr:nth-child(even) td { background: #f0fdfa; }
+
+/* ── QUIZ ── */
+.quiz-wrap { display: flex; flex-direction: column; gap: 1.1rem; margin-top: 1rem; }
+.quiz-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.quiz-q {
+  padding: 1rem 1.2rem; font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; min-height: 52px;
+}
+.quiz-q:hover { background: #f0fdfa; }
+.quiz-q:active { background: #ccfbf1; }
+.quiz-badge { font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.quiz-badge.year { background: #99f6e4; color: #134e4a; }
+.quiz-badge.sim  { background: #e0e7ff; color: #4338ca; }
+.quiz-chevron { font-size: 0.75rem; color: var(--gray); flex-shrink: 0; margin-top: 0.1rem; transition: transform 0.2s; }
+.quiz-card.open .quiz-chevron { transform: rotate(180deg); }
+.quiz-ans { display: none; padding: 0 1.2rem 1.1rem; border-top: 1px solid var(--border); }
+.quiz-card.open .quiz-ans { display: block; }
+.ans-label { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin: 0.8rem 0 0.3rem; }
+.ans-val   { font-size: 0.95rem; font-weight: 700; color: var(--dark); font-family: monospace; }
+.ans-explain { font-size: 0.82rem; color: #374151; margin-top: 0.5rem; line-height: 1.65; }
+.ans-code-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.7rem 0; border-radius: 8px; }
+.ans-code { background: #0f172a; border-radius: 8px; padding: 0.9rem 1.1rem; min-width: 360px; }
+.ans-code pre { margin: 0; font-family: 'Courier New', monospace; font-size: 0.8rem; line-height: 1.65; color: #e2e8f0; }
+
+/* ── MOBILE ── */
+@media (max-width: 640px) {
+  .hero { padding: 1.8rem 1rem 1.5rem; }
+  .hero h1 { font-size: 1.25rem; }
+  .hero p { font-size: 0.84rem; }
+
+  .container { padding: 1.5rem 0.9rem 3rem; }
+  .toc { padding: 0.9rem 1rem; }
+  .sec-title { font-size: 1.1rem; margin: 2rem 0 0.85rem; }
+
+  .code-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.3rem; }
+  .code-block { padding: 0.9rem 1rem; }
+  .code-block pre { font-size: 0.74rem; }
+
+  .tbl-wrap::before { display: block; }
+  .d-table { font-size: 0.74rem; }
+  .d-table th { padding: 0.38rem 0.6rem; font-size: 0.68rem; }
+  .d-table td { padding: 0.3rem 0.6rem; }
+
+  .g-tbl { font-size: 0.76rem; }
+  .g-tbl th, .g-tbl td { padding: 0.35rem 0.6rem; }
+
+  .join-layout { grid-template-columns: 1fr; }
+  .venn-row { gap: 0.6rem; }
+  .venn-item .venn-pic { width: 80px; height: 55px; }
+  .venn-item .vl { width: 44px; height: 44px; }
+  .venn-item .vl.B { left: 30px; }
+
+  .flow-list { gap: 0; }
+  .fl-box { font-size: 0.68rem; padding: 0.25rem 0.5rem; }
+
+  .info, .warn, .tip, .red { font-size: 0.8rem; padding: 0.85rem 1rem; }
+  .concept { padding: 1rem; }
+  .concept h4 { font-size: 0.86rem; }
+
+  .quiz-q { padding: 0.9rem 1rem; font-size: 0.83rem; }
+  .quiz-ans { padding: 0 1rem 1rem; }
+  .ans-val { font-size: 0.88rem; }
+  .ans-explain { font-size: 0.79rem; }
+  .ans-code-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.2rem; }
+  .ans-code pre { font-size: 0.72rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <a class="hero-back" href="index.html">← Level-2 목록</a>
+    <h1>🗄️ SQL 쿼리 실전</h1>
+    <p>JOIN · 서브쿼리 · GROUP BY · 집계함수 · 관계대수</p>
+    <div class="hero-meta">
+      <span class="htag">출제 빈도 ★★★★★</span>
+      <span class="htag">04번</span>
+      <span class="htag">매회 3~5문제 출제</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="toc">
+    <div class="toc-title">목차</div>
+    <div class="toc-list">
+      <a href="#exec-order">실행 순서</a>
+      <a href="#sample">예제 테이블</a>
+      <a href="#join">JOIN 4종류</a>
+      <a href="#aggregate">집계 + GROUP BY</a>
+      <a href="#subquery">서브쿼리</a>
+      <a href="#ra">관계대수</a>
+      <a href="#ddl">DDL</a>
+      <a href="#quiz">기출 문제</a>
+    </div>
+  </div>
+
+  <!-- ① SQL 실행 순서 -->
+  <div class="sec-title" id="exec-order"><span class="sec-num">01</span> SQL 실행 순서</div>
+
+  <div class="warn">⚠️ SQL은 <strong>작성 순서 ≠ 실행 순서</strong>. WHERE 는 GROUP BY 전에 실행, HAVING은 GROUP BY 후에 실행.</div>
+
+  <div class="flow-list">
+    <div class="fl-item"><div class="fl-box">FROM<span class="fl-num">①</span></div><span class="fl-arrow">→</span></div>
+    <div class="fl-item"><div class="fl-box">JOIN<span class="fl-num">②</span></div><span class="fl-arrow">→</span></div>
+    <div class="fl-item"><div class="fl-box">WHERE<span class="fl-num">③</span></div><span class="fl-arrow">→</span></div>
+    <div class="fl-item"><div class="fl-box">GROUP BY<span class="fl-num">④</span></div><span class="fl-arrow">→</span></div>
+    <div class="fl-item"><div class="fl-box">HAVING<span class="fl-num">⑤</span></div><span class="fl-arrow">→</span></div>
+    <div class="fl-item"><div class="fl-box">SELECT<span class="fl-num">⑥</span></div><span class="fl-arrow">→</span></div>
+    <div class="fl-item"><div class="fl-box">DISTINCT<span class="fl-num">⑦</span></div><span class="fl-arrow">→</span></div>
+    <div class="fl-item"><div class="fl-box">ORDER BY<span class="fl-num">⑧</span></div></div>
+  </div>
+  <div class="tip">✅ <strong>WHERE vs HAVING</strong>: WHERE는 개별 행 필터 (집계함수 사용 불가), HAVING은 그룹 필터 (집계함수 사용 가능)</div>
+
+  <!-- ② 예제 테이블 -->
+  <div class="sec-title" id="sample"><span class="sec-num">02</span> 예제 테이블 (이하 모든 예제 공통)</div>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; flex-wrap:wrap;">
+    <div>
+      <div style="font-size:0.78rem; font-weight:700; color:var(--gray); margin-bottom:0.4rem;">EMP (사원)</div>
+      <div class="tbl-wrap">
+        <table class="d-table">
+          <tr><th>EID</th><th>NAME</th><th>DID</th><th>SALARY</th></tr>
+          <tr><td>1</td><td>김민수</td><td>D1</td><td>3500</td></tr>
+          <tr><td>2</td><td>이지은</td><td>D2</td><td>4200</td></tr>
+          <tr><td>3</td><td>박준영</td><td>D1</td><td>3800</td></tr>
+          <tr><td>4</td><td>최현아</td><td>D3</td><td>5000</td></tr>
+          <tr><td>5</td><td>정세훈</td><td>D2</td><td>3200</td></tr>
+          <tr><td>6</td><td>한지수</td><td>D1</td><td>4100</td></tr>
+        </table>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:0.78rem; font-weight:700; color:var(--gray); margin-bottom:0.4rem;">DEPT (부서)</div>
+      <div class="tbl-wrap">
+        <table class="d-table">
+          <tr><th>DID</th><th>DNAME</th><th>LOC</th></tr>
+          <tr><td>D1</td><td>개발팀</td><td>서울</td></tr>
+          <tr><td>D2</td><td>디자인팀</td><td>부산</td></tr>
+          <tr><td>D4</td><td>기획팀</td><td>서울</td></tr>
+        </table>
+      </div>
+      <div style="font-size:0.76rem; color:var(--gray); margin-top:0.5rem;">
+        ⚠️ D3는 DEPT에 없음 (최현아 고립)<br>D4(기획팀)는 EMP에 없음 (빈 부서)
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ JOIN -->
+  <div class="sec-title" id="join"><span class="sec-num">03</span> JOIN 4종류</div>
+
+  <div class="venn-row">
+    <div class="venn-item inner">
+      <div class="venn-pic"><div class="vl A"></div><div class="vl B"></div></div>
+      <div class="v-name">INNER JOIN</div>
+      <div class="v-sql">교집합 (양쪽 모두)</div>
+    </div>
+    <div class="venn-item left-j">
+      <div class="venn-pic"><div class="vl A"></div><div class="vl B"></div></div>
+      <div class="v-name">LEFT (OUTER) JOIN</div>
+      <div class="v-sql">왼쪽 전체 + 오른쪽 매칭</div>
+    </div>
+    <div class="venn-item right-j">
+      <div class="venn-pic"><div class="vl A"></div><div class="vl B"></div></div>
+      <div class="v-name">RIGHT (OUTER) JOIN</div>
+      <div class="v-sql">오른쪽 전체 + 왼쪽 매칭</div>
+    </div>
+    <div class="venn-item full-j">
+      <div class="venn-pic"><div class="vl A"></div><div class="vl B"></div></div>
+      <div class="v-name">FULL OUTER JOIN</div>
+      <div class="v-sql">합집합 (양쪽 모두 포함)</div>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h4>INNER JOIN — 양쪽에 DID가 모두 존재하는 행만</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="kw">SELECT</span> e.NAME, d.DNAME, e.SALARY
+<span class="kw">FROM</span> <span class="tb">EMP</span> e <span class="kw">INNER JOIN</span> <span class="tb">DEPT</span> d <span class="kw">ON</span> e.DID <span class="op">=</span> d.DID;</pre></div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="d-table">
+        <tr><th>NAME</th><th>DNAME</th><th>SALARY</th><th>비고</th></tr>
+        <tr><td>김민수</td><td>개발팀</td><td>3500</td><td class="hi">D1 매칭</td></tr>
+        <tr><td>이지은</td><td>디자인팀</td><td>4200</td><td class="hi">D2 매칭</td></tr>
+        <tr><td>박준영</td><td>개발팀</td><td>3800</td><td class="hi">D1 매칭</td></tr>
+        <tr><td class="no" colspan="3">최현아 (D3) — DEPT에 D3 없음</td><td class="no">제외</td></tr>
+        <tr><td>정세훈</td><td>디자인팀</td><td>3200</td><td class="hi">D2 매칭</td></tr>
+        <tr><td>한지수</td><td>개발팀</td><td>4100</td><td class="hi">D1 매칭</td></tr>
+      </table>
+    </div>
+    <div class="tip">✅ 결과: 5행 (최현아 제외, 기획팀 D4도 미포함)</div>
+  </div>
+
+  <div class="concept">
+    <h4>LEFT JOIN — EMP(왼쪽) 전체 + DEPT 매칭값 (없으면 NULL)</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="kw">SELECT</span> e.NAME, d.DNAME, e.SALARY
+<span class="kw">FROM</span> <span class="tb">EMP</span> e <span class="kw">LEFT JOIN</span> <span class="tb">DEPT</span> d <span class="kw">ON</span> e.DID <span class="op">=</span> d.DID;</pre></div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="d-table">
+        <tr><th>NAME</th><th>DNAME</th><th>SALARY</th></tr>
+        <tr><td>김민수</td><td>개발팀</td><td>3500</td></tr>
+        <tr><td>이지은</td><td>디자인팀</td><td>4200</td></tr>
+        <tr><td>박준영</td><td>개발팀</td><td>3800</td></tr>
+        <tr><td>최현아</td><td class="null-v">NULL</td><td>5000</td></tr>
+        <tr><td>정세훈</td><td>디자인팀</td><td>3200</td></tr>
+        <tr><td>한지수</td><td>개발팀</td><td>4100</td></tr>
+      </table>
+    </div>
+    <div class="tip">✅ 결과: 6행 (EMP 전체 유지. 최현아 DNAME = NULL)</div>
+  </div>
+
+  <div class="concept">
+    <h4>RIGHT JOIN — DEPT(오른쪽) 전체 + EMP 매칭값 (없으면 NULL)</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="kw">SELECT</span> e.NAME, d.DNAME, e.SALARY
+<span class="kw">FROM</span> <span class="tb">EMP</span> e <span class="kw">RIGHT JOIN</span> <span class="tb">DEPT</span> d <span class="kw">ON</span> e.DID <span class="op">=</span> d.DID;</pre></div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="d-table">
+        <tr><th>NAME</th><th>DNAME</th><th>SALARY</th></tr>
+        <tr><td>김민수</td><td>개발팀</td><td>3500</td></tr>
+        <tr><td>박준영</td><td>개발팀</td><td>3800</td></tr>
+        <tr><td>한지수</td><td>개발팀</td><td>4100</td></tr>
+        <tr><td>이지은</td><td>디자인팀</td><td>4200</td></tr>
+        <tr><td>정세훈</td><td>디자인팀</td><td>3200</td></tr>
+        <tr><td class="null-v">NULL</td><td>기획팀</td><td class="null-v">NULL</td></tr>
+      </table>
+    </div>
+    <div class="tip">✅ 결과: 6행 (DEPT 전체 유지. 기획팀 D4는 사원 없어 NAME/SALARY = NULL)</div>
+  </div>
+
+  <!-- ④ GROUP BY + HAVING -->
+  <div class="sec-title" id="aggregate"><span class="sec-num">04</span> 집계함수 + GROUP BY + HAVING</div>
+
+  <div class="tbl-wrap">
+    <table class="g-tbl">
+      <tr><th>함수</th><th>의미</th><th>NULL 처리</th><th>예시</th></tr>
+      <tr><td><code>COUNT(*)</code></td><td>전체 행 수</td><td>NULL 포함</td><td><code>COUNT(*) → 6</code></td></tr>
+      <tr><td><code>COUNT(컬럼)</code></td><td>NULL 제외 행 수</td><td>NULL 제외</td><td><code>COUNT(DNAME) → 5</code> (NULL 1개 제외)</td></tr>
+      <tr><td><code>SUM(컬럼)</code></td><td>합계</td><td>NULL 무시</td><td><code>SUM(SALARY) → 23800</code></td></tr>
+      <tr><td><code>AVG(컬럼)</code></td><td>평균</td><td>NULL 무시</td><td><code>AVG(SALARY) → 3966.7</code></td></tr>
+      <tr><td><code>MAX/MIN(컬럼)</code></td><td>최대/최소</td><td>NULL 무시</td><td><code>MAX(SALARY) → 5000</code></td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>GROUP BY + HAVING 추적</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="kw">SELECT</span> DID, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> CNT, <span class="fn">AVG</span>(SALARY) <span class="kw">AS</span> AVG_SAL
+<span class="kw">FROM</span> <span class="tb">EMP</span>
+<span class="kw">GROUP BY</span> DID
+<span class="kw">HAVING</span> <span class="fn">AVG</span>(SALARY) <span class="op">&gt;=</span> <span class="num">3800</span>
+<span class="kw">ORDER BY</span> AVG_SAL <span class="kw">DESC</span>;</pre></div>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:0.8rem 0;">
+      <div>
+        <div style="font-size:0.76rem; font-weight:700; color:var(--gray); margin-bottom:0.3rem;">GROUP BY 결과 (전체)</div>
+        <div class="tbl-wrap">
+          <table class="d-table">
+            <tr><th>DID</th><th>CNT</th><th>AVG_SAL</th></tr>
+            <tr><td>D1</td><td>3</td><td>3800.0</td></tr>
+            <tr><td>D2</td><td>2</td><td>3700.0</td></tr>
+            <tr><td>D3</td><td>1</td><td>5000.0</td></tr>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:0.76rem; font-weight:700; color:var(--gray); margin-bottom:0.3rem;">HAVING &gt;= 3800 후 최종 결과</div>
+        <div class="tbl-wrap">
+          <table class="d-table">
+            <tr><th>DID</th><th>CNT</th><th>AVG_SAL</th></tr>
+            <tr><td class="hi">D3</td><td class="hi">1</td><td class="hi">5000.0</td></tr>
+            <tr><td class="hi">D1</td><td class="hi">3</td><td class="hi">3800.0</td></tr>
+            <tr><td class="no">D2</td><td class="no">2</td><td class="no">3700.0 ✗</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ 서브쿼리 -->
+  <div class="sec-title" id="subquery"><span class="sec-num">05</span> 서브쿼리</div>
+
+  <div class="tbl-wrap">
+    <table class="g-tbl">
+      <tr><th>유형</th><th>특징</th><th>연산자</th></tr>
+      <tr><td>단일행 서브쿼리</td><td>서브쿼리 결과가 1행 1열</td><td><code>= &lt; &gt; &lt;= &gt;=</code></td></tr>
+      <tr><td>다중행 서브쿼리</td><td>서브쿼리 결과가 여러 행</td><td><code>IN, NOT IN, ANY, ALL, EXISTS</code></td></tr>
+      <tr><td>상관 서브쿼리</td><td>외부 쿼리 값을 서브쿼리가 참조 (행마다 실행)</td><td><code>EXISTS, IN</code></td></tr>
+      <tr><td>스칼라 서브쿼리</td><td>SELECT 절에 위치, 결과 1행 1열 반드시</td><td>—</td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>단일행 서브쿼리 — 최고 급여 사원</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="kw">SELECT</span> NAME, SALARY
+<span class="kw">FROM</span> <span class="tb">EMP</span>
+<span class="kw">WHERE</span> SALARY <span class="op">=</span> (<span class="kw">SELECT</span> <span class="fn">MAX</span>(SALARY) <span class="kw">FROM</span> <span class="tb">EMP</span>);
+<span class="cmt">-- 서브쿼리 결과: 5000</span>
+<span class="cmt">-- 결과: 최현아, 5000</span></pre></div>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h4>다중행 서브쿼리 — IN / NOT IN</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="cmt">-- 서울에 있는 부서의 사원만</span>
+<span class="kw">SELECT</span> NAME, DID
+<span class="kw">FROM</span> <span class="tb">EMP</span>
+<span class="kw">WHERE</span> DID <span class="kw">IN</span> (
+    <span class="kw">SELECT</span> DID <span class="kw">FROM</span> <span class="tb">DEPT</span> <span class="kw">WHERE</span> LOC <span class="op">=</span> <span class="str">'서울'</span>
+);
+<span class="cmt">-- 서브쿼리 결과: ('D1', 'D4')</span>
+<span class="cmt">-- EMP 중 DID IN ('D1','D4'): 김민수,박준영,한지수 (D4 해당 없음)</span></pre></div>
+    </div>
+    <div class="tip">✅ ANY: 하나라도 참이면 TRUE | ALL: 모두 참이어야 TRUE<br>
+    &gt; ANY(3500, 4200, 5000) → 3500보다 크면 OK (= &gt; MIN) <br>
+    &gt; ALL(3500, 4200, 5000) → 5000보다도 크면 OK (= &gt; MAX)</div>
+  </div>
+
+  <div class="concept">
+    <h4>상관 서브쿼리 — 소속 부서 평균 이상 받는 사원</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="kw">SELECT</span> e1.NAME, e1.DID, e1.SALARY
+<span class="kw">FROM</span> <span class="tb">EMP</span> e1
+<span class="kw">WHERE</span> e1.SALARY <span class="op">&gt;</span> (
+    <span class="kw">SELECT</span> <span class="fn">AVG</span>(e2.SALARY)
+    <span class="kw">FROM</span> <span class="tb">EMP</span> e2
+    <span class="kw">WHERE</span> e2.DID <span class="op">=</span> e1.DID  <span class="cmt">-- 외부 쿼리의 e1 참조</span>
+);
+<span class="cmt">-- D1 평균: (3500+3800+4100)/3 = 3800 → 한지수(4100) 해당</span>
+<span class="cmt">-- D2 평균: (4200+3200)/2 = 3700 → 이지은(4200) 해당</span>
+<span class="cmt">-- D3 평균: 5000 → 없음</span></pre></div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="d-table">
+        <tr><th>NAME</th><th>DID</th><th>SALARY</th><th>부서평균</th></tr>
+        <tr><td>이지은</td><td>D2</td><td class="hi">4200</td><td>3700</td></tr>
+        <tr><td>한지수</td><td>D1</td><td class="hi">4100</td><td>3800</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h4>스칼라 서브쿼리 — SELECT 절에서 사용</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="kw">SELECT</span>
+    e.NAME,
+    e.SALARY,
+    (<span class="kw">SELECT</span> d.DNAME <span class="kw">FROM</span> <span class="tb">DEPT</span> d <span class="kw">WHERE</span> d.DID <span class="op">=</span> e.DID) <span class="kw">AS</span> DNAME,
+    e.SALARY <span class="op">-</span> (<span class="kw">SELECT</span> <span class="fn">AVG</span>(SALARY) <span class="kw">FROM</span> <span class="tb">EMP</span>) <span class="kw">AS</span> DIFF
+<span class="kw">FROM</span> <span class="tb">EMP</span> e;
+<span class="cmt">-- 전체 평균: (3500+4200+3800+5000+3200+4100)/6 ≈ 3966.7</span></pre></div>
+    </div>
+  </div>
+
+  <!-- ⑥ 관계대수 -->
+  <div class="sec-title" id="ra"><span class="sec-num">06</span> 관계대수 (Relational Algebra)</div>
+
+  <div class="tbl-wrap">
+    <table class="ra-table">
+      <tr><th>기호</th><th>이름</th><th>SQL 대응</th><th>설명</th></tr>
+      <tr><td>σ (시그마)</td><td>Selection (선택)</td><td>WHERE 절</td><td>σ<sub>조건</sub>(R) — 조건을 만족하는 행만 선택</td></tr>
+      <tr><td>π (파이)</td><td>Projection (추출)</td><td>SELECT 컬럼</td><td>π<sub>컬럼목록</sub>(R) — 특정 열만 추출</td></tr>
+      <tr><td>⋈ (보타이)</td><td>Natural Join</td><td>NATURAL JOIN</td><td>공통 속성 기준 자동 조인</td></tr>
+      <tr><td>⟕</td><td>Left Outer Join</td><td>LEFT JOIN</td><td>왼쪽 전체 + 오른쪽 매칭</td></tr>
+      <tr><td>⟖</td><td>Right Outer Join</td><td>RIGHT JOIN</td><td>오른쪽 전체 + 왼쪽 매칭</td></tr>
+      <tr><td>∪</td><td>Union (합집합)</td><td>UNION</td><td>두 릴레이션의 합집합 (중복 제거)</td></tr>
+      <tr><td>∩</td><td>Intersection (교집합)</td><td>INTERSECT</td><td>두 릴레이션의 공통 행</td></tr>
+      <tr><td>−</td><td>Difference (차집합)</td><td>EXCEPT / MINUS</td><td>R에서 S에 있는 것 제외</td></tr>
+      <tr><td>×</td><td>Cartesian Product</td><td>CROSS JOIN</td><td>모든 조합 (R행 × S행 수)</td></tr>
+      <tr><td>ρ (로)</td><td>Rename</td><td>AS 별칭</td><td>릴레이션 또는 속성 이름 변경</td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>관계대수 → SQL 변환 예제</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="cmt">-- 관계대수: π_NAME,SALARY(σ_SALARY≥4000(EMP))</span>
+<span class="cmt">-- 읽기: EMP에서 SALARY≥4000인 행 선택 후 NAME, SALARY만 추출</span>
+
+<span class="kw">SELECT</span> NAME, SALARY
+<span class="kw">FROM</span> <span class="tb">EMP</span>
+<span class="kw">WHERE</span> SALARY <span class="op">&gt;=</span> <span class="num">4000</span>;
+
+<span class="cmt">-- 관계대수: π_NAME,DNAME(EMP ⋈ DEPT)</span>
+<span class="cmt">-- 읽기: EMP와 DEPT를 자연조인 후 NAME, DNAME만 추출</span>
+
+<span class="kw">SELECT</span> e.NAME, d.DNAME
+<span class="kw">FROM</span> <span class="tb">EMP</span> e <span class="kw">NATURAL JOIN</span> <span class="tb">DEPT</span> d;</pre></div>
+    </div>
+  </div>
+
+  <!-- ⑦ DDL -->
+  <div class="sec-title" id="ddl"><span class="sec-num">07</span> DDL — CREATE / ALTER / DROP</div>
+
+  <div class="concept">
+    <h4>CREATE TABLE — 테이블 생성</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="kw">CREATE TABLE</span> <span class="tb">PRODUCT</span> (
+    PID       <span class="kw">INT</span>          <span class="kw">PRIMARY KEY</span>,          <span class="cmt">-- 기본키</span>
+    PNAME     <span class="kw">VARCHAR</span>(<span class="num">50</span>) <span class="kw">NOT NULL</span>,              <span class="cmt">-- NULL 불가</span>
+    PRICE     <span class="kw">INT</span>          <span class="kw">DEFAULT</span> <span class="num">0</span>,             <span class="cmt">-- 기본값 0</span>
+    CID       <span class="kw">INT</span>          <span class="kw">UNIQUE</span>,                <span class="cmt">-- 중복 불가</span>
+    STOCK     <span class="kw">INT</span>          <span class="kw">CHECK</span> (STOCK <span class="op">&gt;=</span> <span class="num">0</span>),   <span class="cmt">-- 체크 제약</span>
+    DEPT_ID   <span class="kw">VARCHAR</span>(<span class="num">10</span>) <span class="kw">REFERENCES</span> <span class="tb">DEPT</span>(DID)  <span class="cmt">-- 외래키</span>
+);</pre></div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="g-tbl">
+        <tr><th>제약조건</th><th>의미</th></tr>
+        <tr><td><code>PRIMARY KEY</code></td><td>기본키: NOT NULL + UNIQUE 조합, 테이블당 1개</td></tr>
+        <tr><td><code>FOREIGN KEY</code></td><td>외래키: 다른 테이블 기본키 참조, 참조 무결성 보장</td></tr>
+        <tr><td><code>UNIQUE</code></td><td>유일성: NULL은 여러 개 허용 (구현마다 다름)</td></tr>
+        <tr><td><code>NOT NULL</code></td><td>NULL 입력 불가</td></tr>
+        <tr><td><code>CHECK</code></td><td>지정 조건을 만족해야 입력 허용</td></tr>
+        <tr><td><code>DEFAULT</code></td><td>INSERT 시 값 생략하면 기본값 자동 삽입</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h4>ALTER / DROP</h4>
+    <div class="code-wrap">
+      <div class="code-block"><pre>
+<span class="cmt">-- 열 추가</span>
+<span class="kw">ALTER TABLE</span> <span class="tb">EMP</span> <span class="kw">ADD</span> EMAIL <span class="kw">VARCHAR</span>(<span class="num">100</span>);
+
+<span class="cmt">-- 열 수정 (데이터타입 변경)</span>
+<span class="kw">ALTER TABLE</span> <span class="tb">EMP</span> <span class="kw">MODIFY</span> NAME <span class="kw">VARCHAR</span>(<span class="num">100</span>);
+
+<span class="cmt">-- 열 삭제</span>
+<span class="kw">ALTER TABLE</span> <span class="tb">EMP</span> <span class="kw">DROP COLUMN</span> EMAIL;
+
+<span class="cmt">-- 테이블 삭제 (데이터 + 구조 모두)</span>
+<span class="kw">DROP TABLE</span> <span class="tb">EMP</span>;
+
+<span class="cmt">-- 데이터만 삭제 (구조 유지)</span>
+<span class="kw">TRUNCATE TABLE</span> <span class="tb">EMP</span>;
+
+<span class="cmt">-- 특정 데이터 삭제 (롤백 가능)</span>
+<span class="kw">DELETE FROM</span> <span class="tb">EMP</span> <span class="kw">WHERE</span> DID <span class="op">=</span> <span class="str">'D3'</span>;</pre></div>
+    </div>
+    <div class="warn">⚠️ DROP ≠ TRUNCATE ≠ DELETE<br>
+    DROP: 테이블 자체 삭제 (롤백 불가) | TRUNCATE: 데이터만 전체 삭제 (롤백 불가) | DELETE: 조건부 삭제 (롤백 가능)</div>
+  </div>
+
+  <!-- ⑧ 기출 문제 -->
+  <div class="sec-title" id="quiz"><span class="sec-num">08</span> 기출 문제</div>
+
+  <div class="quiz-wrap">
+
+    <!-- Q1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          다음 SQL의 결과 행 수를 쓰시오. (JOIN 이해)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="cmt">-- 위 예제 테이블 기준 (EMP 6행, DEPT 3행)</span>
+
+<span class="cmt">-- ① INNER JOIN</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tb">EMP</span> e <span class="kw">INNER JOIN</span> <span class="tb">DEPT</span> d <span class="kw">ON</span> e.DID <span class="op">=</span> d.DID;
+
+<span class="cmt">-- ② LEFT JOIN</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tb">EMP</span> e <span class="kw">LEFT JOIN</span> <span class="tb">DEPT</span> d <span class="kw">ON</span> e.DID <span class="op">=</span> d.DID;
+
+<span class="cmt">-- ③ RIGHT JOIN</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tb">EMP</span> e <span class="kw">RIGHT JOIN</span> <span class="tb">DEPT</span> d <span class="kw">ON</span> e.DID <span class="op">=</span> d.DID;</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">① 5행 &nbsp; ② 6행 &nbsp; ③ 6행</div>
+        <div class="ans-explain">
+          ① INNER: D1(김민수,박준영,한지수=3) + D2(이지은,정세훈=2) = <strong>5행</strong> (최현아 D3 미매칭, D4 사원 없음)<br>
+          ② LEFT: EMP 6행 전부 + 최현아 DNAME=NULL = <strong>6행</strong><br>
+          ③ RIGHT: D1(3행)+D2(2행)+D4(NULL,기획팀,NULL) = <strong>6행</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          다음 SQL의 출력 결과를 쓰시오. (GROUP BY + HAVING)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> DID, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> CNT, <span class="fn">SUM</span>(SALARY) <span class="kw">AS</span> TOTAL
+<span class="kw">FROM</span> <span class="tb">EMP</span>
+<span class="kw">WHERE</span> SALARY <span class="op">&lt;</span> <span class="num">5000</span>
+<span class="kw">GROUP BY</span> DID
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="op">&gt;=</span> <span class="num">2</span>
+<span class="kw">ORDER BY</span> TOTAL <span class="kw">DESC</span>;</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">D1, 3, 11400<br>D2, 2, 7400</div>
+        <div class="ans-explain">
+          WHERE SALARY &lt; 5000 → 최현아(5000) 제외<br>
+          D1: 3500+3800+4100=11400, D2: 4200+3200=7400<br>
+          HAVING COUNT≥2 → D1(3), D2(2) 통과<br>
+          ORDER BY TOTAL DESC → D1(11400) 먼저
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          다음 SQL에서 빈칸 (㉠), (㉡)에 알맞은 내용을 쓰시오.<br>
+          <small style="font-weight:400; color:var(--gray);">급여가 전체 평균 이상인 사원의 이름과 급여를 조회하는 쿼리</small>
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> NAME, SALARY
+<span class="kw">FROM</span> <span class="tb">EMP</span>
+<span class="kw">WHERE</span> SALARY ( ㉠ ) (
+    <span class="kw">SELECT</span> ( ㉡ )(SALARY) <span class="kw">FROM</span> <span class="tb">EMP</span>
+);</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">㉠ &gt;=&nbsp;&nbsp;&nbsp; ㉡ AVG</div>
+        <div class="ans-explain">
+          전체 평균 이상 → SALARY &gt;= AVG(SALARY)<br>
+          AVG(SALARY) = (3500+4200+3800+5000+3200+4100)/6 ≈ 3966.7<br>
+          결과: 이지은(4200), 최현아(5000), 한지수(4100)
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          다음 SQL의 결과로 출력되는 행 수를 쓰시오. (서브쿼리 NOT IN + NULL 주의)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="cmt">-- DEPT2 테이블 (DID: D1, D2, NULL)</span>
+<span class="kw">SELECT</span> NAME <span class="kw">FROM</span> <span class="tb">EMP</span>
+<span class="kw">WHERE</span> DID <span class="kw">NOT IN</span> (
+    <span class="kw">SELECT</span> DID <span class="kw">FROM</span> <span class="tb">DEPT2</span>
+    <span class="cmt">-- 결과: ('D1', 'D2', NULL)</span>
+);</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">0행 (결과 없음)</div>
+        <div class="ans-explain">
+          🚨 <strong>NOT IN + NULL 함정</strong>: 서브쿼리 결과에 NULL이 포함되면 NOT IN 조건이 <strong>항상 UNKNOWN</strong>이 되어 아무 행도 반환하지 않음.<br>
+          → NULL과의 비교는 항상 UNKNOWN (TRUE도 FALSE도 아님)<br>
+          → 해결: <code>WHERE DID NOT IN (SELECT DID FROM DEPT2 WHERE DID IS NOT NULL)</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          다음 관계대수식을 SQL로 변환하시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div style="background:#f0fdfa; border:1px solid #99f6e4; border-radius:8px; padding:0.9rem 1.1rem; font-size:1rem; font-family:serif; margin:0.7rem 0;">
+          π<sub>NAME, SALARY</sub>(σ<sub>DID='D1' ∧ SALARY≥3800</sub>(EMP))
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">SELECT NAME, SALARY<br>FROM EMP<br>WHERE DID = 'D1' AND SALARY &gt;= 3800;</div>
+        <div class="ans-explain">
+          σ<sub>DID='D1' ∧ SALARY≥3800</sub> → WHERE DID='D1' AND SALARY&gt;=3800 (Selection)<br>
+          π<sub>NAME, SALARY</sub> → SELECT NAME, SALARY (Projection)<br>
+          결과: 박준영(3800), 한지수(4100)
+        </div>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          다음 SQL의 출력 결과를 쓰시오. (UNION vs UNION ALL)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="cmt">-- A 테이블: (1,'김'), (2,'이'), (3,'박')</span>
+<span class="cmt">-- B 테이블: (2,'이'), (4,'최'), (5,'정')</span>
+
+<span class="cmt">-- ① UNION (중복 제거)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> A <span class="kw">UNION</span> <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> B;
+
+<span class="cmt">-- ② UNION ALL (중복 포함)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> A <span class="kw">UNION ALL</span> <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> B;</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">① 5행 &nbsp;(중복 제거)<br>② 6행 &nbsp;(중복 포함)</div>
+        <div class="ans-explain">
+          A∪B = {1,2,3,4,5} → <strong>5행</strong> (2,'이' 중복 1개 제거)<br>
+          UNION ALL: A(3행) + B(3행) = <strong>6행</strong> (2,'이' 2번 포함)
+        </div>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">기출 유사</span>&nbsp;
+          다음 SQL에서 빈칸을 채워 2번째로 높은 급여를 구하는 쿼리를 완성하시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> <span class="fn">MAX</span>(SALARY)
+<span class="kw">FROM</span> <span class="tb">EMP</span>
+<span class="kw">WHERE</span> SALARY <span class="op">&lt;</span> (
+    <span class="kw">SELECT</span> ( <span class="cmt">빈칸</span> )(SALARY) <span class="kw">FROM</span> <span class="tb">EMP</span>
+);</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">MAX</div>
+        <div class="ans-explain">
+          서브쿼리로 MAX(SALARY)=5000을 구하고, 그보다 작은 것들 중 MAX → 4200<br>
+          WHERE SALARY &lt; 5000 → {3500,4200,3800,3200,4100} → MAX = <strong>4200</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">개념 확인</span>&nbsp;
+          WHERE 절과 HAVING 절의 차이를 설명하고, 다음 중 오류가 있는 쿼리를 고르시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="cmt">-- ① (정상)</span>
+<span class="kw">SELECT</span> DID, <span class="fn">AVG</span>(SALARY) <span class="kw">FROM</span> <span class="tb">EMP</span>
+<span class="kw">GROUP BY</span> DID <span class="kw">HAVING</span> <span class="fn">AVG</span>(SALARY) <span class="op">&gt;</span> <span class="num">3000</span>;
+
+<span class="cmt">-- ② (오류)</span>
+<span class="kw">SELECT</span> DID, <span class="fn">AVG</span>(SALARY) <span class="kw">FROM</span> <span class="tb">EMP</span>
+<span class="kw">WHERE</span> <span class="fn">AVG</span>(SALARY) <span class="op">&gt;</span> <span class="num">3000</span>
+<span class="kw">GROUP BY</span> DID;</pre></div></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">② 오류</div>
+        <div class="ans-explain">
+          <strong>WHERE 절에는 집계함수 사용 불가</strong>: WHERE는 GROUP BY 전에 실행되므로 아직 그룹이 없음<br>
+          집계함수(AVG, COUNT, SUM 등) 조건은 반드시 <strong>HAVING</strong> 절에 작성<br>
+          ① 정상: GROUP BY → AVG 계산 → HAVING으로 필터 (올바른 순서)
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+</div><!-- /container -->
+
+<footer style="text-align:center; padding:1.5rem; color:var(--gray); font-size:0.78rem; border-top:1px solid var(--border);">
+  Level-2 · 04 SQL 쿼리 실전 · <a href="index.html" style="color:var(--accent); text-decoration:none;">← 목록으로</a>
+</footer>
+
+<script>
+function toggle(el) {
+  el.closest('.quiz-card').classList.toggle('open');
+}
+</script>
+</body>
+</html>

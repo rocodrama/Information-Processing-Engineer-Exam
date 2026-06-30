@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>09 소프트웨어 공학 실전 — Level-2</title>
+<style>
+:root {
+  --dark: #0f172a; --gray: #64748b; --light: #f8fafc; --border: #e2e8f0;
+  --accent: #7c3aed; --accent2: #a78bfa;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.7; }
+
+.hero { background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #2e1065 100%); color: white; padding: 2.5rem 1.5rem 2rem; }
+.hero-inner { max-width: 960px; margin: 0 auto; }
+.hero-back { font-size: 0.78rem; color: #94a3b8; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; margin-bottom: 1rem; }
+.hero-back:hover { color: white; }
+.hero h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.3rem; }
+.hero p { color: #c4b5fd; font-size: 0.88rem; }
+.hero-meta { display: flex; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
+.htag { background: rgba(255,255,255,0.12); padding: 0.22rem 0.65rem; border-radius: 20px; font-size: 0.75rem; }
+
+.container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+.toc { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.5rem; margin-bottom: 2rem; }
+.toc-title { font-size: 0.78rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.7rem; }
+.toc-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.toc-list a { font-size: 0.8rem; color: var(--accent); text-decoration: none; border: 1px solid #ddd6fe; background: #faf5ff; padding: 0.2rem 0.6rem; border-radius: 8px; }
+.toc-list a:hover { background: #ede9fe; }
+
+.sec-title { font-size: 1.3rem; font-weight: 800; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 20px; }
+
+.info  { background: #faf5ff; border: 1px solid #ddd6fe; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #4c1d95; margin: 1rem 0; }
+.warn  { background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #713f12; margin: 1rem 0; }
+.tip   { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #166534; margin: 1rem 0; }
+.red   { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #991b1b; margin: 1rem 0; }
+
+.tbl-wrap { overflow-x: auto; margin: 0.7rem 0; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+.tbl-wrap::before { content: '← 좌우 스크롤'; display: none; font-size: 0.68rem; color: var(--gray); text-align: right; padding: 0.3rem 0; }
+
+.g-tbl { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+.g-tbl th { background: #0f172a; color: #c4b5fd; padding: 0.5rem 0.8rem; text-align: left; font-size: 0.77rem; font-weight: 700; }
+.g-tbl td { padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--border); }
+.g-tbl tr:nth-child(even) td { background: #fafafa; }
+.g-tbl tr:hover td { background: #faf5ff; }
+code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.82rem; }
+
+.concept { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1.1rem; }
+.concept h4 { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.4rem; }
+.concept h4::before { content: '▸'; color: var(--accent); }
+
+/* pattern grid */
+.pat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin: 1rem 0; }
+.pat-group { background: white; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.pat-group-head { padding: 0.6rem 0.9rem; font-size: 0.78rem; font-weight: 700; color: white; }
+.pat-group-head.create { background: #7c3aed; }
+.pat-group-head.struct  { background: #0d9488; }
+.pat-group-head.behav   { background: #c2410c; }
+.pat-list { padding: 0.6rem 0.9rem; }
+.pat-item { font-size: 0.76rem; padding: 0.22rem 0; border-bottom: 1px solid var(--border); display: flex; gap: 0.4rem; }
+.pat-item:last-child { border-bottom: none; }
+.pat-name { font-weight: 700; min-width: 80px; }
+.pat-desc { color: var(--gray); }
+
+/* cohesion/coupling bars */
+.level-bars { display: flex; flex-direction: column; gap: 0.35rem; margin: 0.8rem 0; }
+.level-bar { display: flex; align-items: center; gap: 0.7rem; }
+.lb-label { font-size: 0.78rem; min-width: 130px; font-weight: 600; }
+.lb-bar { height: 18px; border-radius: 4px; transition: width 0.3s; }
+.lb-score { font-size: 0.72rem; color: var(--gray); white-space: nowrap; }
+.coh-bar { background: #7c3aed; }
+.cou-bar { background: #ef4444; }
+.good { color: #15803d; font-weight: 700; }
+.bad  { color: #991b1b; font-weight: 700; }
+
+/* UML diagram types */
+.uml-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin: 1rem 0; }
+.uml-box { background: white; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.uml-head { padding: 0.55rem 0.9rem; font-size: 0.78rem; font-weight: 700; color: white; }
+.uml-head.structural { background: #1d4ed8; }
+.uml-head.behavioral { background: #c2410c; }
+.uml-items { padding: 0.6rem 0.9rem; }
+.uml-item { font-size: 0.78rem; padding: 0.2rem 0; border-bottom: 1px solid #f1f5f9; display: flex; gap: 0.5rem; }
+.uml-item:last-child { border-bottom: none; }
+.uml-key { font-weight: 700; min-width: 80px; color: var(--dark); }
+.uml-val { color: var(--gray); font-size: 0.74rem; }
+
+/* coverage table */
+.cov-table { border-collapse: collapse; width: 100%; font-size: 0.82rem; }
+.cov-table th { background: #0f172a; color: #c4b5fd; padding: 0.5rem 0.7rem; text-align: center; font-size: 0.74rem; }
+.cov-table td { padding: 0.4rem 0.7rem; border-bottom: 1px solid var(--border); }
+.cov-table tr:nth-child(even) td { background: #fafafa; }
+.cov-bar-cell { width: 120px; }
+.cov-bar-wrap { background: var(--border); border-radius: 4px; height: 12px; }
+.cov-bar-fill { background: var(--accent); height: 12px; border-radius: 4px; }
+
+/* SDLC cards */
+.sdlc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; margin: 1rem 0; }
+.sdlc-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
+.sdlc-card .sdlc-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem; }
+.sdlc-card .sdlc-icon { width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: white; font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.sdlc-card .sdlc-pros { font-size: 0.76rem; color: #15803d; }
+.sdlc-card .sdlc-cons { font-size: 0.76rem; color: #991b1b; }
+.sdlc-card p { font-size: 0.78rem; color: var(--gray); margin: 0.25rem 0; }
+
+/* quiz */
+.quiz-wrap { display: flex; flex-direction: column; gap: 1.1rem; margin-top: 1rem; }
+.quiz-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.quiz-q {
+  padding: 1rem 1.2rem; font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; min-height: 52px;
+}
+.quiz-q:hover { background: #faf5ff; }
+.quiz-badge { font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.quiz-badge.year { background: #ddd6fe; color: #4c1d95; }
+.quiz-badge.sim  { background: #e0e7ff; color: #4338ca; }
+.quiz-chevron { font-size: 0.75rem; color: var(--gray); flex-shrink: 0; margin-top: 0.1rem; transition: transform 0.2s; }
+.quiz-card.open .quiz-chevron { transform: rotate(180deg); }
+.quiz-ans { display: none; padding: 0 1.2rem 1.1rem; border-top: 1px solid var(--border); }
+.quiz-card.open .quiz-ans { display: block; }
+.ans-label { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin: 0.8rem 0 0.3rem; }
+.ans-val   { font-size: 0.95rem; font-weight: 700; color: var(--dark); }
+.ans-explain { font-size: 0.82rem; color: #374151; margin-top: 0.5rem; line-height: 1.65; }
+
+@media (max-width: 640px) {
+  .hero { padding: 1.8rem 1rem 1.5rem; }
+  .hero h1 { font-size: 1.25rem; }
+  .container { padding: 1.5rem 0.9rem 3rem; }
+  .sec-title { font-size: 1.1rem; margin: 2rem 0 0.85rem; }
+  .tbl-wrap::before { display: block; }
+  .g-tbl { font-size: 0.76rem; }
+  .g-tbl th, .g-tbl td { padding: 0.35rem 0.6rem; }
+  .pat-grid { grid-template-columns: 1fr; }
+  .uml-grid { grid-template-columns: 1fr; }
+  .sdlc-grid { grid-template-columns: 1fr; }
+  .pat-name { min-width: 70px; }
+  .uml-key { min-width: 70px; }
+  .lb-label { min-width: 110px; font-size: 0.72rem; }
+  .concept { padding: 1rem; }
+  .info, .warn, .tip, .red { font-size: 0.8rem; padding: 0.85rem 1rem; }
+  .quiz-q { padding: 0.9rem 1rem; font-size: 0.83rem; }
+  .quiz-ans { padding: 0 1rem 1rem; }
+  .ans-val { font-size: 0.88rem; }
+  .ans-explain { font-size: 0.79rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <a class="hero-back" href="index.html">← Level-2 목록</a>
+    <h1>⚙️ 소프트웨어 공학 실전</h1>
+    <p>디자인 패턴 · 응집도/결합도 · UML · 테스트 · 개발 방법론</p>
+    <div class="hero-meta">
+      <span class="htag">출제 빈도 ★★★☆☆</span>
+      <span class="htag">09번</span>
+      <span class="htag">패턴 · 응집도 · 결합도 필수</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="toc">
+    <div class="toc-title">목차</div>
+    <div class="toc-list">
+      <a href="#pattern">GoF 디자인 패턴</a>
+      <a href="#cohesion">응집도</a>
+      <a href="#coupling">결합도</a>
+      <a href="#uml">UML 다이어그램</a>
+      <a href="#test">테스트 기법</a>
+      <a href="#sdlc">개발 방법론</a>
+      <a href="#cmmi">CMMI</a>
+      <a href="#quiz">기출 문제</a>
+    </div>
+  </div>
+
+  <!-- ① GoF 디자인 패턴 -->
+  <div class="sec-title" id="pattern"><span class="sec-num">01</span> GoF 디자인 패턴 23종</div>
+
+  <div class="info">GoF(Gang of Four) 패턴: 객체지향 설계에서 반복 등장하는 문제의 해결책을 정형화한 것. <strong>생성(5) + 구조(7) + 행위(11) = 23가지</strong></div>
+
+  <div class="pat-grid">
+    <div class="pat-group">
+      <div class="pat-group-head create">🔧 생성 패턴 (Creational) — 5종</div>
+      <div class="pat-list">
+        <div class="pat-item"><span class="pat-name">Singleton</span><span class="pat-desc">인스턴스 1개만 보장</span></div>
+        <div class="pat-item"><span class="pat-name">Factory Method</span><span class="pat-desc">객체 생성 서브클래스에 위임</span></div>
+        <div class="pat-item"><span class="pat-name">Abstract Factory</span><span class="pat-desc">관련 객체군 생성 인터페이스</span></div>
+        <div class="pat-item"><span class="pat-name">Builder</span><span class="pat-desc">복잡 객체 단계별 생성</span></div>
+        <div class="pat-item"><span class="pat-name">Prototype</span><span class="pat-desc">복제(clone)로 객체 생성</span></div>
+      </div>
+    </div>
+    <div class="pat-group">
+      <div class="pat-group-head struct">🏗️ 구조 패턴 (Structural) — 7종</div>
+      <div class="pat-list">
+        <div class="pat-item"><span class="pat-name">Adapter</span><span class="pat-desc">인터페이스 변환(호환)</span></div>
+        <div class="pat-item"><span class="pat-name">Bridge</span><span class="pat-desc">구현부 분리(독립 변화)</span></div>
+        <div class="pat-item"><span class="pat-name">Composite</span><span class="pat-desc">트리구조 부분-전체</span></div>
+        <div class="pat-item"><span class="pat-name">Decorator</span><span class="pat-desc">동적으로 기능 추가</span></div>
+        <div class="pat-item"><span class="pat-name">Facade</span><span class="pat-desc">복잡 시스템 단순 인터페이스</span></div>
+        <div class="pat-item"><span class="pat-name">Flyweight</span><span class="pat-desc">공유로 메모리 절약</span></div>
+        <div class="pat-item"><span class="pat-name">Proxy</span><span class="pat-desc">대리자 객체로 접근 제어</span></div>
+      </div>
+    </div>
+    <div class="pat-group">
+      <div class="pat-group-head behav">🔄 행위 패턴 (Behavioral) — 11종</div>
+      <div class="pat-list">
+        <div class="pat-item"><span class="pat-name">Chain of Resp.</span><span class="pat-desc">요청 처리 체인 전달</span></div>
+        <div class="pat-item"><span class="pat-name">Command</span><span class="pat-desc">요청을 객체로 캡슐화</span></div>
+        <div class="pat-item"><span class="pat-name">Interpreter</span><span class="pat-desc">언어 문법 처리</span></div>
+        <div class="pat-item"><span class="pat-name">Iterator</span><span class="pat-desc">순차 접근 방법 캡슐화</span></div>
+        <div class="pat-item"><span class="pat-name">Mediator</span><span class="pat-desc">객체 간 통신 중재</span></div>
+        <div class="pat-item"><span class="pat-name">Memento</span><span class="pat-desc">상태 스냅샷 저장/복원</span></div>
+        <div class="pat-item"><span class="pat-name">Observer</span><span class="pat-desc">상태변화 자동 알림</span></div>
+        <div class="pat-item"><span class="pat-name">State</span><span class="pat-desc">상태에 따라 행동 변경</span></div>
+        <div class="pat-item"><span class="pat-name">Strategy</span><span class="pat-desc">알고리즘 교체 가능</span></div>
+        <div class="pat-item"><span class="pat-name">Template Method</span><span class="pat-desc">알고리즘 골격 정의</span></div>
+        <div class="pat-item"><span class="pat-name">Visitor</span><span class="pat-desc">연산을 별도 클래스로 분리</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h4>자주 출제되는 패턴 핵심 정리</h4>
+    <div class="tbl-wrap">
+      <table class="g-tbl">
+        <tr><th>패턴</th><th>핵심 키워드</th><th>실제 예시</th></tr>
+        <tr><td><strong>Singleton</strong></td><td>인스턴스 하나, 전역 접근점</td><td>DB 커넥션 풀, 로그 매니저</td></tr>
+        <tr><td><strong>Observer</strong></td><td>Subject-Observer, 1:N 의존, 이벤트 발행-구독</td><td>MVC의 Model→View 갱신, GUI 이벤트</td></tr>
+        <tr><td><strong>Strategy</strong></td><td>알고리즘 캡슐화, 런타임 교체</td><td>정렬 알고리즘 선택, 결제 방법 선택</td></tr>
+        <tr><td><strong>Factory Method</strong></td><td>객체 생성 방식 서브클래스 결정, 생성 위임</td><td>Logger.getLogger(), DB 드라이버</td></tr>
+        <tr><td><strong>Decorator</strong></td><td>래퍼(wrapper), 기능 동적 추가, 상속 대안</td><td>Java I/O Stream, 커피 토핑 추가</td></tr>
+        <tr><td><strong>Template Method</strong></td><td>골격 정의 → 세부 구현 서브클래스, 훅(hook)</td><td>게임 초기화 흐름, 요리 레시피 순서</td></tr>
+        <tr><td><strong>Adapter</strong></td><td>인터페이스 호환, 변환기, 래퍼</td><td>110V→220V 어댑터, 레거시 API 통합</td></tr>
+        <tr><td><strong>Command</strong></td><td>실행취소(Undo), 큐잉, 로깅, 트랜잭션</td><td>에디터 Ctrl+Z, 매크로 기록</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ② 응집도 -->
+  <div class="sec-title" id="cohesion"><span class="sec-num">02</span> 응집도 (Cohesion) — 높을수록 좋음</div>
+
+  <div class="info">모듈 내부 요소들이 얼마나 밀접하게 관련되어 있는지. <strong>높은 응집도 = 좋은 설계</strong>. 암기: <strong>기순교절시논우</strong></div>
+
+  <div class="concept">
+    <h4>응집도 수준 (낮음 → 높음)</h4>
+    <div class="level-bars">
+      <div class="level-bar">
+        <div class="lb-label bad">우연적 (Coincidental)</div>
+        <div class="lb-bar coh-bar" style="width:14%"></div>
+        <div class="lb-score">가장 낮음 — 관련 없는 기능 모음</div>
+      </div>
+      <div class="level-bar">
+        <div class="lb-label bad">논리적 (Logical)</div>
+        <div class="lb-bar coh-bar" style="width:28%"></div>
+        <div class="lb-score">유사 기능 묶음 (if로 선택)</div>
+      </div>
+      <div class="level-bar">
+        <div class="lb-label" style="color:#92400e;">시간적 (Temporal)</div>
+        <div class="lb-bar coh-bar" style="width:42%"></div>
+        <div class="lb-score">같은 시간대 실행 (초기화 루틴)</div>
+      </div>
+      <div class="level-bar">
+        <div class="lb-label" style="color:#92400e;">절차적 (Procedural)</div>
+        <div class="lb-bar coh-bar" style="width:56%"></div>
+        <div class="lb-score">순서에 따라 실행 (파일 열기→읽기→닫기)</div>
+      </div>
+      <div class="level-bar">
+        <div class="lb-label" style="color:#0c4a6e;">교환적 (Communicational)</div>
+        <div class="lb-bar coh-bar" style="width:70%"></div>
+        <div class="lb-score">같은 데이터 사용 또는 생성</div>
+      </div>
+      <div class="level-bar">
+        <div class="lb-label" style="color:#1d4ed8;">순차적 (Sequential)</div>
+        <div class="lb-bar coh-bar" style="width:84%"></div>
+        <div class="lb-score">출력이 다음 입력 (파이프라인)</div>
+      </div>
+      <div class="level-bar">
+        <div class="lb-label good">기능적 (Functional)</div>
+        <div class="lb-bar coh-bar" style="width:100%"></div>
+        <div class="lb-score">가장 높음 — 단 하나의 기능만 수행</div>
+      </div>
+    </div>
+    <div class="tip">✅ 암기: <strong>우논시절교순기</strong> (낮→높) or <strong>기순교절시논우</strong> (높→낮)</div>
+  </div>
+
+  <!-- ③ 결합도 -->
+  <div class="sec-title" id="coupling"><span class="sec-num">03</span> 결합도 (Coupling) — 낮을수록 좋음</div>
+
+  <div class="info">모듈 간 상호 의존 정도. <strong>낮은 결합도 = 좋은 설계</strong>. 암기: <strong>자스제외공내</strong></div>
+
+  <div class="concept">
+    <h4>결합도 수준 (낮음 → 높음)</h4>
+    <div class="level-bars">
+      <div class="level-bar">
+        <div class="lb-label good">자료 (Data)</div>
+        <div class="lb-bar cou-bar" style="width:16%"></div>
+        <div class="lb-score">가장 낮음 — 단순 값(스칼라) 전달</div>
+      </div>
+      <div class="level-bar">
+        <div class="lb-label" style="color:#1d4ed8;">스탬프 (Stamp)</div>
+        <div class="lb-bar cou-bar" style="width:32%"></div>
+        <div class="lb-score">자료구조(구조체·클래스) 전달</div>
+      </div>
+      <div class="level-bar">
+        <div class="lb-label" style="color:#0c4a6e;">제어 (Control)</div>
+        <div class="lb-bar cou-bar" style="width:48%"></div>
+        <div class="lb-score">제어 신호(플래그) 전달로 흐름 제어</div>
+      </div>
+      <div class="level-bar">
+        <div class="lb-label" style="color:#92400e;">외부 (External)</div>
+        <div class="lb-bar cou-bar" style="width:64%"></div>
+        <div class="lb-score">외부 환경(파일형식·통신프로토콜) 공유</div>
+      </div>
+      <div class="level-bar">
+        <div class="lb-label bad">공통 (Common)</div>
+        <div class="lb-bar cou-bar" style="width:80%"></div>
+        <div class="lb-score">전역 데이터를 여러 모듈이 공유</div>
+      </div>
+      <div class="level-bar">
+        <div class="lb-label bad">내용 (Content)</div>
+        <div class="lb-bar cou-bar" style="width:100%"></div>
+        <div class="lb-score">가장 높음 — 내부 코드·변수 직접 참조</div>
+      </div>
+    </div>
+    <div class="tip">✅ 암기: <strong>자스제외공내</strong> (낮→높)<br>
+    자료: int 전달 / 스탬프: struct 전달 / 제어: flag 전달 / 외부: 파일 공유 / 공통: global 변수 / 내용: 내부직접접근</div>
+  </div>
+
+  <!-- ④ UML -->
+  <div class="sec-title" id="uml"><span class="sec-num">04</span> UML 다이어그램</div>
+
+  <div class="uml-grid">
+    <div class="uml-box">
+      <div class="uml-head structural">🏛️ 구조 다이어그램 (Structure) — 6종</div>
+      <div class="uml-items">
+        <div class="uml-item"><span class="uml-key">클래스</span><span class="uml-val">클래스 속성·메서드·관계 표현</span></div>
+        <div class="uml-item"><span class="uml-key">객체</span><span class="uml-val">특정 시점의 인스턴스 상태</span></div>
+        <div class="uml-item"><span class="uml-key">컴포넌트</span><span class="uml-val">소프트웨어 구성요소 관계</span></div>
+        <div class="uml-item"><span class="uml-key">배치</span><span class="uml-val">하드웨어 물리 배치 관계</span></div>
+        <div class="uml-item"><span class="uml-key">복합구조</span><span class="uml-val">내부 구조와 협력 관계</span></div>
+        <div class="uml-item"><span class="uml-key">패키지</span><span class="uml-val">패키지 간 의존관계</span></div>
+      </div>
+    </div>
+    <div class="uml-box">
+      <div class="uml-head behavioral">🔄 행위 다이어그램 (Behavior) — 7종</div>
+      <div class="uml-items">
+        <div class="uml-item"><span class="uml-key">유스케이스</span><span class="uml-val">사용자-시스템 상호작용</span></div>
+        <div class="uml-item"><span class="uml-key">시퀀스</span><span class="uml-val">객체 간 시간순 메시지 흐름</span></div>
+        <div class="uml-item"><span class="uml-key">상태</span><span class="uml-val">객체 상태 변화 표현</span></div>
+        <div class="uml-item"><span class="uml-key">활동</span><span class="uml-val">업무 흐름·알고리즘 표현</span></div>
+        <div class="uml-item"><span class="uml-key">커뮤니케이션</span><span class="uml-val">객체 간 메시지 (시퀀스의 변형)</span></div>
+        <div class="uml-item"><span class="uml-key">상호작용개요</span><span class="uml-val">상호작용 다이어그램 개요</span></div>
+        <div class="uml-item"><span class="uml-key">타이밍</span><span class="uml-val">시간 제약 있는 상태 변화</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h4>클래스 다이어그램 관계 종류</h4>
+    <div class="tbl-wrap">
+      <table class="g-tbl">
+        <tr><th>관계</th><th>기호</th><th>의미</th><th>예시</th></tr>
+        <tr><td><strong>연관 (Association)</strong></td><td>─────</td><td>두 클래스 간 연결</td><td>학생 ─ 강의</td></tr>
+        <tr><td><strong>집합 (Aggregation)</strong></td><td>◇──── (빈 마름모)</td><td>전체-부분, 독립 생존 가능</td><td>자동차 ◇── 바퀴</td></tr>
+        <tr><td><strong>합성 (Composition)</strong></td><td>◆──── (채운 마름모)</td><td>전체-부분, 독립 생존 불가</td><td>집 ◆── 방</td></tr>
+        <tr><td><strong>의존 (Dependency)</strong></td><td>- - - -▶</td><td>일시적 사용 관계</td><td>클래스가 메서드 내 다른 클래스 사용</td></tr>
+        <tr><td><strong>일반화 (Generalization)</strong></td><td>────▷ (빈 삼각)</td><td>상속 관계 (is-a)</td><td>개 ──▷ 동물</td></tr>
+        <tr><td><strong>실체화 (Realization)</strong></td><td>- - -▷ (빈 삼각)</td><td>인터페이스 구현</td><td>Dog - -▷ Animal</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ⑤ 테스트 -->
+  <div class="sec-title" id="test"><span class="sec-num">05</span> 테스트 기법</div>
+
+  <div class="tbl-wrap">
+    <table class="g-tbl">
+      <tr><th>구분</th><th>화이트박스 (White-box)</th><th>블랙박스 (Black-box)</th></tr>
+      <tr><td>별칭</td><td>구조 테스트, 투명 상자</td><td>기능 테스트, 불투명 상자</td></tr>
+      <tr><td>대상</td><td>내부 로직·구조 (코드 직접 보고)</td><td>입출력 기능 (코드 모르고)</td></tr>
+      <tr><td>설계자</td><td>개발자</td><td>테스터(사용자 관점)</td></tr>
+      <tr><td>주요 기법</td><td>기초경로, 제어흐름, 데이터흐름</td><td>동치분할, 경계값분석, 원인-결과</td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>화이트박스 커버리지 (약한 → 강한)</h4>
+    <table class="cov-table">
+      <tr><th>커버리지</th><th>조건</th><th>강도</th></tr>
+      <tr>
+        <td><strong>구문(문장)</strong><br>Statement Coverage</td>
+        <td>모든 구문 최소 1회 실행</td>
+        <td class="cov-bar-cell"><div class="cov-bar-wrap"><div class="cov-bar-fill" style="width:20%"></div></div></td>
+      </tr>
+      <tr>
+        <td><strong>결정(분기)</strong><br>Decision/Branch Coverage</td>
+        <td>모든 결정문의 True·False 각 1회</td>
+        <td class="cov-bar-cell"><div class="cov-bar-wrap"><div class="cov-bar-fill" style="width:40%"></div></div></td>
+      </tr>
+      <tr>
+        <td><strong>조건</strong><br>Condition Coverage</td>
+        <td>각 조건식의 True·False 각 1회</td>
+        <td class="cov-bar-cell"><div class="cov-bar-wrap"><div class="cov-bar-fill" style="width:55%"></div></div></td>
+      </tr>
+      <tr>
+        <td><strong>조건/결정</strong><br>Condition/Decision</td>
+        <td>조건 커버리지 + 결정 커버리지 동시</td>
+        <td class="cov-bar-cell"><div class="cov-bar-wrap"><div class="cov-bar-fill" style="width:70%"></div></div></td>
+      </tr>
+      <tr>
+        <td><strong>변경 조건/결정 (MCDC)</strong><br>Modified C/D Coverage</td>
+        <td>각 조건이 독립적으로 결정에 영향</td>
+        <td class="cov-bar-cell"><div class="cov-bar-wrap"><div class="cov-bar-fill" style="width:85%"></div></div></td>
+      </tr>
+      <tr>
+        <td><strong>다중 조건</strong><br>Multiple Condition</td>
+        <td>조건 조합 모두 테스트 (2ⁿ)</td>
+        <td class="cov-bar-cell"><div class="cov-bar-wrap"><div class="cov-bar-fill" style="width:100%"></div></div></td>
+      </tr>
+    </table>
+    <div class="tip">✅ 암기: <strong>구결조조변다</strong> (구문→결정→조건→조건결정→변경조건결정→다중조건)</div>
+  </div>
+
+  <div class="concept">
+    <h4>블랙박스 테스트 기법</h4>
+    <div class="tbl-wrap">
+      <table class="g-tbl">
+        <tr><th>기법</th><th>설명</th><th>예시</th></tr>
+        <tr><td><strong>동치 분할</strong><br>(Equivalence Partitioning)</td><td>입력 범위를 유효/무효 구간으로 분할, 각 구간 대표값 테스트</td><td>나이 1~100: {음수, 1~100, 101+} 3개 구간</td></tr>
+        <tr><td><strong>경계값 분석</strong><br>(Boundary Value Analysis)</td><td>경계 바로 안팎 값 테스트 (오류 집중 발생)</td><td>1~100: {0, 1, 100, 101} 테스트</td></tr>
+        <tr><td><strong>원인-결과 그래프</strong></td><td>입력(원인) → 출력(결과) 논리 관계를 그래프로 표현 후 테스트케이스 도출</td><td>조건 조합별 출력 결정</td></tr>
+        <tr><td><strong>의사결정표</strong><br>(Decision Table)</td><td>조건과 행위를 표로 정리, 모든 조합 테스트</td><td>로그인 성공/실패 조건 테이블</td></tr>
+        <tr><td><strong>오류 추측</strong><br>(Error Guessing)</td><td>경험 기반으로 오류 발생 가능성 높은 케이스 테스트</td><td>NULL 입력, 0 나누기, 빈 문자열</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ⑥ 소프트웨어 개발 방법론 -->
+  <div class="sec-title" id="sdlc"><span class="sec-num">06</span> 소프트웨어 개발 방법론 (SDLC)</div>
+
+  <div class="sdlc-grid">
+    <div class="sdlc-card">
+      <div class="sdlc-name"><div class="sdlc-icon">폭</div> 폭포수 모델</div>
+      <p>순차적 단계: 요구→설계→구현→테스트→유지보수</p>
+      <p class="sdlc-pros">✅ 단순, 문서화 철저, 관리 용이</p>
+      <p class="sdlc-cons">❌ 요구사항 변경 어려움, 후기에 오류 발견 위험</p>
+    </div>
+    <div class="sdlc-card">
+      <div class="sdlc-name"><div class="sdlc-icon">원</div> 프로토타입 모델</div>
+      <p>시제품(프로토타입) 개발 → 사용자 피드백 → 반복 개선</p>
+      <p class="sdlc-pros">✅ 요구사항 불명확 시 유용, 사용자 참여</p>
+      <p class="sdlc-cons">❌ 프로토타입 과도한 수정, 문서화 미흡</p>
+    </div>
+    <div class="sdlc-card">
+      <div class="sdlc-name"><div class="sdlc-icon">나</div> 나선형 모델</div>
+      <p>계획→위험분석→개발→평가 반복 (보헴, Boehm)</p>
+      <p class="sdlc-pros">✅ 위험 관리 강점, 대규모·고위험 시스템 적합</p>
+      <p class="sdlc-cons">❌ 복잡, 비용 高, 위험 분석 전문성 필요</p>
+    </div>
+    <div class="sdlc-card">
+      <div class="sdlc-name"><div class="sdlc-icon">애</div> 애자일 (Agile)</div>
+      <p>짧은 반복(스프린트), 고객 협업, 변화 대응 (Scrum, XP, Kanban)</p>
+      <p class="sdlc-pros">✅ 변화에 유연, 빠른 피드백, 소규모팀 적합</p>
+      <p class="sdlc-cons">❌ 문서화 미흡, 대규모 프로젝트 관리 어려움</p>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h4>Scrum vs XP (eXtreme Programming)</h4>
+    <div class="tbl-wrap">
+      <table class="g-tbl">
+        <tr><th>구분</th><th>Scrum</th><th>XP (eXtreme Programming)</th></tr>
+        <tr><td>반복주기</td><td>Sprint (1~4주)</td><td>Iteration (1~2주)</td></tr>
+        <tr><td>역할</td><td>Product Owner, Scrum Master, Dev Team</td><td>고객(On-site), 코치, 프로그래머</td></tr>
+        <tr><td>특징</td><td>데일리 스크럼, 번다운 차트</td><td>TDD, 페어 프로그래밍, 리팩토링</td></tr>
+        <tr><td>초점</td><td>프로세스 관리</td><td>기술적 실천 (코딩 품질)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ⑦ CMMI -->
+  <div class="sec-title" id="cmmi"><span class="sec-num">07</span> CMMI (역량 성숙도 통합 모델)</div>
+
+  <div class="tbl-wrap">
+    <table class="g-tbl">
+      <tr><th>레벨</th><th>명칭</th><th>특징</th></tr>
+      <tr><td style="text-align:center; font-weight:700;">1</td><td><strong>초기 (Initial)</strong></td><td>프로세스 정의 없음, 개인 역량 의존, 혼돈</td></tr>
+      <tr><td style="text-align:center; font-weight:700;">2</td><td><strong>관리 (Managed)</strong></td><td>프로젝트 계획·추적 가능, 기본 관리 수행</td></tr>
+      <tr><td style="text-align:center; font-weight:700;">3</td><td><strong>정의 (Defined)</strong></td><td>조직 표준 프로세스 정의·문서화, 전사 적용</td></tr>
+      <tr><td style="text-align:center; font-weight:700;">4</td><td><strong>정량적 관리 (Quantitatively Managed)</strong></td><td>정량적 목표 설정·측정·제어</td></tr>
+      <tr><td style="text-align:center; font-weight:700;">5</td><td><strong>최적화 (Optimizing)</strong></td><td>지속적 프로세스 개선, 혁신·결함 방지</td></tr>
+    </table>
+  </div>
+
+  <!-- ⑧ 기출 문제 -->
+  <div class="sec-title" id="quiz"><span class="sec-num">08</span> 기출 문제</div>
+
+  <div class="quiz-wrap">
+
+    <!-- Q1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          다음 설명에 해당하는 GoF 디자인 패턴 이름을 쓰시오.<br>
+          <small style="font-weight:400; color:var(--gray);">"어떤 클래스의 인스턴스가 오직 하나임을 보장하고, 이에 대한 전역 접근점을 제공한다."</small>
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">Singleton (싱글톤)</div>
+        <div class="ans-explain">
+          <strong>생성 패턴</strong>에 속함. 클래스 자신이 유일한 인스턴스를 관리.<br>
+          구현: private 생성자 + static getInstance() 메서드<br>
+          활용: DB 연결, 로그 매니저, 설정 파일 관리자
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          다음 설명에 해당하는 디자인 패턴 이름을 쓰시오.<br>
+          <small style="font-weight:400; color:var(--gray);">"객체의 상태가 변할 때 그 객체에 의존하는 다른 객체들에게 자동으로 알리고 갱신되도록 한다. 발행-구독 패턴이라고도 한다."</small>
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">Observer (옵저버)</div>
+        <div class="ans-explain">
+          <strong>행위 패턴</strong>. Subject(발행자) 1 : Observer(구독자) N 구조.<br>
+          Subject 상태 변화 시 모든 Observer에게 자동으로 notify().<br>
+          활용: MVC 모델→뷰 갱신, 이벤트 리스너, 알림 시스템
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          응집도와 결합도를 각각 어떤 방향으로 설계해야 좋은 모듈인지 쓰고, 응집도 7단계를 낮은 것부터 순서대로 쓰시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">응집도: 높게 / 결합도: 낮게<br>우연 → 논리 → 시간 → 절차 → 교환 → 순차 → 기능</div>
+        <div class="ans-explain">
+          <strong>응집도 높게</strong>: 한 모듈이 하나의 기능만 수행 (기능적 응집도 지향)<br>
+          <strong>결합도 낮게</strong>: 모듈 간 의존성 최소화 (자료 결합도 지향)<br><br>
+          응집도 낮→높: <strong>우논시절교순기</strong><br>
+          우연적 &lt; 논리적 &lt; 시간적 &lt; 절차적 &lt; 교환적 &lt; 순차적 &lt; 기능적
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          결합도 6단계를 낮은 것부터 순서대로 쓰시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">자료 → 스탬프 → 제어 → 외부 → 공통 → 내용</div>
+        <div class="ans-explain">
+          암기: <strong>자스제외공내</strong><br>
+          자료(Data) — 단순값 전달 (가장 낮음, 가장 좋음)<br>
+          스탬프(Stamp) — 구조체/클래스 전달<br>
+          제어(Control) — 제어 플래그 전달<br>
+          외부(External) — 외부 포맷/프로토콜 공유<br>
+          공통(Common) — 전역 데이터 공유<br>
+          내용(Content) — 내부 직접 참조 (가장 높음, 가장 나쁨)
+        </div>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          UML 다이어그램 중 "정적 구조"를 표현하는 다이어그램과 "동적 행위"를 표현하는 다이어그램을 각각 구분하시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">구조(정적): 클래스, 객체, 컴포넌트, 배치, 복합구조, 패키지<br>행위(동적): 유스케이스, 시퀀스, 상태, 활동, 커뮤니케이션, 상호작용개요, 타이밍</div>
+        <div class="ans-explain">
+          <strong>구조 다이어그램 (6종)</strong>: 시스템의 정적인 구조 표현<br>
+          → 클래스 다이어그램이 가장 많이 사용됨<br><br>
+          <strong>행위 다이어그램 (7종)</strong>: 시스템의 동적 동작 표현<br>
+          → 시퀀스 다이어그램: 시간순 메시지 흐름 (가장 자주 출제)<br>
+          → 유스케이스 다이어그램: 사용자-시스템 상호작용 개요
+        </div>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">기출 유사</span>&nbsp;
+          다음 설명에 해당하는 디자인 패턴을 쓰시오.<br>
+          <small style="font-weight:400; color:var(--gray);">"알고리즘의 골격을 상위 클래스에서 정의하고, 알고리즘의 일부 단계는 하위 클래스에서 구현한다."</small>
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">Template Method (템플릿 메서드)</div>
+        <div class="ans-explain">
+          <strong>행위 패턴</strong>. 상위 클래스에 알고리즘 흐름(골격) 정의, 하위 클래스에서 세부 구현.<br>
+          Hollywood Principle: "Don't call us, we'll call you" (부모가 자식 메서드 호출)<br>
+          활용: 게임 초기화-플레이-종료 흐름, 요리 레시피(재료준비-조리-완성)
+        </div>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">기출 유사</span>&nbsp;
+          화이트박스 테스트의 결정(분기) 커버리지를 설명하고, 구문 커버리지와의 차이를 서술하시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">결정 커버리지: 모든 분기(if/switch)의 True·False 각 1회 이상 실행</div>
+        <div class="ans-explain">
+          <strong>구문(문장) 커버리지</strong>: 모든 코드 라인이 최소 1번 실행되면 100%<br>
+          → if(A) { X } 에서 A=True만 테스트해도 구문 커버리지 달성 가능<br><br>
+          <strong>결정(분기) 커버리지</strong>: if의 True 분기도, False 분기도 각각 최소 1번<br>
+          → A=True 케이스 + A=False 케이스 모두 필요<br><br>
+          결정 커버리지 100% ⊃ 구문 커버리지 100% (결정이 더 강한 조건)
+        </div>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">기출 유사</span>&nbsp;
+          나선형 모델의 4단계를 순서대로 쓰고, 다른 모델과 비교한 핵심 특징을 서술하시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">계획 수립 → 위험 분석 → 개발 및 검증 → 고객 평가 (반복)</div>
+        <div class="ans-explain">
+          <strong>나선형 모델 4단계</strong>:<br>
+          ① 계획 수립: 목표·대안·제약 정의<br>
+          ② 위험 분석: 위험 요소 식별·해결 방안 검토 (핵심!)<br>
+          ③ 개발 및 검증: 프로토타입 개발·테스트<br>
+          ④ 고객 평가: 사용자 피드백 → 다음 반복으로<br><br>
+          <strong>핵심 특징</strong>: 위험 관리(Risk Management) 강조. 폭포수+프로토타입 결합.<br>
+          대규모·고위험·장기 프로젝트에 적합. Boehm이 제안.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+</div><!-- /container -->
+
+<footer style="text-align:center; padding:1.5rem; color:var(--gray); font-size:0.78rem; border-top:1px solid var(--border);">
+  Level-2 · 09 소프트웨어 공학 실전 · <a href="index.html" style="color:var(--accent); text-decoration:none;">← 목록으로</a>
+</footer>
+
+<script>
+function toggle(el) {
+  el.closest('.quiz-card').classList.toggle('open');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>12. 제품소프트웨어 패키징 | 정보처리기사 실기</title>
+<style>
+:root {
+  --primary: #15803d;
+  --primary-light: #dcfce7;
+  --secondary: #0369a1;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --dark: #1e293b;
+  --gray: #64748b;
+  --light: #f8fafc;
+  --border: #e2e8f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.6; }
+
+nav { position: sticky; top: 0; z-index: 100; background: var(--dark); padding: 0.6rem 1.5rem; display: flex; gap: 0.5rem; align-items: center; overflow-x: auto; scrollbar-width: none; }
+nav::-webkit-scrollbar { display: none; }
+nav .nav-title { color: #86efac; font-weight: 700; font-size: 0.82rem; white-space: nowrap; margin-right: 0.5rem; }
+nav a { color: #94a3b8; text-decoration: none; font-size: 0.78rem; white-space: nowrap; padding: 0.3rem 0.7rem; border-radius: 5px; transition: all 0.2s; }
+nav a:hover, nav a.active { color: white; background: #334155; }
+
+.hero { background: linear-gradient(135deg, #052e16 0%, #1e293b 100%); color: white; padding: 2.5rem 2rem; text-align: center; }
+.hero h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.4rem; }
+.hero .subtitle { color: #86efac; font-size: 0.95rem; margin-bottom: 1rem; }
+.tags { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; }
+.tag { background: rgba(255,255,255,0.12); color: white; padding: 0.2rem 0.65rem; border-radius: 20px; font-size: 0.78rem; }
+
+.container { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem; }
+section { margin-bottom: 3rem; }
+.section-title { font-size: 1.3rem; font-weight: 700; color: var(--dark); margin-bottom: 1.25rem; padding-bottom: 0.6rem; border-bottom: 3px solid var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { width: 30px; height: 30px; background: var(--primary); color: white; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; flex-shrink: 0; }
+
+.card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-bottom: 1rem; }
+.card h3 { font-size: 0.95rem; margin-bottom: 0.75rem; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+
+.tabs { display: flex; gap: 0.4rem; margin-bottom: 1.25rem; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+.tab-btn { padding: 0.45rem 1rem; background: none; border: none; color: var(--gray); cursor: pointer; font-size: 0.85rem; font-weight: 600; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+table.base { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+table.base th { background: var(--dark); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+table.base td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+table.base tr:hover td { background: #f0fdf4; }
+
+.hl  { background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid var(--primary); border-radius: 7px; padding: 0.8rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; }
+.hl.warn { background: #fffbeb; border-color: #fde68a; border-left-color: var(--warning); }
+.hl.danger { background: #fef2f2; border-color: #fecaca; border-left-color: var(--danger); }
+
+code.il { background: #f1f5f9; color: #15803d; padding: 0.1rem 0.35rem; border-radius: 3px; font-family: monospace; font-size: 0.81rem; font-weight: 700; }
+
+.fc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 0.75rem; }
+.flip-card { height: 128px; perspective: 1000px; cursor: pointer; }
+.flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.55s; transform-style: preserve-3d; }
+.flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+.fc-front, .fc-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0.75rem; text-align: center; }
+.fc-front { background: white; border: 2px solid var(--primary); color: var(--dark); font-weight: 600; font-size: 0.84rem; }
+.fc-back { background: var(--primary); color: white; transform: rotateY(180deg); font-size: 0.77rem; line-height: 1.5; }
+
+/* 패키징 흐름도 */
+.flow-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.flow-step { flex: 1; min-width: 130px; background: white; border: 2px solid var(--border); border-radius: 10px; padding: 0.85rem 0.6rem; text-align: center; cursor: pointer; transition: all 0.2s; font-size: 0.82rem; font-weight: 600; position: relative; }
+.flow-step:hover { border-color: var(--primary); transform: translateY(-2px); }
+.flow-step.active { border-color: var(--primary); background: var(--primary-light); }
+.flow-step.sec { border-color: #fca5a5; }
+.flow-step.sec::after { content: '🔒'; position: absolute; top: -8px; right: -6px; font-size: 0.85rem; }
+.flow-arrow { color: var(--gray); font-size: 1.1rem; flex-shrink: 0; }
+.flow-detail { min-height: 70px; padding: 0.9rem 1.1rem; background: var(--primary-light); border-left: 4px solid var(--primary); border-radius: 7px; font-size: 0.85rem; margin-top: 0.85rem; line-height: 1.7; }
+
+/* 매칭 게임 */
+.match-status { text-align: center; font-size: 0.85rem; color: var(--gray); margin-bottom: 0.75rem; }
+.match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.match-col { display: flex; flex-direction: column; gap: 0.5rem; }
+.match-item { padding: 0.65rem 0.9rem; background: white; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.82rem; transition: all 0.18s; text-align: center; }
+.match-item:hover { border-color: var(--primary); }
+.match-item.selected { border-color: var(--secondary); background: #e0f2fe; }
+.match-item.matched { border-color: #059669; background: #d1fae5; color: #065f46; cursor: default; pointer-events: none; }
+.match-item.wrong-flash { border-color: var(--danger); background: #fee2e2; animation: shake 0.3s; }
+@keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);} }
+
+/* 퀴즈 */
+.quiz-item { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem; }
+.quiz-q { font-weight: 700; margin-bottom: 0.75rem; font-size: 0.9rem; }
+.opts { display: flex; flex-direction: column; gap: 0.4rem; }
+.opt { padding: 0.6rem 1rem; background: #f8fafc; border: 2px solid var(--border); border-radius: 7px; cursor: pointer; font-size: 0.84rem; transition: all 0.18s; }
+.opt:hover { border-color: var(--primary); background: #f0fdf4; }
+.opt.correct { border-color: #059669; background: #d1fae5; color: #065f46; font-weight: 700; }
+.opt.wrong { border-color: var(--danger); background: #fee2e2; color: #991b1b; }
+.exp { display: none; margin-top: 0.85rem; }
+.exp.show { display: block; }
+.exp-inner { padding: 0.7rem 0.9rem; background: #f0fdf4; border-left: 4px solid var(--primary); border-radius: 4px; font-size: 0.82rem; line-height: 1.7; }
+
+.score-box { background: white; border: 2px solid var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; margin-top: 1.25rem; display: none; }
+.score-num { font-size: 2.2rem; font-weight: 800; color: var(--primary); }
+
+.btn { padding: 0.5rem 1.1rem; border: none; border-radius: 7px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: opacity 0.2s; }
+.btn:hover { opacity: 0.85; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-blue   { background: var(--secondary); color: white; }
+.btn-gray   { background: var(--gray); color: white; }
+
+textarea.memo { width: 100%; min-height: 140px; padding: 0.9rem; border: 2px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.88rem; resize: vertical; background: #fffef7; }
+textarea.memo:focus { outline: none; border-color: var(--primary); }
+
+.scroll-top { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--primary); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; }
+.scroll-top.show { display: flex; }
+
+@media (max-width: 700px) {
+  .container { padding: 1rem; }
+  .hero h1 { font-size: 1.35rem; }
+  .card-grid { grid-template-columns: 1fr; }
+  .fc-grid { grid-template-columns: repeat(2, 1fr); }
+  .match-grid { grid-template-columns: 1fr; }
+  .flow-row { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">📦 12. 제품소프트웨어 패키징</span>
+  <a href="#s1">출제기준</a>
+  <a href="#s2">핵심개념</a>
+  <a href="#s3">키워드카드</a>
+  <a href="#s4">패키징흐름도</a>
+  <a href="#s5">릴리즈노트맞추기</a>
+  <a href="#s6">Git명령어카드</a>
+  <a href="#s7">문제풀이</a>
+  <a href="#s8">미니퀴즈</a>
+  <a href="#s9">오답노트</a>
+</nav>
+
+<div class="hero">
+  <h1>12. 제품소프트웨어 패키징</h1>
+  <p class="subtitle">빌드 · 패키징 · 배포 · 릴리즈 노트 · 매뉴얼 · 형상관리 · Git</p>
+  <div class="tags">
+    <span class="tag">빌드/패키징/배포</span>
+    <span class="tag">릴리즈 노트</span>
+    <span class="tag">DRM/보안 패키징</span>
+    <span class="tag">형상관리</span>
+    <span class="tag">Git 명령어</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- S1 출제기준 -->
+<section id="s1">
+  <h2 class="section-title"><span class="sec-num">1</span> 출제기준 요약</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3 style="color:var(--primary)">📦 제품소프트웨어 패키징하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>빌드, 패키징, 배포</li>
+        <li>저작권 보호, 암호화, 보안 패키징 도구</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--secondary)">📖 제품소프트웨어 매뉴얼 작성하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>릴리즈 노트</li>
+        <li>설치 매뉴얼, 사용자 매뉴얼</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--warning)">🗂️ 제품소프트웨어 버전관리하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>형상관리, 버전 등록, 백업</li>
+        <li>Git 기본 명령어</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hl warn">
+    <strong>⚠️ 시험 핵심:</strong>
+    <strong>빌드 → 패키징 → 배포 순서</strong>, <strong>릴리즈 노트 구성요소</strong>,
+    <strong>형상관리 4대 활동(식별/통제/감사/기록)</strong>, <strong>Git 기본 명령어</strong>는 매회 출제됩니다.
+  </div>
+</section>
+
+<!-- S2 핵심 개념 -->
+<section id="s2">
+  <h2 class="section-title"><span class="sec-num">2</span> 핵심 개념</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="tab(this,'t-build')">빌드·패키징·배포</button>
+    <button class="tab-btn" onclick="tab(this,'t-release')">릴리즈 노트</button>
+    <button class="tab-btn" onclick="tab(this,'t-sec')">저작권보호/보안패키징</button>
+    <button class="tab-btn" onclick="tab(this,'t-manual')">매뉴얼 작성</button>
+    <button class="tab-btn" onclick="tab(this,'t-cm')">형상관리/버전관리</button>
+    <button class="tab-btn" onclick="tab(this,'t-git')">Git 기본 명령어</button>
+  </div>
+
+  <div id="t-build" class="tab-content active">
+    <div class="card">
+      <h3>빌드 · 패키징 · 배포 (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>단계</th><th>설명</th></tr>
+        <tr><td><strong>빌드</strong></td><td>소스코드를 컴파일하여 실행 가능한 형태로 만드는 과정</td></tr>
+        <tr><td><strong>패키징</strong></td><td>빌드된 결과물을 사용자가 설치할 수 있는 형태(설치파일 등)로 묶는 과정</td></tr>
+        <tr><td><strong>배포</strong></td><td>패키징된 소프트웨어를 사용자에게 전달하는 과정</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="t-release" class="tab-content">
+    <div class="card">
+      <h3>릴리즈 노트</h3>
+      <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.75rem;">제품의 변경사항, 개선사항, 알려진 문제 등을 사용자에게 안내하는 문서입니다.</p>
+      <table class="base">
+        <tr><th>구성요소</th><th>설명</th></tr>
+        <tr><td>Header(헤더)</td><td>문서명, 제품명, 버전, 작성일 등 기본 정보</td></tr>
+        <tr><td>개요(Overview)</td><td>릴리즈의 목적과 배경 요약</td></tr>
+        <tr><td>이슈 요약</td><td>수정된 버그나 추가된 기능의 목록</td></tr>
+        <tr><td>재현 절차</td><td>문제가 발생했던 상황을 재현하는 절차</td></tr>
+        <tr><td>해결 방법</td><td>발견된 문제에 대한 개선/해결 내용</td></tr>
+        <tr><td>사용범위 및 영향도</td><td>적용 대상 시스템과 영향 받는 범위</td></tr>
+        <tr><td>기타사항</td><td>주의사항, 제한사항 등 추가 안내</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="t-sec" class="tab-content">
+    <div class="card">
+      <h3>저작권 보호 / 보안 패키징</h3>
+      <table class="base">
+        <tr><th>구분</th><th>설명</th></tr>
+        <tr><td><strong>DRM</strong></td><td>디지털 저작물의 무단 복제와 배포를 방지하는 저작권 보호 기술</td></tr>
+        <tr><td><strong>암호화</strong></td><td>대칭키/비대칭키를 활용하여 콘텐츠를 보호</td></tr>
+        <tr><td><strong>보안 패키징 도구</strong></td><td>압축과 암호화를 동시에 적용하여 무단 배포·복제를 방지</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="t-manual" class="tab-content">
+    <div class="card">
+      <h3>설치 매뉴얼 vs 사용자 매뉴얼</h3>
+      <table class="base">
+        <tr><th>구분</th><th>설명</th></tr>
+        <tr><td><strong>설치 매뉴얼</strong></td><td>설치 절차, 환경설정, 주의사항 등을 안내 (설치 담당자 대상)</td></tr>
+        <tr><td><strong>사용자 매뉴얼</strong></td><td>기능 사용법, FAQ 등을 안내 (최종 사용자 대상)</td></tr>
+      </table>
+      <div class="hl">작성 순서: <strong>기획 → 구성 → 작성 → 검토 → 배포</strong></div>
+    </div>
+  </div>
+
+  <div id="t-cm" class="tab-content">
+    <div class="card">
+      <h3>형상관리 4대 활동 (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>활동</th><th>설명</th></tr>
+        <tr><td><strong>형상식별</strong></td><td>형상관리 대상(베이스라인)을 식별</td></tr>
+        <tr><td><strong>형상통제</strong></td><td>변경 요청을 검토·승인·통제</td></tr>
+        <tr><td><strong>형상감사</strong></td><td>형상관리 항목의 일치성을 검증</td></tr>
+        <tr><td><strong>형상기록(상태보고)</strong></td><td>형상 항목의 상태와 변경 이력을 기록·보고</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>버전 등록 / 백업</h3>
+      <p style="font-size:0.84rem;color:var(--gray);">버전은 일반적으로 <code class="il">Major.Minor.Patch</code> 형식(예: 1.2.3)으로 표기하며, 정기적인 <strong>백업</strong>으로 데이터 손실을 방지합니다.</p>
+    </div>
+  </div>
+
+  <div id="t-git" class="tab-content">
+    <div class="card">
+      <h3>Git 기본 명령어</h3>
+      <table class="base">
+        <tr><th>명령어</th><th>설명</th></tr>
+        <tr><td><code class="il">git init</code></td><td>새로운 Git 저장소 초기화</td></tr>
+        <tr><td><code class="il">git clone</code></td><td>원격 저장소를 복제하여 로컬에 가져옴</td></tr>
+        <tr><td><code class="il">git add</code></td><td>변경된 파일을 스테이징 영역에 추가</td></tr>
+        <tr><td><code class="il">git commit</code></td><td>스테이징된 변경사항을 저장소에 기록</td></tr>
+        <tr><td><code class="il">git push / pull</code></td><td>원격 저장소에 업로드 / 원격 변경사항을 가져와 병합</td></tr>
+        <tr><td><code class="il">git branch / checkout / merge</code></td><td>브랜치 생성·조회 / 전환 / 통합</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- S3 플래시카드 -->
+<section id="s3">
+  <h2 class="section-title"><span class="sec-num">3</span> 시험용 키워드 플래시카드</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:0.85rem;">카드를 클릭하면 정의가 나옵니다.</p>
+  <div class="fc-grid" id="fc-container"></div>
+</section>
+
+<!-- S4 패키징 흐름도 -->
+<section id="s4">
+  <h2 class="section-title"><span class="sec-num">4</span> 패키징 흐름도</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.85rem;">각 단계를 클릭하면 설명이 나타납니다. 🔒 표시는 보안이 적용되는 단계입니다.</p>
+    <div class="flow-row" id="flow-container"></div>
+    <div class="flow-detail" id="flow-detail">단계를 클릭하면 설명이 나타납니다.</div>
+  </div>
+</section>
+
+<!-- S5 릴리즈 노트 맞추기 -->
+<section id="s5">
+  <h2 class="section-title"><span class="sec-num">5</span> 릴리즈 노트 구성 요소 맞추기</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.5rem;">왼쪽 구성요소와 오른쪽 설명을 순서대로 클릭해 짝지으세요.</p>
+    <div class="match-status" id="match-status">0 / 8 매칭 완료</div>
+    <div class="match-grid">
+      <div class="match-col" id="match-left"></div>
+      <div class="match-col" id="match-right"></div>
+    </div>
+    <button class="btn btn-gray" style="margin-top:1rem;" onclick="resetMatch()">다시 섞기</button>
+  </div>
+</section>
+
+<!-- S6 Git 명령어 카드 -->
+<section id="s6">
+  <h2 class="section-title"><span class="sec-num">6</span> Git 명령어 카드</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:0.85rem;">카드를 클릭하면 명령어의 설명이 나타납니다.</p>
+  <div class="fc-grid" id="git-container"></div>
+</section>
+
+<!-- S7 문제 풀이 -->
+<section id="s7">
+  <h2 class="section-title"><span class="sec-num">7</span> 대표 문제 유형</h2>
+  <div id="oq-container"></div>
+  <div class="score-box" id="oq-score">
+    <div class="score-num" id="oq-snum">0/0</div>
+    <p style="color:var(--gray);margin-top:0.4rem;" id="oq-smsg"></p>
+  </div>
+  <button class="btn btn-primary" style="margin-top:1rem;" onclick="resetOQ()">다시 풀기</button>
+</section>
+
+<!-- S8 미니 퀴즈 -->
+<section id="s8">
+  <h2 class="section-title"><span class="sec-num">8</span> 미니 퀴즈</h2>
+  <div id="mq-container"></div>
+  <button class="btn btn-blue" style="margin-top:0.85rem;" onclick="checkMQ()">채점하기</button>
+  <div id="mq-result" style="display:none;margin-top:1rem;"></div>
+</section>
+
+<!-- S9 오답노트 -->
+<section id="s9">
+  <h2 class="section-title"><span class="sec-num">9</span> 오답 노트</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.7rem;">틀린 문제나 헷갈리는 개념을 기록하세요. (자동 저장)</p>
+    <textarea class="memo" id="memo" placeholder="예) 빌드(컴파일) → 패키징(설치파일 생성) → 배포(전달)&#10;예) 릴리즈노트: 헤더/개요/이슈요약/재현절차/해결방법/영향도/기타사항&#10;예) 형상관리 4대 활동: 형상식별, 형상통제, 형상감사, 형상기록&#10;예) DRM = 저작권 보호 기술, 보안 패키징 = 압축+암호화&#10;예) git add(스테이징) → git commit(기록) → git push(업로드)"></textarea>
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.5rem;">
+      <button class="btn btn-primary" onclick="saveMemo()">저장</button>
+      <span id="memo-ok" style="font-size:0.8rem;color:#059669;display:none;">✓ 저장됨</span>
+    </div>
+  </div>
+</section>
+
+</div>
+<button class="scroll-top" id="stbtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+const fcData = [
+  { f:'빌드',                  b:'소스코드를 컴파일하여\n실행 가능한 형태로\n만드는 과정' },
+  { f:'패키징',                 b:'빌드 결과물을\n사용자가 설치 가능한 형태로\n묶는 과정' },
+  { f:'배포',                  b:'패키징된 소프트웨어를\n사용자에게\n전달하는 과정' },
+  { f:'릴리즈 노트',             b:'변경사항, 개선사항,\n알려진 문제를\n안내하는 문서' },
+  { f:'DRM',                  b:'디지털 저작물의 무단 복제/\n배포를 막는\n저작권 보호 기술' },
+  { f:'보안 패키징',             b:'압축과 암호화를 함께 적용해\n무단 배포를 방지하는\n패키징 기법' },
+  { f:'설치 매뉴얼',             b:'설치 절차와\n환경설정을\n안내하는 문서' },
+  { f:'사용자 매뉴얼',            b:'기능 사용법과 FAQ를\n안내하는\n최종 사용자용 문서' },
+  { f:'형상관리',                b:'산출물의 변경사항을\n체계적으로\n관리하는 활동' },
+  { f:'형상식별',                b:'형상관리 대상\n(베이스라인)을\n식별하는 활동' },
+  { f:'형상통제',                b:'변경 요청을 검토/승인/\n통제하는\n활동' },
+  { f:'형상감사',                b:'형상관리 항목의\n일치성을\n검증하는 활동' },
+  { f:'버전 등록',               b:'Major.Minor.Patch 형식으로\n소프트웨어 버전을\n기록하는 것' },
+  { f:'백업',                  b:'데이터 손실에 대비해\n정기적으로 자료를\n복제 저장하는 것' },
+  { f:'Git',                  b:'분산형 버전관리 시스템으로\n소스코드 변경 이력을\n관리하는 도구' },
+  { f:'베이스라인',               b:'형상관리의 기준이 되는\n승인된 산출물\n버전' },
+];
+
+const gitData = [
+  { f:'git init',     b:'새로운 Git 저장소를\n초기화' },
+  { f:'git clone',    b:'원격 저장소를 복제하여\n로컬에 가져옴' },
+  { f:'git add',      b:'변경된 파일을\n스테이징 영역에 추가' },
+  { f:'git commit',   b:'스테이징된 변경사항을\n저장소에 기록' },
+  { f:'git status',   b:'작업 디렉터리의\n변경 상태를 확인' },
+  { f:'git log',      b:'커밋 이력을\n확인' },
+  { f:'git diff',     b:'변경 내용의\n차이를 비교' },
+  { f:'git branch',   b:'브랜치를\n생성/조회/삭제' },
+  { f:'git checkout', b:'브랜치를 전환하거나\n파일을 복원' },
+  { f:'git merge',    b:'다른 브랜치의 변경사항을\n현재 브랜치에 통합' },
+  { f:'git push',     b:'로컬 커밋을\n원격 저장소에 업로드' },
+  { f:'git pull',     b:'원격 저장소의 변경사항을\n가져와 병합' },
+];
+
+const flowData = [
+  { step:'빌드', detail:'소스코드를 컴파일하여 실행 가능한 형태(바이너리)로 만드는 과정입니다.', sec:false },
+  { step:'모듈/라이브러리 통합', detail:'빌드된 모듈과 라이브러리를 하나로 통합합니다.', sec:false },
+  { step:'저작권 보호 적용', detail:'DRM, 암호화 등 보안 패키징 기술을 적용하여 무단 복제/배포를 방지합니다.', sec:true },
+  { step:'패키징(설치파일 생성)', detail:'통합된 모듈을 사용자가 설치할 수 있는 설치파일 형태로 묶습니다.', sec:false },
+  { step:'사용자 환경 테스트', detail:'다양한 사용자 환경에서 정상 동작하는지 테스트합니다.', sec:false },
+  { step:'배포 및 릴리즈 노트 작성', detail:'패키징된 소프트웨어를 배포하고, 변경사항을 정리한 릴리즈 노트를 작성합니다.', sec:false },
+];
+
+const matchData = [
+  { vuln:'Header(헤더)', ctr:'문서명, 제품명, 버전, 작성일 등 기본 정보' },
+  { vuln:'개요(Overview)', ctr:'릴리즈의 목적과 배경 요약' },
+  { vuln:'이슈 요약', ctr:'수정된 버그나 추가된 기능의 목록' },
+  { vuln:'재현 절차', ctr:'문제가 발생했던 상황을 재현하는 절차' },
+  { vuln:'해결 방법', ctr:'발견된 문제에 대한 개선/해결 내용' },
+  { vuln:'사용범위 및 영향도', ctr:'적용 대상 시스템과 영향 받는 범위' },
+  { vuln:'기타사항', ctr:'주의사항, 제한사항 등 추가 안내' },
+  { vuln:'작성자/배포일', ctr:'문서를 작성한 담당자와 배포 날짜' },
+];
+
+const oqData = [
+  { q:'빌드된 결과물을 사용자가 설치 가능한 형태로 묶는 과정은?', opts:['배포','패키징','형상관리','테스트'], ans:1, exp:'패키징은 빌드된 결과물을 사용자가 설치할 수 있는 형태(설치파일 등)로 묶는 과정입니다.' },
+  { q:'다음 중 릴리즈 노트에 일반적으로 포함되지 않는 항목은?', opts:['이슈 요약','재현 절차','서버 IP 할당 내역','사용범위 및 영향도'], ans:2, exp:'릴리즈 노트는 변경사항, 이슈, 영향도 등을 다루며 서버 IP 할당 내역은 포함되지 않습니다.' },
+  { q:'디지털 저작물의 무단 복제와 배포를 방지하기 위한 저작권 보호 기술은?', opts:['DRM','RAID','VPN','CDN'], ans:0, exp:'DRM(Digital Rights Management)은 디지털 저작물의 무단 복제/배포를 방지하는 저작권 보호 기술입니다.' },
+  { q:'설치 매뉴얼과 사용자 매뉴얼의 차이를 올바르게 설명한 것은?', opts:['설치 매뉴얼은 최종 사용자 대상, 사용자 매뉴얼은 개발자 대상이다','설치 매뉴얼은 설치 절차를, 사용자 매뉴얼은 기능 사용법을 안내한다','두 문서는 동일한 내용을 다룬다','사용자 매뉴얼은 배포 전에는 작성하지 않는다'], ans:1, exp:'설치 매뉴얼은 설치 절차/환경설정을, 사용자 매뉴얼은 기능 사용법과 FAQ를 안내합니다.' },
+  { q:'형상관리 활동 중, 변경 요청을 검토하고 승인/통제하는 활동은?', opts:['형상식별','형상통제','형상감사','형상기록'], ans:1, exp:'형상통제는 변경 요청을 검토하고 승인/통제하는 활동입니다.' },
+  { q:'소프트웨어 버전을 Major.Minor.Patch 형식으로 표기할 때, 하위 호환이 가능한 기능 추가 시 증가시키는 항목은?', opts:['Major','Minor','Patch','Build'], ans:1, exp:'Minor는 하위 호환이 가능한 기능 추가 시 증가시킵니다. Major는 호환되지 않는 변경, Patch는 버그 수정 시 증가합니다.' },
+  { q:'원격 저장소의 변경사항을 가져와 현재 브랜치에 병합하는 Git 명령어는?', opts:['git push','git pull','git clone','git branch'], ans:1, exp:'git pull은 원격 저장소의 변경사항을 가져와 현재 브랜치에 병합합니다.' },
+  { q:'새로운 Git 저장소를 초기화하는 명령어는?', opts:['git init','git add','git commit','git status'], ans:0, exp:'git init은 새로운 Git 저장소를 초기화하는 명령어입니다.' },
+];
+
+const mqData = [
+  { q:'소스코드를 컴파일하여 실행 가능한 형태로 만드는 과정은?', opts:['빌드','배포','패키징','형상관리'], ans:0 },
+  { q:'제품의 변경사항과 개선사항, 알려진 문제를 사용자에게 안내하는 문서는?', opts:['릴리즈 노트','형상관리계획서','요구사항정의서','테스트케이스'], ans:0 },
+  { q:'압축과 암호화를 함께 적용하여 무단 배포를 방지하는 패키징 기법은?', opts:['보안 패키징','일반 빌드','형상감사','단위테스트'], ans:0 },
+  { q:'형상관리에서 기준이 되는 승인된 산출물 버전을 무엇이라 하는가?', opts:['베이스라인','릴리즈노트','형상감사','롤백'], ans:0 },
+  { q:'변경된 파일을 Git의 스테이징 영역에 추가하는 명령어는?', opts:['git add','git commit','git push','git log'], ans:0 },
+  { q:'현재 작업 디렉터리의 변경 상태를 확인하는 Git 명령어는?', opts:['git status','git merge','git clone','git pull'], ans:0 },
+  { q:'다른 브랜치의 변경사항을 현재 브랜치에 통합하는 Git 명령어는?', opts:['git merge','git init','git diff','git log'], ans:0 },
+  { q:'데이터 손실에 대비하여 정기적으로 자료를 복제 저장하는 것은?', opts:['백업','패키징','배포','버전등록'], ans:0 },
+];
+
+function renderFC() {
+  document.getElementById('fc-container').innerHTML = fcData.map(c =>
+    `<div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-inner">
+        <div class="fc-front">${c.f.replace(/\n/g, '<br>')}</div>
+        <div class="fc-back">${c.b.replace(/\n/g, '<br>')}</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function renderGit() {
+  document.getElementById('git-container').innerHTML = gitData.map(c =>
+    `<div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-inner">
+        <div class="fc-front">${c.f.replace(/\n/g, '<br>')}</div>
+        <div class="fc-back">${c.b.replace(/\n/g, '<br>')}</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+let activeFlow = -1;
+function renderFlow() {
+  document.getElementById('flow-container').innerHTML = flowData.map((s, i) =>
+    `${i > 0 ? '<span class="flow-arrow">→</span>' : ''}<div class="flow-step${s.sec ? ' sec' : ''}" onclick="showFlow(${i})" id="flow-${i}">${s.step}</div>`
+  ).join('');
+}
+function showFlow(i) {
+  flowData.forEach((_, j) => document.getElementById(`flow-${j}`).classList.toggle('active', j === i && activeFlow !== i));
+  const detail = document.getElementById('flow-detail');
+  if (activeFlow === i) { detail.textContent = '단계를 클릭하면 설명이 나타납니다.'; activeFlow = -1; return; }
+  detail.innerHTML = flowData[i].detail;
+  activeFlow = i;
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+let leftOrder = [], rightOrder = [], selectedLeft = -1, selectedRight = -1, matchedCount = 0;
+function renderMatch() {
+  matchedCount = 0; selectedLeft = -1; selectedRight = -1;
+  leftOrder = shuffle(matchData.map((_, i) => i));
+  rightOrder = shuffle(matchData.map((_, i) => i));
+  document.getElementById('match-left').innerHTML = leftOrder.map(i =>
+    `<div class="match-item" onclick="selectVuln(${i},this)" id="ml-${i}">${matchData[i].vuln}</div>`
+  ).join('');
+  document.getElementById('match-right').innerHTML = rightOrder.map(i =>
+    `<div class="match-item" onclick="selectCtr(${i},this)" id="mr-${i}">${matchData[i].ctr}</div>`
+  ).join('');
+  updateMatchStatus();
+}
+
+function selectVuln(i, el) {
+  if (el.classList.contains('matched')) return;
+  document.querySelectorAll('#match-left .match-item').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedLeft = i;
+  if (selectedRight !== -1) tryMatch();
+}
+function selectCtr(i, el) {
+  if (el.classList.contains('matched')) return;
+  document.querySelectorAll('#match-right .match-item').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedRight = i;
+  if (selectedLeft !== -1) tryMatch();
+}
+function tryMatch() {
+  const lEl = document.getElementById(`ml-${selectedLeft}`);
+  const rEl = document.getElementById(`mr-${selectedRight}`);
+  if (selectedLeft === selectedRight) {
+    lEl.classList.remove('selected'); rEl.classList.remove('selected');
+    lEl.classList.add('matched'); rEl.classList.add('matched');
+    matchedCount++;
+    updateMatchStatus();
+  } else {
+    lEl.classList.add('wrong-flash'); rEl.classList.add('wrong-flash');
+    setTimeout(() => {
+      lEl.classList.remove('wrong-flash', 'selected');
+      rEl.classList.remove('wrong-flash', 'selected');
+    }, 400);
+  }
+  selectedLeft = -1; selectedRight = -1;
+}
+function updateMatchStatus() {
+  document.getElementById('match-status').textContent = `${matchedCount} / ${matchData.length} 매칭 완료`;
+}
+function resetMatch() { renderMatch(); }
+
+let oqAnswered = {}, oqSelected = {};
+function renderOQ() {
+  oqAnswered = {}; oqSelected = {};
+  document.getElementById('oq-container').innerHTML = oqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi + 1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<div class="opt" onclick="pickOQ(${qi},${oi},this)" id="oq-${qi}-${oi}">${o}</div>`
+      ).join('')}</div>
+      <div class="exp" id="exp-${qi}"><div class="exp-inner">${q.exp.replace(/\n/g, '<br>')}</div></div>
+    </div>`
+  ).join('');
+  document.getElementById('oq-score').style.display = 'none';
+}
+
+function pickOQ(qi, oi, el) {
+  if (oqAnswered[qi]) return;
+  oqAnswered[qi] = true; oqSelected[qi] = oi;
+  const correct = oqData[qi].ans;
+  document.getElementById(`oq-${qi}-${correct}`).classList.add('correct');
+  if (oi !== correct) el.classList.add('wrong');
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  if (Object.keys(oqAnswered).length === oqData.length) {
+    const sc = oqData.filter((_, i) => oqSelected[i] === oqData[i].ans).length;
+    document.getElementById('oq-snum').textContent = `${sc}/${oqData.length}`;
+    document.getElementById('oq-smsg').textContent = sc === oqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 오답노트에 기록하세요!';
+    document.getElementById('oq-score').style.display = 'block';
+  }
+}
+
+function resetOQ() { renderOQ(); }
+
+function renderMQ() {
+  document.getElementById('mq-container').innerHTML = mqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi + 1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<label style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;background:#f8fafc;border:2px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.84rem;" id="mql-${qi}-${oi}">
+          <input type="radio" name="mq${qi}" value="${oi}" style="margin:0;flex-shrink:0;">${o}
+        </label>`
+      ).join('')}</div>
+    </div>`
+  ).join('');
+  document.getElementById('mq-result').style.display = 'none';
+}
+
+function checkMQ() {
+  let sc = 0;
+  mqData.forEach((q, qi) => {
+    const sel = document.querySelector(`input[name="mq${qi}"]:checked`);
+    const v = sel ? +sel.value : -1;
+    const lbl = id => document.getElementById(`mql-${qi}-${id}`);
+    lbl(q.ans).style.cssText += ';border-color:#059669;background:#d1fae5;';
+    if (v !== -1 && v !== q.ans) lbl(v).style.cssText += ';border-color:#dc2626;background:#fee2e2;';
+    if (v === q.ans) sc++;
+  });
+  const r = document.getElementById('mq-result');
+  r.style.display = 'block';
+  r.innerHTML = `<div class="card" style="text-align:center;">
+    <div class="score-num">${sc}/${mqData.length}</div>
+    <p style="color:var(--gray);margin-top:0.4rem;">${sc === mqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 다시 복습하세요!'}</p>
+  </div>`;
+}
+
+function tab(btn, id) {
+  btn.closest('section').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.closest('section').querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+function saveMemo() {
+  localStorage.setItem('pkg_memo', document.getElementById('memo').value);
+  const ok = document.getElementById('memo-ok');
+  ok.style.display = 'inline';
+  setTimeout(() => { ok.style.display = 'none'; }, 2000);
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('stbtn').classList.toggle('show', window.scrollY > 300);
+  let cur = '';
+  document.querySelectorAll('section[id]').forEach(s => { if (window.scrollY >= s.offsetTop - 110) cur = s.id; });
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderFC();
+  renderGit();
+  renderFlow();
+  renderMatch();
+  renderOQ();
+  renderMQ();
+  const m = localStorage.getItem('pkg_memo');
+  if (m) document.getElementById('memo').value = m;
+  document.getElementById('memo').addEventListener('input', () =>
+    localStorage.setItem('pkg_memo', document.getElementById('memo').value)
+  );
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>05. 인터페이스 구현 | 정보처리기사 실기</title>
+<style>
+:root {
+  --primary: #4338ca;
+  --primary-light: #e0e7ff;
+  --secondary: #0d9488;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --dark: #1e293b;
+  --gray: #64748b;
+  --light: #f8fafc;
+  --border: #e2e8f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.6; }
+
+nav { position: sticky; top: 0; z-index: 100; background: var(--dark); padding: 0.6rem 1.5rem; display: flex; gap: 0.5rem; align-items: center; overflow-x: auto; scrollbar-width: none; }
+nav::-webkit-scrollbar { display: none; }
+nav .nav-title { color: #a5b4fc; font-weight: 700; font-size: 0.82rem; white-space: nowrap; margin-right: 0.5rem; }
+nav a { color: #94a3b8; text-decoration: none; font-size: 0.78rem; white-space: nowrap; padding: 0.3rem 0.7rem; border-radius: 5px; transition: all 0.2s; }
+nav a:hover, nav a.active { color: white; background: #334155; }
+
+.hero { background: linear-gradient(135deg, #1e1b4b 0%, #1e293b 100%); color: white; padding: 2.5rem 2rem; text-align: center; }
+.hero h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.4rem; }
+.hero .subtitle { color: #a5b4fc; font-size: 0.95rem; margin-bottom: 1rem; }
+.tags { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; }
+.tag { background: rgba(255,255,255,0.12); color: white; padding: 0.2rem 0.65rem; border-radius: 20px; font-size: 0.78rem; }
+
+.container { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem; }
+section { margin-bottom: 3rem; }
+.section-title { font-size: 1.3rem; font-weight: 700; color: var(--dark); margin-bottom: 1.25rem; padding-bottom: 0.6rem; border-bottom: 3px solid var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { width: 30px; height: 30px; background: var(--primary); color: white; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; flex-shrink: 0; }
+
+.card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-bottom: 1rem; }
+.card h3 { font-size: 0.95rem; margin-bottom: 0.75rem; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+
+.tabs { display: flex; gap: 0.4rem; margin-bottom: 1.25rem; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+.tab-btn { padding: 0.45rem 1rem; background: none; border: none; color: var(--gray); cursor: pointer; font-size: 0.85rem; font-weight: 600; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+table.base { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+table.base th { background: var(--dark); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+table.base td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+table.base tr:hover td { background: #eef2ff; }
+
+.hl  { background: #eef2ff; border: 1px solid #c7d2fe; border-left: 4px solid var(--primary); border-radius: 7px; padding: 0.8rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; }
+.hl.warn { background: #fffbeb; border-color: #fde68a; border-left-color: var(--warning); }
+.hl.danger { background: #fef2f2; border-color: #fecaca; border-left-color: var(--danger); }
+
+code.il { background: #f1f5f9; color: #4338ca; padding: 0.1rem 0.35rem; border-radius: 3px; font-family: monospace; font-size: 0.81rem; font-weight: 700; }
+
+.fc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 0.75rem; }
+.flip-card { height: 128px; perspective: 1000px; cursor: pointer; }
+.flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.55s; transform-style: preserve-3d; }
+.flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+.fc-front, .fc-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0.75rem; text-align: center; }
+.fc-front { background: white; border: 2px solid var(--primary); color: var(--dark); font-weight: 600; font-size: 0.84rem; }
+.fc-back { background: var(--primary); color: white; transform: rotateY(180deg); font-size: 0.77rem; line-height: 1.5; }
+
+/* 명세서 분석 */
+.spec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.6rem; }
+.spec-card { background: white; border: 2px solid var(--border); border-radius: 8px; padding: 0.7rem 0.5rem; text-align: center; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.spec-card:hover { border-color: var(--primary); }
+.spec-card.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+.spec-detail { min-height: 70px; padding: 0.85rem 1.1rem; background: var(--primary-light); border-left: 4px solid var(--primary); border-radius: 7px; font-size: 0.85rem; margin-top: 0.85rem; }
+
+/* 매칭 게임 */
+.match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.match-item { padding: 0.6rem 0.9rem; background: white; border: 2px solid var(--border); border-radius: 7px; margin-bottom: 0.5rem; font-size: 0.83rem; cursor: pointer; transition: all 0.15s; }
+.match-item:hover { border-color: var(--secondary); }
+.match-item.selected { border-color: var(--secondary); background: #ecfdf5; }
+.match-item.matched { border-color: #059669; background: #d1fae5; color: #065f46; font-weight: 600; cursor: default; }
+.match-item.wrong-flash { border-color: var(--danger); background: #fee2e2; }
+.match-status { margin-top: 0.5rem; font-size: 0.84rem; color: var(--gray); font-weight: 600; }
+
+/* 보안 적용 위치 흐름 */
+.flow-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.4rem; margin-bottom: 1rem; }
+.flow-step { padding: 0.65rem 1rem; border: 2px solid var(--primary); border-radius: 8px; background: white; color: var(--primary); font-size: 0.83rem; font-weight: 700; cursor: pointer; transition: all 0.2s; text-align: center; max-width: 170px; }
+.flow-step:hover { transform: translateY(-2px); }
+.flow-step.active { background: var(--primary); color: white; transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+.flow-step.sec { border-color: var(--danger); color: var(--danger); }
+.flow-step.sec.active { background: var(--danger); color: white; }
+.flow-arrow { color: var(--gray); font-size: 1.1rem; }
+.flow-detail { min-height: 70px; padding: 0.85rem 1.1rem; background: var(--primary-light); border-left: 4px solid var(--primary); border-radius: 7px; font-size: 0.85rem; }
+
+/* 퀴즈 */
+.quiz-item { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem; }
+.quiz-q { font-weight: 700; margin-bottom: 0.75rem; font-size: 0.9rem; }
+.opts { display: flex; flex-direction: column; gap: 0.4rem; }
+.opt { padding: 0.6rem 1rem; background: #f8fafc; border: 2px solid var(--border); border-radius: 7px; cursor: pointer; font-size: 0.84rem; transition: all 0.18s; }
+.opt:hover { border-color: var(--primary); background: #eef2ff; }
+.opt.correct { border-color: #059669; background: #d1fae5; color: #065f46; font-weight: 700; }
+.opt.wrong { border-color: var(--danger); background: #fee2e2; color: #991b1b; }
+.exp { display: none; margin-top: 0.85rem; }
+.exp.show { display: block; }
+.exp-inner { padding: 0.7rem 0.9rem; background: #eef2ff; border-left: 4px solid var(--primary); border-radius: 4px; font-size: 0.82rem; line-height: 1.7; }
+
+.score-box { background: white; border: 2px solid var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; margin-top: 1.25rem; display: none; }
+.score-num { font-size: 2.2rem; font-weight: 800; color: var(--primary); }
+
+.btn { padding: 0.5rem 1.1rem; border: none; border-radius: 7px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: opacity 0.2s; }
+.btn:hover { opacity: 0.85; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-blue   { background: var(--secondary); color: white; }
+.btn-gray   { background: var(--gray); color: white; }
+
+textarea.memo { width: 100%; min-height: 140px; padding: 0.9rem; border: 2px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.88rem; resize: vertical; background: #fffef7; }
+textarea.memo:focus { outline: none; border-color: var(--primary); }
+
+.scroll-top { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--primary); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; }
+.scroll-top.show { display: flex; }
+
+@media (max-width: 700px) {
+  .container { padding: 1rem; }
+  .hero h1 { font-size: 1.35rem; }
+  .card-grid { grid-template-columns: 1fr; }
+  .fc-grid { grid-template-columns: repeat(2, 1fr); }
+  .match-grid { grid-template-columns: 1fr; }
+  .flow-row { gap: 0.3rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">🔌 05. 인터페이스 구현</span>
+  <a href="#s1">출제기준</a>
+  <a href="#s2">핵심개념</a>
+  <a href="#s3">키워드카드</a>
+  <a href="#s4">명세서분석</a>
+  <a href="#s5">응답코드매칭</a>
+  <a href="#s6">보안적용위치</a>
+  <a href="#s7">문제풀이</a>
+  <a href="#s8">미니퀴즈</a>
+  <a href="#s9">오답노트</a>
+</nav>
+
+<div class="hero">
+  <h1>05. 인터페이스 구현</h1>
+  <p class="subtitle">인터페이스 설계서 · 데이터 표준 · 예외처리 · 인터페이스 보안 · 구현 검증 도구</p>
+  <div class="tags">
+    <span class="tag">인터페이스 명세서</span>
+    <span class="tag">동기/비동기</span>
+    <span class="tag">HTTP 상태코드</span>
+    <span class="tag">SSL/TLS</span>
+    <span class="tag">STAF/FitNesse/NTAF</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- S1 출제기준 -->
+<section id="s1">
+  <h2 class="section-title"><span class="sec-num">1</span> 출제기준 요약</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3 style="color:var(--primary)">📋 인터페이스 설계서 확인하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>인터페이스 설계서 구성요소</li>
+        <li>인터페이스 기능 식별</li>
+        <li>인터페이스 데이터 표준</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--secondary)">🔧 인터페이스 기능 구현하기 / 검증하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>예외 처리, 응답 코드</li>
+        <li>인터페이스 보안</li>
+        <li>구현 검증 도구</li>
+        <li>오류 처리 보고서</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hl warn">
+    <strong>⚠️ 시험 핵심:</strong>
+    <strong>인터페이스 설계서 구성요소</strong>, <strong>동기/비동기 방식 구분</strong>,
+    <strong>HTTP 응답 코드</strong>, <strong>구현 검증 도구(STAF/FitNesse/NTAF)</strong>는 매회 출제됩니다.
+  </div>
+</section>
+
+<!-- S2 핵심 개념 -->
+<section id="s2">
+  <h2 class="section-title"><span class="sec-num">2</span> 핵심 개념</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="tab(this,'t-spec')">인터페이스 설계서</button>
+    <button class="tab-btn" onclick="tab(this,'t-data')">데이터 표준 / 연동 방식</button>
+    <button class="tab-btn" onclick="tab(this,'t-err')">예외처리 / 응답코드</button>
+    <button class="tab-btn" onclick="tab(this,'t-sec')">인터페이스 보안</button>
+    <button class="tab-btn" onclick="tab(this,'t-tool')">구현 검증 도구</button>
+  </div>
+
+  <div id="t-spec" class="tab-content active">
+    <div class="card">
+      <h3>인터페이스 설계서 구성요소 (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>항목</th><th>설명</th></tr>
+        <tr><td><strong>인터페이스 ID/명칭</strong></td><td>각 인터페이스를 구분하는 고유 식별자와 이름</td></tr>
+        <tr><td><strong>송신 시스템 / 수신 시스템</strong></td><td>데이터를 보내는 쪽과 받는 쪽 시스템 정보</td></tr>
+        <tr><td><strong>연동 데이터 항목</strong></td><td>송수신되는 데이터의 항목, 타입, 길이</td></tr>
+        <tr><td><strong>통신 규약(프로토콜)</strong></td><td>HTTP, TCP/IP, FTP 등 통신에 사용하는 규약</td></tr>
+        <tr><td><strong>연동 방식</strong></td><td>동기(Synchronous) / 비동기(Asynchronous)</td></tr>
+        <tr><td><strong>연동 주기</strong></td><td>실시간, 배치(주기적) 등 발생 빈도</td></tr>
+        <tr><td><strong>보안 적용 여부</strong></td><td>암호화, 인증 적용 여부 및 방식</td></tr>
+        <tr><td><strong>예외처리 방안</strong></td><td>오류 발생 시 처리 절차와 응답 코드</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="t-data" class="tab-content">
+    <div class="card">
+      <h3>동기 vs 비동기 방식</h3>
+      <table class="base">
+        <tr><th>구분</th><th>특징</th></tr>
+        <tr><td><strong>동기(Synchronous)</strong></td><td>송신 후 응답을 기다렸다가 다음 처리 진행, 실시간성 높음, 처리 지연 시 대기</td></tr>
+        <tr><td><strong>비동기(Asynchronous)</strong></td><td>송신 후 응답을 기다리지 않고 다음 처리 진행, 별도 콜백/큐로 결과 수신</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>인터페이스 데이터 표준</h3>
+      <table class="base">
+        <tr><th>구분</th><th>XML</th><th>JSON</th></tr>
+        <tr><td>구조</td><td>태그 기반, 계층적</td><td>키-값 기반, 경량</td></tr>
+        <tr><td>가독성/용량</td><td>상대적으로 무거움</td><td>가볍고 파싱 빠름</td></tr>
+        <tr><td>주 용도</td><td>문서형 데이터, 레거시 연계</td><td>웹/모바일 API 연계</td></tr>
+      </table>
+      <div class="hl" style="margin-top:0.5rem;">데이터 표준화: 공통 코드, 표준 데이터 형식을 정의하여 송수신 시스템 간 데이터 해석 차이를 방지합니다.</div>
+    </div>
+  </div>
+
+  <div id="t-err" class="tab-content">
+    <div class="card">
+      <h3>HTTP 응답 코드 분류 (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>코드대</th><th>의미</th></tr>
+        <tr><td><strong>1xx</strong></td><td>정보성 응답 (요청을 받았으며 처리 중)</td></tr>
+        <tr><td><strong>2xx</strong></td><td>성공 (요청이 정상적으로 처리됨)</td></tr>
+        <tr><td><strong>3xx</strong></td><td>리다이렉션 (다른 URI로 이동 필요)</td></tr>
+        <tr><td><strong>4xx</strong></td><td>클라이언트 오류 (잘못된 요청, 인증/권한 문제)</td></tr>
+        <tr><td><strong>5xx</strong></td><td>서버 오류 (서버 내부 처리 실패)</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>오류 처리 보고서 구성</h3>
+      <p style="font-size:0.85rem;color:var(--gray);">오류 발생 일시, 오류 코드/메시지, 발생 위치(인터페이스명), 오류 원인, 처리 내용 및 재처리 결과를 기록합니다.</p>
+    </div>
+  </div>
+
+  <div id="t-sec" class="tab-content">
+    <div class="card">
+      <h3>인터페이스 보안 적용 요소</h3>
+      <table class="base">
+        <tr><th>구분</th><th>적용 기술</th></tr>
+        <tr><td><strong>전송 구간 암호화</strong></td><td>SSL/TLS로 네트워크 전송 데이터 암호화</td></tr>
+        <tr><td><strong>인증</strong></td><td>API Key, OAuth, 토큰 기반 인증</td></tr>
+        <tr><td><strong>데이터 무결성</strong></td><td>전자서명, 해시값 비교로 위변조 여부 검증</td></tr>
+        <tr><td><strong>접근통제</strong></td><td>호출 가능한 시스템/IP 제한</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="t-tool" class="tab-content">
+    <div class="card">
+      <h3>인터페이스 구현 검증 도구 (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>도구</th><th>설명</th></tr>
+        <tr><td><strong>xUnit</strong></td><td>단위 테스트 프레임워크 (JUnit, NUnit, CppUnit 등)</td></tr>
+        <tr><td><strong>STAF</strong></td><td>분산 환경의 소프트웨어 테스트를 자동화하는 프레임워크</td></tr>
+        <tr><td><strong>FitNesse</strong></td><td>웹 기반으로 테스트케이스를 작성·실행하는 협업 테스트 도구</td></tr>
+        <tr><td><strong>NTAF</strong></td><td>STAF와 FitNesse를 통합한 한국형 테스트 자동화 프레임워크</td></tr>
+        <tr><td><strong>Selenium</strong></td><td>웹 애플리케이션 테스트를 자동화하는 도구</td></tr>
+        <tr><td><strong>watir</strong></td><td>Ruby 기반의 웹 애플리케이션 테스트 자동화 도구</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- S3 플래시카드 -->
+<section id="s3">
+  <h2 class="section-title"><span class="sec-num">3</span> 시험용 키워드 플래시카드</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:0.85rem;">카드를 클릭하면 정의가 나옵니다.</p>
+  <div class="fc-grid" id="fc-container"></div>
+</section>
+
+<!-- S4 명세서 분석 -->
+<section id="s4">
+  <h2 class="section-title"><span class="sec-num">4</span> 인터페이스 명세서 샘플 분석</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.85rem;">항목을 클릭하면 해당 명세서 항목의 예시와 설명이 나타납니다.</p>
+    <div class="spec-grid" id="spec-container"></div>
+    <div class="spec-detail" id="spec-detail">항목을 클릭하면 설명이 나타납니다.</div>
+  </div>
+</section>
+
+<!-- S5 응답코드 매칭 -->
+<section id="s5">
+  <h2 class="section-title"><span class="sec-num">5</span> 정상/오류 응답 코드 매핑 퀴즈</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.75rem;">왼쪽 응답 코드를 클릭한 뒤, 오른쪽에서 알맞은 의미를 클릭하세요.</p>
+    <div class="match-grid">
+      <div id="match-code"></div>
+      <div id="match-mean"></div>
+    </div>
+    <div class="match-status" id="match-status"></div>
+    <button class="btn btn-gray" style="margin-top:0.75rem;" onclick="resetMatch()">다시 섞기</button>
+  </div>
+</section>
+
+<!-- S6 보안 적용 위치 -->
+<section id="s6">
+  <h2 class="section-title"><span class="sec-num">6</span> 인터페이스 보안 적용 위치</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:1rem;">데이터 송수신 흐름에서 보안이 적용되는 단계를 클릭해보세요. (빨간 테두리 = 보안 적용 지점)</p>
+    <div class="flow-row" id="flow-container"></div>
+    <div class="flow-detail" id="flow-detail">단계를 클릭하면 설명이 나타납니다.</div>
+  </div>
+</section>
+
+<!-- S7 문제 풀이 -->
+<section id="s7">
+  <h2 class="section-title"><span class="sec-num">7</span> 대표 문제 유형</h2>
+  <div id="oq-container"></div>
+  <div class="score-box" id="oq-score">
+    <div class="score-num" id="oq-snum">0/0</div>
+    <p style="color:var(--gray);margin-top:0.4rem;" id="oq-smsg"></p>
+  </div>
+  <button class="btn btn-primary" style="margin-top:1rem;" onclick="resetOQ()">다시 풀기</button>
+</section>
+
+<!-- S8 미니 퀴즈 -->
+<section id="s8">
+  <h2 class="section-title"><span class="sec-num">8</span> 미니 퀴즈</h2>
+  <div id="mq-container"></div>
+  <button class="btn btn-blue" style="margin-top:0.85rem;" onclick="checkMQ()">채점하기</button>
+  <div id="mq-result" style="display:none;margin-top:1rem;"></div>
+</section>
+
+<!-- S9 오답노트 -->
+<section id="s9">
+  <h2 class="section-title"><span class="sec-num">9</span> 오답 노트</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.7rem;">틀린 문제나 헷갈리는 개념을 기록하세요. (자동 저장)</p>
+    <textarea class="memo" id="memo" placeholder="예) 인터페이스 설계서: ID/명칭, 송수신시스템, 연동데이터, 통신규약, 연동방식, 연동주기, 보안적용여부, 예외처리방안&#10;예) 동기=응답 기다림 / 비동기=응답 기다리지 않음&#10;예) 4xx=클라이언트 오류, 5xx=서버 오류&#10;예) 인터페이스 구현 검증도구: STAF, FitNesse, NTAF(=STAF+FitNesse), Selenium, watir, xUnit&#10;예) 인터페이스 보안: SSL/TLS(전송암호화), 전자서명(무결성), 토큰인증"></textarea>
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.5rem;">
+      <button class="btn btn-primary" onclick="saveMemo()">저장</button>
+      <span id="memo-ok" style="font-size:0.8rem;color:#059669;display:none;">✓ 저장됨</span>
+    </div>
+  </div>
+</section>
+
+</div>
+<button class="scroll-top" id="stbtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+const fcData = [
+  { f:'인터페이스 설계서',     b:'송수신 시스템 간\n연동 데이터·통신규약·연동방식\n등을 정의한 문서' },
+  { f:'동기(Synchronous)',     b:'송신 후 응답을 기다렸다가\n다음 처리 진행\n실시간성 높음' },
+  { f:'비동기(Asynchronous)',  b:'송신 후 응답을 기다리지 않고\n다음 처리 진행\n콜백/큐로 결과 수신' },
+  { f:'xUnit',                 b:'단위 테스트 프레임워크\nJUnit, NUnit, CppUnit 등' },
+  { f:'STAF',                  b:'분산 환경의 소프트웨어\n테스트를 자동화하는\n프레임워크' },
+  { f:'FitNesse',               b:'웹 기반으로 테스트케이스를\n작성·실행하는\n협업 테스트 도구' },
+  { f:'NTAF',                  b:'STAF + FitNesse를 통합한\n한국형 테스트\n자동화 프레임워크' },
+  { f:'Selenium',              b:'웹 애플리케이션 테스트를\n자동화하는 도구' },
+  { f:'watir',                 b:'Ruby 기반의\n웹 애플리케이션 테스트\n자동화 도구' },
+  { f:'200 OK',                b:'요청이\n정상적으로 처리됨' },
+  { f:'400 Bad Request',       b:'요청 구문이\n잘못됨' },
+  { f:'401 Unauthorized',      b:'인증되지 않은\n요청' },
+  { f:'404 Not Found',         b:'요청한 리소스를\n찾을 수 없음' },
+  { f:'500 Internal Server Error', b:'서버 내부에서\n오류가 발생함' },
+  { f:'SSL/TLS',               b:'네트워크 전송 구간의\n데이터를 암호화하는\n프로토콜' },
+  { f:'전자서명',               b:'데이터의 무결성과\n송신자 인증을 보장하는\n암호 기술' },
+];
+
+const specData = [
+  { label:'인터페이스 ID/명칭', desc:'<strong>예: IF-001 (회원정보 동기화)</strong><br>각 인터페이스를 구분하는 고유 식별자와 이름입니다.' },
+  { label:'송신 시스템',        desc:'<strong>예: 회원관리시스템</strong><br>데이터를 보내는 쪽 시스템 정보입니다.' },
+  { label:'수신 시스템',        desc:'<strong>예: 포인트관리시스템</strong><br>데이터를 받는 쪽 시스템 정보입니다.' },
+  { label:'연동 데이터 항목',    desc:'<strong>예: 회원ID(CHAR 10), 이름(VARCHAR 20)</strong><br>송수신되는 데이터의 항목, 타입, 길이를 정의합니다.' },
+  { label:'통신 규약',          desc:'<strong>예: HTTP/HTTPS, TCP/IP, FTP</strong><br>송수신 시 사용하는 통신 프로토콜입니다.' },
+  { label:'연동 방식',          desc:'<strong>예: 동기 / 비동기</strong><br>응답을 기다리는지 여부에 따른 연동 처리 방식입니다.' },
+  { label:'연동 주기',          desc:'<strong>예: 실시간, 1일 1회 배치</strong><br>인터페이스가 발생하는 빈도입니다.' },
+  { label:'보안 적용 여부',      desc:'<strong>예: SSL 적용, 토큰 인증 사용</strong><br>암호화·인증 적용 여부 및 방식을 명시합니다.' },
+  { label:'예외처리 방안',       desc:'<strong>예: 응답코드 500 시 3회 재시도 후 담당자 알림</strong><br>오류 발생 시 처리 절차와 응답 코드를 정의합니다.' },
+];
+
+const matchData = [
+  { v:'200 OK', c:'요청이 정상적으로 처리됨' },
+  { v:'201 Created', c:'요청에 의해 새로운 리소스가 생성됨' },
+  { v:'400 Bad Request', c:'요청 구문이 잘못됨' },
+  { v:'401 Unauthorized', c:'인증되지 않은 요청' },
+  { v:'403 Forbidden', c:'권한이 없어 접근이 거부됨' },
+  { v:'404 Not Found', c:'요청한 리소스를 찾을 수 없음' },
+  { v:'500 Internal Server Error', c:'서버 내부에서 오류가 발생함' },
+  { v:'503 Service Unavailable', c:'서버가 일시적으로 요청을 처리할 수 없음' },
+];
+
+const flowData = [
+  { label:'송신 시스템', sec:false, desc:'<strong>송신 시스템</strong>: 인터페이스를 통해 전송할 데이터를 생성·조회하여 송신을 준비합니다.' },
+  { label:'데이터 암호화 (SSL/TLS)', sec:true, desc:'<strong>🔒 보안 적용 지점 1</strong>: 전송 전 데이터를 SSL/TLS로 암호화하여 네트워크 구간 노출을 방지합니다.' },
+  { label:'네트워크 전송', sec:false, desc:'<strong>네트워크 전송</strong>: 암호화된 데이터가 네트워크를 통해 수신 시스템으로 전달됩니다.' },
+  { label:'인증/무결성 검증', sec:true, desc:'<strong>🔒 보안 적용 지점 2</strong>: 수신 측에서 토큰/API Key로 송신자를 인증하고, 전자서명·해시값으로 데이터 위변조 여부를 검증합니다.' },
+  { label:'수신 시스템 처리', sec:false, desc:'<strong>수신 시스템 처리</strong>: 검증을 통과한 데이터를 복호화하여 비즈니스 로직에 반영합니다.' },
+];
+
+const oqData = [
+  { q:'인터페이스 설계서에 포함되어야 하는 항목으로 옳지 않은 것은?', opts:['인터페이스 ID','송수신 시스템','UI 색상 코드','연동 데이터 항목'], ans:2, exp:'인터페이스 설계서는 ID, 송수신 시스템, 연동 데이터, 통신규약, 연동방식 등을 정의합니다. UI 색상 코드는 화면 설계 영역입니다.' },
+  { q:'동기(Synchronous) 방식과 비동기(Asynchronous) 방식에 대한 설명으로 옳은 것은?', opts:['동기는 응답을 기다리지 않고 다음 처리를 진행한다','비동기는 응답을 기다렸다가 처리한다','동기는 응답을 기다렸다가 다음 처리를 진행한다','동기와 비동기는 차이가 없다'], ans:2, exp:'동기 방식은 송신 후 응답을 기다렸다가 다음 처리를 진행하며, 비동기 방식은 응답을 기다리지 않고 다음 처리를 진행합니다.' },
+  { q:'HTTP 상태 코드 중 인증 실패를 의미하는 것은?', opts:['200','400','401','500'], ans:2, exp:'401 Unauthorized는 인증되지 않은 요청을 의미합니다. 400은 잘못된 요청 구문, 500은 서버 내부 오류입니다.' },
+  { q:'다음 중 인터페이스 구현 검증 도구가 아닌 것은?', opts:['STAF','FitNesse','NTAF','Spring Batch'], ans:3, exp:'STAF, FitNesse, NTAF는 테스트(검증) 자동화 도구이며, Spring Batch는 배치 프로그램 처리 프레임워크입니다.' },
+  { q:'인터페이스 보안에서 데이터의 무결성과 송신자 인증을 보장하기 위해 사용하는 기술은?', opts:['전자서명','로드밸런싱','캐싱','페이징'], ans:0, exp:'전자서명은 데이터 위변조 여부와 송신자 신원을 함께 검증할 수 있는 암호 기술입니다.' },
+  { q:'STAF와 FitNesse를 통합하여 만든 한국형 테스트 자동화 프레임워크는?', opts:['NTAF','xUnit','Selenium','watir'], ans:0, exp:'NTAF(Naver Test Automation Framework)는 STAF와 FitNesse를 통합한 국내 테스트 자동화 프레임워크입니다.' },
+  { q:'다음 중 HTTP 상태 코드 5xx에 대한 설명으로 옳은 것은?', opts:['클라이언트 요청 오류','서버 내부 오류','정상 처리','리다이렉션'], ans:1, exp:'5xx는 서버 내부에서 요청을 처리하지 못해 발생하는 오류입니다. 4xx는 클라이언트 요청 오류입니다.' },
+  { q:'인터페이스 보안 적용에 대한 설명으로 옳지 않은 것은?', opts:['네트워크 전송 구간에 SSL/TLS를 적용한다','API 호출 시 인증 토큰을 사용한다','민감 데이터는 평문으로 전송해도 무방하다','데이터 무결성 검증을 위해 해시값을 비교한다'], ans:2, exp:'민감 데이터는 반드시 암호화하여 전송해야 하며, 평문 전송은 보안 취약점입니다.' },
+];
+
+const mqData = [
+  { q:'인터페이스 설계서에서 응답을 기다렸다가 다음 처리를 진행하는 방식은?', opts:['동기','비동기','배치','폴링'], ans:0 },
+  { q:'요청이 정상적으로 처리되었음을 의미하는 HTTP 상태 코드는?', opts:['200','400','404','500'], ans:0 },
+  { q:'권한이 없어 접근이 거부될 때 사용하는 HTTP 상태 코드는?', opts:['401','403','404','500'], ans:1 },
+  { q:'웹 기반으로 테스트케이스를 작성·실행하는 협업 테스트 도구는?', opts:['STAF','FitNesse','Selenium','watir'], ans:1 },
+  { q:'네트워크 전송 구간의 데이터를 암호화하는 프로토콜은?', opts:['SSL/TLS','HTTP','FTP','SMTP'], ans:0 },
+  { q:'Ruby 기반의 웹 애플리케이션 테스트 자동화 도구는?', opts:['xUnit','STAF','watir','NTAF'], ans:2 },
+  { q:'인터페이스 설계서의 연동 주기 항목에 들어갈 수 있는 값은?', opts:['실시간, 1일 1회 배치','UI 색상','폰트 크기','메뉴 구조'], ans:0 },
+  { q:'단위 테스트 프레임워크의 통칭으로 JUnit, NUnit 등을 포함하는 용어는?', opts:['xUnit','STAF','NTAF','FitNesse'], ans:0 },
+];
+
+function renderFC() {
+  document.getElementById('fc-container').innerHTML = fcData.map(c =>
+    `<div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-inner">
+        <div class="fc-front">${c.f.replace(/\n/g, '<br>')}</div>
+        <div class="fc-back">${c.b.replace(/\n/g, '<br>')}</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+let activeSpec = -1;
+function renderSpec() {
+  document.getElementById('spec-container').innerHTML = specData.map((s, i) =>
+    `<div class="spec-card" onclick="showSpec(${i})" id="spec-${i}">${s.label}</div>`
+  ).join('');
+}
+function showSpec(i) {
+  specData.forEach((_, j) => {
+    document.getElementById(`spec-${j}`).classList.toggle('active', j === i && activeSpec !== i);
+  });
+  const detail = document.getElementById('spec-detail');
+  if (activeSpec === i) { detail.textContent = '항목을 클릭하면 설명이 나타납니다.'; activeSpec = -1; return; }
+  detail.innerHTML = specData[i].desc;
+  activeSpec = i;
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+let matchLeftSel = null, matchedCount = 0;
+function renderMatch() {
+  matchedCount = 0; matchLeftSel = null;
+  const idxs = matchData.map((_, i) => i);
+  const rightOrder = shuffle([...idxs]);
+  document.getElementById('match-code').innerHTML = matchData.map((d, i) =>
+    `<div class="match-item" data-i="${i}" onclick="selectVuln(${i},this)">${d.v}</div>`
+  ).join('');
+  document.getElementById('match-mean').innerHTML = rightOrder.map(ri =>
+    `<div class="match-item" data-i="${ri}" onclick="selectCtr(${ri},this)">${matchData[ri].c}</div>`
+  ).join('');
+  updateMatchStatus();
+}
+
+function selectVuln(i, el) {
+  if (el.classList.contains('matched')) return;
+  document.querySelectorAll('#match-code .match-item').forEach(x => x.classList.remove('selected'));
+  el.classList.add('selected');
+  matchLeftSel = i;
+}
+
+function selectCtr(i, el) {
+  if (el.classList.contains('matched') || matchLeftSel === null) return;
+  if (i === matchLeftSel) {
+    el.classList.add('matched');
+    const leftEl = document.querySelector(`#match-code .match-item[data-i="${matchLeftSel}"]`);
+    leftEl.classList.add('matched');
+    leftEl.classList.remove('selected');
+    matchedCount++;
+    matchLeftSel = null;
+    updateMatchStatus();
+  } else {
+    el.classList.add('wrong-flash');
+    setTimeout(() => el.classList.remove('wrong-flash'), 450);
+  }
+}
+
+function updateMatchStatus() {
+  const s = document.getElementById('match-status');
+  s.textContent = matchedCount === matchData.length
+    ? `🎉 모두 매칭 완료! (${matchedCount}/${matchData.length})`
+    : `왼쪽 응답 코드를 클릭한 뒤, 오른쪽에서 알맞은 의미를 클릭하세요. (${matchedCount}/${matchData.length})`;
+}
+
+function resetMatch() { renderMatch(); }
+
+let activeFlow = -1;
+function renderFlow() {
+  document.getElementById('flow-container').innerHTML = flowData.map((s, i) =>
+    `${i > 0 ? '<span class="flow-arrow">→</span>' : ''}
+    <div class="flow-step${s.sec ? ' sec' : ''}" onclick="showFlow(${i})" id="flow-${i}">${s.label}</div>`
+  ).join('');
+}
+function showFlow(i) {
+  flowData.forEach((_, j) => {
+    document.getElementById(`flow-${j}`).classList.toggle('active', j === i && activeFlow !== i);
+  });
+  const detail = document.getElementById('flow-detail');
+  if (activeFlow === i) { detail.textContent = '단계를 클릭하면 설명이 나타납니다.'; activeFlow = -1; return; }
+  detail.innerHTML = flowData[i].desc;
+  activeFlow = i;
+}
+
+let oqAnswered = {}, oqSelected = {};
+function renderOQ() {
+  oqAnswered = {}; oqSelected = {};
+  document.getElementById('oq-container').innerHTML = oqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi + 1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<div class="opt" onclick="pickOQ(${qi},${oi},this)" id="oq-${qi}-${oi}">${o}</div>`
+      ).join('')}</div>
+      <div class="exp" id="exp-${qi}"><div class="exp-inner">${q.exp.replace(/\n/g, '<br>')}</div></div>
+    </div>`
+  ).join('');
+  document.getElementById('oq-score').style.display = 'none';
+}
+
+function pickOQ(qi, oi, el) {
+  if (oqAnswered[qi]) return;
+  oqAnswered[qi] = true; oqSelected[qi] = oi;
+  const correct = oqData[qi].ans;
+  document.getElementById(`oq-${qi}-${correct}`).classList.add('correct');
+  if (oi !== correct) el.classList.add('wrong');
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  if (Object.keys(oqAnswered).length === oqData.length) {
+    const sc = oqData.filter((_, i) => oqSelected[i] === oqData[i].ans).length;
+    document.getElementById('oq-snum').textContent = `${sc}/${oqData.length}`;
+    document.getElementById('oq-smsg').textContent = sc === oqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 오답노트에 기록하세요!';
+    document.getElementById('oq-score').style.display = 'block';
+  }
+}
+
+function resetOQ() { renderOQ(); }
+
+function renderMQ() {
+  document.getElementById('mq-container').innerHTML = mqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi + 1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<label style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;background:#f8fafc;border:2px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.84rem;" id="mql-${qi}-${oi}">
+          <input type="radio" name="mq${qi}" value="${oi}" style="margin:0;flex-shrink:0;">${o}
+        </label>`
+      ).join('')}</div>
+    </div>`
+  ).join('');
+  document.getElementById('mq-result').style.display = 'none';
+}
+
+function checkMQ() {
+  let sc = 0;
+  mqData.forEach((q, qi) => {
+    const sel = document.querySelector(`input[name="mq${qi}"]:checked`);
+    const v = sel ? +sel.value : -1;
+    const lbl = id => document.getElementById(`mql-${qi}-${id}`);
+    lbl(q.ans).style.cssText += ';border-color:#059669;background:#d1fae5;';
+    if (v !== -1 && v !== q.ans) lbl(v).style.cssText += ';border-color:#dc2626;background:#fee2e2;';
+    if (v === q.ans) sc++;
+  });
+  const r = document.getElementById('mq-result');
+  r.style.display = 'block';
+  r.innerHTML = `<div class="card" style="text-align:center;">
+    <div class="score-num">${sc}/${mqData.length}</div>
+    <p style="color:var(--gray);margin-top:0.4rem;">${sc === mqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 다시 복습하세요!'}</p>
+  </div>`;
+}
+
+function tab(btn, id) {
+  btn.closest('section').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.closest('section').querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+function saveMemo() {
+  localStorage.setItem('if_memo', document.getElementById('memo').value);
+  const ok = document.getElementById('memo-ok');
+  ok.style.display = 'inline';
+  setTimeout(() => { ok.style.display = 'none'; }, 2000);
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('stbtn').classList.toggle('show', window.scrollY > 300);
+  let cur = '';
+  document.querySelectorAll('section[id]').forEach(s => { if (window.scrollY >= s.offsetTop - 110) cur = s.id; });
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderFC();
+  renderSpec();
+  renderMatch();
+  renderFlow();
+  renderOQ();
+  renderMQ();
+  const m = localStorage.getItem('if_memo');
+  if (m) document.getElementById('memo').value = m;
+  document.getElementById('memo').addEventListener('input', () =>
+    localStorage.setItem('if_memo', document.getElementById('memo').value)
+  );
+});
+</script>
+</body>
+</html>

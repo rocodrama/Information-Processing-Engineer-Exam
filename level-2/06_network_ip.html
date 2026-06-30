@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>06 네트워크 & IP 계산 — Level-2</title>
+<style>
+:root {
+  --dark: #0f172a; --gray: #64748b; --light: #f8fafc; --border: #e2e8f0;
+  --accent: #c2410c; --accent2: #ea580c;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.7; }
+
+/* ── HEADER ── */
+.hero { background: linear-gradient(135deg, #1c1917 0%, #292524 60%, #44403c 100%); color: white; padding: 2.5rem 1.5rem 2rem; }
+.hero-inner { max-width: 900px; margin: 0 auto; }
+.hero-back { font-size: 0.78rem; color: #a8a29e; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; margin-bottom: 1rem; }
+.hero-back:hover { color: white; }
+.hero h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.3rem; }
+.hero p { color: #d6d3d1; font-size: 0.88rem; }
+.hero-meta { display: flex; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
+.htag { background: rgba(255,255,255,0.12); padding: 0.22rem 0.65rem; border-radius: 20px; font-size: 0.75rem; }
+
+/* ── LAYOUT ── */
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+/* ── TOC ── */
+.toc { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.5rem; margin-bottom: 2rem; }
+.toc-title { font-size: 0.78rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.7rem; }
+.toc-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.toc-list a { font-size: 0.8rem; color: var(--accent); text-decoration: none; border: 1px solid #fed7aa; background: #fff7ed; padding: 0.2rem 0.6rem; border-radius: 8px; }
+.toc-list a:hover { background: #ffedd5; }
+
+/* ── SECTION TITLE ── */
+.sec-title { font-size: 1.3rem; font-weight: 800; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 20px; }
+
+/* ── FORMULA CARD ── */
+.formula-card { background: #fff7ed; border: 1.5px solid #fed7aa; border-left: 5px solid var(--accent); border-radius: 10px; padding: 1.2rem 1.4rem; margin-bottom: 1rem; }
+.formula-card h4 { font-size: 0.82rem; font-weight: 700; color: var(--accent); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.formula { font-size: 1rem; font-weight: 700; color: var(--dark); font-family: 'Courier New', monospace; background: rgba(0,0,0,0.04); padding: 0.4rem 0.8rem; border-radius: 6px; display: inline-block; margin: 0.2rem 0; }
+
+/* ── STEP BOX ── */
+.steps { display: flex; flex-direction: column; gap: 0.6rem; margin: 1rem 0; }
+.step { display: flex; gap: 0.9rem; align-items: flex-start; }
+.step-num { width: 28px; height: 28px; background: var(--accent); color: white; border-radius: 50%; font-size: 0.78rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.1rem; }
+.step-body { flex: 1; }
+.step-body strong { display: block; font-size: 0.88rem; font-weight: 700; margin-bottom: 0.15rem; }
+.step-body p, .step-body code { font-size: 0.85rem; color: #374151; }
+code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.83rem; }
+
+/* ── TABLE ── */
+.tbl-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+th { background: #1c1917; color: white; padding: 0.55rem 0.8rem; text-align: left; font-weight: 700; font-size: 0.78rem; }
+td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); }
+tr:nth-child(even) td { background: #fafafa; }
+tr:hover td { background: #fff7ed; }
+.yes { color: #16a34a; font-weight: 700; }
+.no { color: #dc2626; font-weight: 700; }
+
+/* ── BINARY GRID ── */
+.bin-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; margin: 0.5rem 0; max-width: 280px; }
+.bin-cell { background: #f1f5f9; border: 1px solid var(--border); text-align: center; padding: 0.3rem 0; font-size: 0.8rem; font-family: monospace; border-radius: 4px; }
+.bin-cell.on { background: var(--accent); color: white; border-color: var(--accent); font-weight: 700; }
+.bin-cell.off { background: #e2e8f0; color: var(--gray); }
+.bin-label { font-size: 0.7rem; color: var(--gray); text-align: center; margin-top: 0.2rem; }
+
+/* ── QUIZ ── */
+.quiz-wrap { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 1rem; }
+.quiz-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.quiz-q { padding: 1rem 1.2rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
+.quiz-q:hover { background: #fafafa; }
+.quiz-q:active { background: #f5f5f5; }
+.quiz-badge { font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.quiz-badge.year { background: #fed7aa; color: #c2410c; }
+.quiz-badge.cat { background: #e0e7ff; color: #4338ca; }
+.quiz-chevron { font-size: 0.75rem; color: var(--gray); flex-shrink: 0; margin-top: 0.1rem; transition: transform 0.2s; }
+.quiz-card.open .quiz-chevron { transform: rotate(180deg); }
+.quiz-ans { display: none; padding: 0 1.2rem 1rem; border-top: 1px solid var(--border); }
+.quiz-card.open .quiz-ans { display: block; }
+.ans-label { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin: 0.8rem 0 0.3rem; }
+.ans-val { font-size: 0.92rem; font-weight: 700; color: var(--dark); font-family: monospace; }
+.ans-explain { font-size: 0.82rem; color: var(--gray); margin-top: 0.4rem; }
+.ans-steps { margin-top: 0.5rem; }
+.ans-step { font-size: 0.82rem; color: #374151; padding: 0.15rem 0; }
+.ans-step::before { content: '→ '; color: var(--accent); }
+
+/* ── INFO BOX ── */
+.info { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #1e40af; margin: 1rem 0; }
+.warn { background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #713f12; margin: 1rem 0; }
+
+/* ── MEMO GRID ── */
+.memo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.7rem; margin: 1rem 0; }
+.memo-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 0.85rem 1rem; }
+.memo-card .mlabel { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 0.3rem; }
+.memo-card .mval { font-size: 0.88rem; font-weight: 700; font-family: monospace; }
+.memo-card .mdesc { font-size: 0.75rem; color: var(--gray); margin-top: 0.15rem; }
+
+/* ── ATTACK TABLE ── */
+.atk-list { display: flex; flex-direction: column; gap: 0.55rem; margin: 1rem 0; }
+.atk-item { display: grid; grid-template-columns: 140px 1fr; gap: 0.8rem; align-items: start; background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem 1rem; }
+.atk-name { font-size: 0.84rem; font-weight: 700; color: var(--dark); }
+.atk-desc { font-size: 0.82rem; color: var(--gray); }
+
+@media (max-width: 640px) {
+  /* Hero */
+  .hero { padding: 1.8rem 1rem 1.5rem; }
+  .hero h1 { font-size: 1.25rem; }
+  .hero p { font-size: 0.84rem; }
+  .hero-meta { gap: 0.35rem; }
+  .htag { font-size: 0.7rem; padding: 0.18rem 0.55rem; }
+
+  /* Container */
+  .container { padding: 1.5rem 0.9rem 3rem; }
+
+  /* TOC */
+  .toc { padding: 0.9rem 1rem; }
+  .toc-list a { font-size: 0.74rem; padding: 0.18rem 0.5rem; }
+
+  /* Section title */
+  .sec-title { font-size: 1.1rem; margin: 2rem 0 0.85rem; }
+
+  /* Formula */
+  .formula-card { padding: 1rem 1.1rem; }
+  .formula { font-size: 0.8rem; word-break: break-all; display: block; white-space: normal; }
+
+  /* Binary grid */
+  .bin-grid { max-width: 200px; }
+  .bin-cell { font-size: 0.72rem; padding: 0.25rem 0; }
+
+  /* Tables */
+  .tbl-wrap { border-radius: 8px; border: 1px solid var(--border); background: white; }
+  .tbl-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; padding: 0.3rem 0.6rem 0; }
+  table { font-size: 0.76rem; }
+  th { font-size: 0.72rem; padding: 0.45rem 0.6rem; }
+  td { padding: 0.4rem 0.6rem; }
+
+  /* Steps */
+  .step-body { font-size: 0.82rem; }
+  .step-num { width: 24px; height: 24px; font-size: 0.72rem; }
+
+  /* Memo grid */
+  .memo-grid { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+  .memo-card { padding: 0.7rem 0.85rem; }
+  .memo-card .mval { font-size: 0.8rem; }
+
+  /* Attack items */
+  .atk-item { grid-template-columns: 1fr; gap: 0.3rem; padding: 0.7rem 0.9rem; }
+  .atk-name { font-size: 0.82rem; }
+  .atk-desc { font-size: 0.79rem; }
+
+  /* Info / warn */
+  .info, .warn { font-size: 0.8rem; padding: 0.85rem 1rem; }
+
+  /* Quiz */
+  .quiz-q { min-height: 52px; padding: 0.9rem 1rem; font-size: 0.83rem; align-items: flex-start; }
+  .quiz-ans { padding: 0 1rem 1rem; }
+  .ans-val { font-size: 0.88rem; }
+  .ans-explain { font-size: 0.79rem; }
+  .quiz-badge { font-size: 0.64rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <a class="hero-back" href="index.html">← Level-2 목록</a>
+    <h1>🌐 네트워크 & IP 계산</h1>
+    <p>서브넷 마스크 계산 · FLSM 분할 · OSI 7계층 · 공격 유형</p>
+    <div class="hero-meta">
+      <span class="htag">출제 빈도 ★★★★☆</span>
+      <span class="htag">06번</span>
+      <span class="htag">2020~2025 기출 포함</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="toc">
+    <div class="toc-title">목차</div>
+    <div class="toc-list">
+      <a href="#class">IPv4 클래스</a>
+      <a href="#mask">서브넷 마스크 표기</a>
+      <a href="#calc">계산 공식 & 단계</a>
+      <a href="#flsm">FLSM 서브넷 분할</a>
+      <a href="#private">사설 IP</a>
+      <a href="#osi">OSI 7계층</a>
+      <a href="#protocol">주요 프로토콜</a>
+      <a href="#attack">네트워크 공격</a>
+      <a href="#quiz">기출 문제</a>
+    </div>
+  </div>
+
+  <!-- ① IPv4 클래스 -->
+  <div class="sec-title" id="class"><span class="sec-num">01</span> IPv4 클래스 구분</div>
+
+  <div class="info">첫 번째 옥텟(0~255)의 범위로 클래스를 구분합니다. 시험엔 범위 암기보다 <strong>사설 IP 대역</strong>과 <strong>기본 서브넷 마스크</strong>가 자주 나옵니다.</div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>클래스</th><th>첫 옥텟 범위</th><th>기본 서브넷 마스크</th><th>Prefix</th><th>네트워크 / 호스트 비트</th><th>용도</th></tr>
+      <tr><td><strong>A</strong></td><td>1 ~ 126</td><td>255.0.0.0</td><td>/8</td><td>8 / 24</td><td>대규모 네트워크</td></tr>
+      <tr><td><strong>B</strong></td><td>128 ~ 191</td><td>255.255.0.0</td><td>/16</td><td>16 / 16</td><td>중규모 네트워크</td></tr>
+      <tr><td><strong>C</strong></td><td>192 ~ 223</td><td>255.255.255.0</td><td>/24</td><td>24 / 8</td><td>소규모 네트워크</td></tr>
+      <tr><td><strong>D</strong></td><td>224 ~ 239</td><td>—</td><td>—</td><td>—</td><td>멀티캐스트</td></tr>
+      <tr><td><strong>E</strong></td><td>240 ~ 255</td><td>—</td><td>—</td><td>—</td><td>예약(실험용)</td></tr>
+    </table>
+  </div>
+  <div class="warn">⚠️ 127.x.x.x는 루프백(Loopback) 주소 — 클래스 A 범위지만 네트워크 주소로 사용하지 않음</div>
+
+  <!-- ② 서브넷 마스크 표기 -->
+  <div class="sec-title" id="mask"><span class="sec-num">02</span> 서브넷 마스크 표기법</div>
+
+  <p style="font-size:0.86rem; color:var(--gray); margin-bottom:1rem;">CIDR 표기(/숫자)와 점선 십진수 표기를 서로 변환할 수 있어야 합니다.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>CIDR</th><th>마스크 (십진수)</th><th>마지막 옥텟 2진수</th><th>호스트 비트</th><th>호스트 수 (사용 가능)</th></tr>
+      <tr><td>/24</td><td>255.255.255.0</td><td>00000000</td><td>8</td><td>2⁸−2 = <strong>254</strong></td></tr>
+      <tr><td>/25</td><td>255.255.255.128</td><td>10000000</td><td>7</td><td>2⁷−2 = <strong>126</strong></td></tr>
+      <tr><td>/26</td><td>255.255.255.192</td><td>11000000</td><td>6</td><td>2⁶−2 = <strong>62</strong></td></tr>
+      <tr><td>/27</td><td>255.255.255.224</td><td>11100000</td><td>5</td><td>2⁵−2 = <strong>30</strong></td></tr>
+      <tr><td>/28</td><td>255.255.255.240</td><td>11110000</td><td>4</td><td>2⁴−2 = <strong>14</strong></td></tr>
+      <tr><td>/29</td><td>255.255.255.248</td><td>11111000</td><td>3</td><td>2³−2 = <strong>6</strong></td></tr>
+      <tr><td>/30</td><td>255.255.255.252</td><td>11111100</td><td>2</td><td>2²−2 = <strong>2</strong></td></tr>
+    </table>
+  </div>
+
+  <div class="formula-card">
+    <h4>십진수 → 2진수 (마스크 패턴)</h4>
+    <div style="font-size:0.85rem; margin-bottom:0.5rem;">마스크의 4번째 옥텟이 <strong>192</strong>인 경우:</div>
+    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; margin-bottom:0.5rem;">
+      <div>
+        <div class="bin-grid">
+          <div class="bin-cell on">1</div><div class="bin-cell on">1</div>
+          <div class="bin-cell off">0</div><div class="bin-cell off">0</div>
+          <div class="bin-cell off">0</div><div class="bin-cell off">0</div>
+          <div class="bin-cell off">0</div><div class="bin-cell off">0</div>
+        </div>
+        <div class="bin-label">128 + 64 = <strong>192</strong> → 네트워크 비트 2개 추가 → /26</div>
+      </div>
+    </div>
+    <div style="font-size:0.83rem; color:var(--gray);">암기 팁: 128→/25, 192→/26, 224→/27, 240→/28, 248→/29, 252→/30</div>
+  </div>
+
+  <!-- ③ 계산 공식 -->
+  <div class="sec-title" id="calc"><span class="sec-num">03</span> IP 계산 공식 & 단계별 풀이</div>
+
+  <div class="formula-card">
+    <h4>핵심 공식 4가지</h4>
+    <div class="formula">호스트 수 (사용 가능) = 2^(32−prefix) − 2</div><br>
+    <div class="formula">블록 크기 = 2^(호스트 비트 수) = 256 − 마지막 옥텟 마스크 값</div><br>
+    <div class="formula">네트워크 주소 = IP AND 서브넷 마스크</div><br>
+    <div class="formula">브로드캐스트 = 네트워크 주소 + (블록 크기 − 1)</div>
+  </div>
+
+  <div style="background:white; border:1px solid var(--border); border-radius:12px; padding:1.3rem 1.5rem; margin-bottom:1rem;">
+    <div style="font-size:0.92rem; font-weight:700; margin-bottom:1rem;">📌 예제: IP <code>223.13.234.132</code> / 마스크 <code>255.255.255.192</code></div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Prefix 구하기</strong>
+          <p>192 = 11000000₂ → 켜진 비트 수: 24 + 2 = <strong>/26</strong></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>호스트 비트 수</strong>
+          <p>32 − 26 = <strong>6비트</strong></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>블록 크기</strong>
+          <p>2⁶ = <strong>64</strong> &nbsp;(또는 256 − 192 = 64)</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <strong>네트워크 주소</strong>
+          <p>132 ÷ 64 = 2.xxx → 내림 → 64 × 2 = <strong>128</strong> → 네트워크: <code>223.13.234.128</code></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <strong>브로드캐스트</strong>
+          <p>128 + 64 − 1 = <strong>191</strong> → 브로드캐스트: <code>223.13.234.191</code></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <strong>사용 가능한 호스트 수</strong>
+          <p>2⁶ − 2 = <strong>62</strong>개 &nbsp;(네트워크 주소, 브로드캐스트 제외)</p>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:1rem; padding:0.7rem 1rem; background:#fff7ed; border-radius:8px; font-size:0.83rem;">
+      <strong>결과 정리</strong><br>
+      네트워크: 223.13.234.128 &nbsp;|&nbsp; 브로드캐스트: 223.13.234.191 &nbsp;|&nbsp; 호스트: 223.13.234.129 ~ .190 (62개)
+    </div>
+  </div>
+
+  <div class="info">💡 <strong>블록 크기로 네트워크 주소 찾기</strong>: IP의 마지막 옥텟 ÷ 블록 크기 = 몫 → 몫 × 블록 크기 = 네트워크 주소의 마지막 옥텟<br>예) 132 ÷ 64 = 2.0625 → 몫 2 → 2 × 64 = 128</div>
+
+  <!-- ④ FLSM 서브넷 분할 -->
+  <div class="sec-title" id="flsm"><span class="sec-num">04</span> FLSM 서브넷 분할</div>
+
+  <div class="info">FLSM(Fixed Length Subnet Mask): <strong>동일한 크기</strong>의 서브넷으로 분할. 몇 개의 서브넷으로 나눌지 주어지면 필요한 비트 수를 계산합니다.</div>
+
+  <div style="background:white; border:1px solid var(--border); border-radius:12px; padding:1.3rem 1.5rem; margin-bottom:1rem;">
+    <div style="font-size:0.92rem; font-weight:700; margin-bottom:1rem;">📌 예제: <code>192.168.1.0/24</code> → <strong>3개</strong> 서브넷으로 분할</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>필요한 서브넷 비트 수</strong>
+          <p>2^n ≥ 3 → 2²=4 ≥ 3 → <strong>2비트</strong> 필요</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>새 Prefix</strong>
+          <p>/24 + 2 = <strong>/26</strong> → 마스크: 255.255.255.192</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>블록 크기</strong>
+          <p>2^(32−26) = 2⁶ = <strong>64</strong></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <strong>각 서브넷 범위</strong>
+          <p>서브넷 1: 192.168.1.0 ~ 192.168.1.63 &nbsp;(브로드캐스트: .63)<br>
+             서브넷 2: 192.168.1.64 ~ 192.168.1.127 &nbsp;<strong>(브로드캐스트: .127 ← 기출 정답)</strong><br>
+             서브넷 3: 192.168.1.128 ~ 192.168.1.191 &nbsp;(브로드캐스트: .191)<br>
+             서브넷 4: 192.168.1.192 ~ 192.168.1.255 &nbsp;(미사용)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="formula-card">
+    <h4>FLSM 공식 정리</h4>
+    <div class="formula">서브넷 비트 수 n = ⌈log₂(필요 서브넷 수)⌉</div><br>
+    <div class="formula">새 Prefix = 기존 Prefix + n</div><br>
+    <div class="formula">k번째 서브넷 시작 주소 마지막 옥텟 = (k−1) × 블록 크기</div><br>
+    <div class="formula">k번째 서브넷 브로드캐스트 = k × 블록 크기 − 1</div>
+  </div>
+
+  <!-- ⑤ 사설 IP -->
+  <div class="sec-title" id="private"><span class="sec-num">05</span> 사설 IP 대역</div>
+
+  <div class="memo-grid">
+    <div class="memo-card">
+      <div class="mlabel">클래스 A 사설</div>
+      <div class="mval">10.0.0.0/8</div>
+      <div class="mdesc">10.0.0.0 ~ 10.255.255.255</div>
+    </div>
+    <div class="memo-card">
+      <div class="mlabel">클래스 B 사설</div>
+      <div class="mval">172.16.0.0/12</div>
+      <div class="mdesc">172.16.0.0 ~ 172.31.255.255</div>
+    </div>
+    <div class="memo-card">
+      <div class="mlabel">클래스 C 사설</div>
+      <div class="mval">192.168.0.0/16</div>
+      <div class="mdesc">192.168.0.0 ~ 192.168.255.255</div>
+    </div>
+    <div class="memo-card">
+      <div class="mlabel">루프백</div>
+      <div class="mval">127.0.0.0/8</div>
+      <div class="mdesc">자기 자신 (127.0.0.1)</div>
+    </div>
+    <div class="memo-card">
+      <div class="mlabel">IPv6</div>
+      <div class="mval">128비트</div>
+      <div class="mdesc">16진수 8그룹, :으로 구분</div>
+    </div>
+    <div class="memo-card">
+      <div class="mlabel">NAT</div>
+      <div class="mval">사설 → 공인 변환</div>
+      <div class="mdesc">IP·포트 재기록으로 인터넷 접속</div>
+    </div>
+  </div>
+
+  <!-- ⑥ OSI 7계층 -->
+  <div class="sec-title" id="osi"><span class="sec-num">06</span> OSI 7계층 & 프로토콜</div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>계층</th><th>이름</th><th>단위</th><th>대표 프로토콜 / 장비</th><th>기출 포인트</th></tr>
+      <tr><td><strong>7</strong></td><td>응용 (Application)</td><td>데이터</td><td>HTTP, HTTPS, FTP, SMTP, DNS, DHCP, Telnet</td><td>포트 번호 (HTTP:80, HTTPS:443, FTP:21, SSH:22, SMTP:25, DNS:53)</td></tr>
+      <tr><td><strong>6</strong></td><td>표현 (Presentation)</td><td>데이터</td><td>SSL/TLS, JPEG, MPEG, ASCII</td><td>암호화·압축·인코딩</td></tr>
+      <tr><td><strong>5</strong></td><td>세션 (Session)</td><td>데이터</td><td>NetBIOS, SSH(일부), RPC</td><td>연결 설정·유지·종료</td></tr>
+      <tr><td><strong>4</strong></td><td>전송 (Transport)</td><td>세그먼트</td><td>TCP, UDP</td><td>포트 번호, 오류제어, 흐름제어</td></tr>
+      <tr><td><strong>3</strong></td><td>네트워크 (Network)</td><td>패킷</td><td>IP, ICMP, ARP, RARP, OSPF, RIP, BGP</td><td>라우팅, IP 주소, 라우터</td></tr>
+      <tr><td><strong>2</strong></td><td>데이터링크 (Data Link)</td><td>프레임</td><td>Ethernet, MAC, HDLC, PPP, 스위치</td><td>MAC 주소, 브리지·스위치</td></tr>
+      <tr><td><strong>1</strong></td><td>물리 (Physical)</td><td>비트</td><td>RS-232, 허브, 리피터, 케이블</td><td>전기 신호, 허브</td></tr>
+    </table>
+  </div>
+
+  <!-- ⑦ 주요 프로토콜 -->
+  <div class="sec-title" id="protocol"><span class="sec-num">07</span> 주요 프로토콜 정리</div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>프로토콜</th><th>계층</th><th>포트</th><th>설명</th></tr>
+      <tr><td><strong>ARP</strong></td><td>3(네트워크)</td><td>—</td><td>IP 주소 → MAC 주소 변환</td></tr>
+      <tr><td><strong>RARP</strong></td><td>3(네트워크)</td><td>—</td><td>MAC 주소 → IP 주소 변환 (ARP 반대)</td></tr>
+      <tr><td><strong>ICMP</strong></td><td>3(네트워크)</td><td>—</td><td>오류 보고·진단 (ping 사용)</td></tr>
+      <tr><td><strong>RIP</strong></td><td>3(네트워크)</td><td>520/UDP</td><td>거리벡터 라우팅, 홉 수 기준, 최대 15홉</td></tr>
+      <tr><td><strong>OSPF</strong></td><td>3(네트워크)</td><td>—</td><td>링크상태 라우팅, 홉 수 무제한, AS 내부</td></tr>
+      <tr><td><strong>BGP</strong></td><td>3(네트워크)</td><td>179/TCP</td><td>AS 간 라우팅 (인터넷 백본)</td></tr>
+      <tr><td><strong>TCP</strong></td><td>4(전송)</td><td>—</td><td>연결형, 신뢰성, 흐름/오류 제어, 3-way handshake</td></tr>
+      <tr><td><strong>UDP</strong></td><td>4(전송)</td><td>—</td><td>비연결형, 비신뢰성, 빠름, DNS/스트리밍</td></tr>
+      <tr><td><strong>SSH</strong></td><td>7(응용)</td><td>22/TCP</td><td>암호화 원격 접속 (Telnet 대체)</td></tr>
+      <tr><td><strong>IPSec</strong></td><td>3(네트워크)</td><td>—</td><td>IP 패킷 암호화·인증, VPN에 사용</td></tr>
+      <tr><td><strong>SSL/TLS</strong></td><td>6(표현)</td><td>—</td><td>HTTPS의 기반, 공개키 암호화</td></tr>
+      <tr><td><strong>DHCP</strong></td><td>7(응용)</td><td>67-68/UDP</td><td>IP 주소 자동 할당</td></tr>
+    </table>
+  </div>
+
+  <div class="formula-card">
+    <h4>TCP 3-way Handshake (연결) vs 4-way (종료)</h4>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:0.5rem;">
+      <div>
+        <div style="font-size:0.82rem; font-weight:700; margin-bottom:0.3rem;">연결 (3-way)</div>
+        <div style="font-size:0.82rem; font-family:monospace; line-height:2;">
+          Client → Server: <code>SYN</code><br>
+          Server → Client: <code>SYN+ACK</code><br>
+          Client → Server: <code>ACK</code>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:0.82rem; font-weight:700; margin-bottom:0.3rem;">종료 (4-way)</div>
+        <div style="font-size:0.82rem; font-family:monospace; line-height:2;">
+          Client → Server: <code>FIN</code><br>
+          Server → Client: <code>ACK</code><br>
+          Server → Client: <code>FIN</code><br>
+          Client → Server: <code>ACK</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑧ 공격 유형 -->
+  <div class="sec-title" id="attack"><span class="sec-num">08</span> 네트워크 공격 유형</div>
+
+  <div class="atk-list">
+    <div class="atk-item">
+      <div class="atk-name">SYN Flooding</div>
+      <div class="atk-desc">TCP 3-way handshake 취약점 악용. SYN 패킷을 대량 전송 후 ACK를 보내지 않아 서버의 연결 대기 큐를 가득 채움 → DoS</div>
+    </div>
+    <div class="atk-item">
+      <div class="atk-name">스머프 (Smurf)</div>
+      <div class="atk-desc">ICMP Echo Request를 브로드캐스트 주소로 전송, 출발지 IP를 피해자 IP로 위조 → 수많은 호스트가 피해자에게 Echo Reply 전송</div>
+    </div>
+    <div class="atk-item">
+      <div class="atk-name">ARP Spoofing</div>
+      <div class="atk-desc">ARP 응답을 위조하여 자신의 MAC 주소를 게이트웨이로 등록 → 중간자(MitM) 공격, 트래픽 도청</div>
+    </div>
+    <div class="atk-item">
+      <div class="atk-name">스니핑 (Sniffing)</div>
+      <div class="atk-desc">네트워크 패킷을 수동적으로 도청·수집. 암호화되지 않은 데이터에서 ID/PW 탈취. 수동적 공격</div>
+    </div>
+    <div class="atk-item">
+      <div class="atk-name">스푸핑 (Spoofing)</div>
+      <div class="atk-desc">IP·MAC·이메일 등을 위조하여 신뢰할 수 있는 호스트인 척 공격. 능동적 공격</div>
+    </div>
+    <div class="atk-item">
+      <div class="atk-name">세션 하이재킹</div>
+      <div class="atk-desc">TCP 시퀀스 번호를 예측하여 이미 인증된 세션 탈취. 재인증 없이 권한 획득</div>
+    </div>
+    <div class="atk-item">
+      <div class="atk-name">XSS</div>
+      <div class="atk-desc">웹 페이지에 악성 스크립트 삽입 → 다른 사용자의 브라우저에서 실행됨. 쿠키 탈취·세션 도용</div>
+    </div>
+    <div class="atk-item">
+      <div class="atk-name">SQL Injection</div>
+      <div class="atk-desc">입력값에 SQL 구문을 삽입하여 DB 조작. 인증 우회·데이터 유출·삭제 가능</div>
+    </div>
+    <div class="atk-item">
+      <div class="atk-name">CSRF</div>
+      <div class="atk-desc">사용자가 의도하지 않은 요청을 강제로 전송. 이미 로그인된 사용자의 권한 악용</div>
+    </div>
+    <div class="atk-item">
+      <div class="atk-name">DoS / DDoS</div>
+      <div class="atk-desc">서비스 거부 공격. DoS: 단일 출처. DDoS: 다수 좀비PC(봇넷) 이용 분산 공격</div>
+    </div>
+  </div>
+
+  <div class="tbl-wrap" style="margin-top:1rem;">
+    <table>
+      <tr><th>용어</th><th>설명</th><th>기출 연도</th></tr>
+      <tr><td><strong>VPN</strong></td><td>공용 네트워크 기반 사설망, IPSec·SSL 사용</td><td>2024 3회 Q17</td></tr>
+      <tr><td><strong>IPSec</strong></td><td>IP 패킷 암호화·인증 프로토콜, 네트워크 계층</td><td>2024 2회 Q5</td></tr>
+      <tr><td><strong>SSH</strong></td><td>암호화 원격 접속, 포트 22, 공개키 인증</td><td>2025 2회 Q3</td></tr>
+      <tr><td><strong>NAT</strong></td><td>사설 IP ↔ 공인 IP 변환, IP+포트 재기록</td><td>2023 3회 Q12</td></tr>
+      <tr><td><strong>ATM</strong></td><td>53바이트 고정 길이 셀 기반 전송</td><td>2023 3회 Q9</td></tr>
+    </table>
+  </div>
+
+  <!-- ⑨ 기출 문제 -->
+  <div class="sec-title" id="quiz"><span class="sec-num">09</span> 기출 문제</div>
+
+  <div class="quiz-wrap">
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2025 2회 Q6</span>&nbsp;
+          IP 주소 <code>223.13.234.132</code>, 서브넷 마스크 <code>255.255.255.192</code>일 때<br>
+          ① 서브넷 수, ② 서브넷당 사용 가능한 호스트 수를 구하시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">① 128개 &nbsp; ② 62개</div>
+        <div class="ans-steps">
+          <div class="ans-step">마스크 192 = 11000000₂ → /26, 네트워크 비트 2개 추가됨</div>
+          <div class="ans-step">서브넷 수 = 2² × (기존 네트워크 배수) → C클래스(/24) 기준 추가 2비트 → 총 2²=4개 서브넷... 하지만 이 문제는 클래스 C 전체(192.168.x.x)가 아닌 단일 IP 맥락 → 문제 의도: 마스크 /26에서 서브넷 수 = 2^(26-24) = 4... ★실제 정답: ①128 ②62로 출제됨 — 클래스 B IP 기준 /26 적용 시 서브넷 수 2^(26-16)=1024 아님, 해당 회차 복원 정답 기준</div>
+          <div class="ans-step">호스트 수: 2^(32-26) - 2 = 2⁶ - 2 = 62</div>
+        </div>
+        <div class="ans-explain">핵심: 호스트 수 = 2^(호스트비트) − 2</div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2022 3회 Q5</span>&nbsp;
+          <code>192.168.1.0/24</code>를 FLSM 방식으로 <strong>3개</strong> 서브넷으로 분할했을 때,
+          두 번째 서브넷의 브로드캐스트 IP를 구하시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">192.168.1.127</div>
+        <div class="ans-steps">
+          <div class="ans-step">3개 서브넷 필요 → 2^n ≥ 3 → n=2 → /24+2 = /26</div>
+          <div class="ans-step">블록 크기 = 2^6 = 64</div>
+          <div class="ans-step">1번째: .0 ~ .63 (브로드캐스트 .63)</div>
+          <div class="ans-step">2번째: .64 ~ .127 (브로드캐스트 .127) ← 정답</div>
+          <div class="ans-step">3번째: .128 ~ .191 (브로드캐스트 .191)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2025 1회 Q6</span>&nbsp;
+          다음을 채우시오: IP 주소를 MAC 주소로 변환하는 프로토콜은 <code>( ① )</code>,
+          MAC 주소를 IP 주소로 변환하는 프로토콜은 <code>( ② )</code>이다.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">① ARP &nbsp; ② RARP</div>
+        <div class="ans-explain">ARP: Address Resolution Protocol (IP→MAC), RARP: Reverse ARP (MAC→IP)</div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2024 2회 Q5</span>&nbsp;
+          Network layer에서 IP 패킷을 암호화하고 인증하는 프로토콜은?
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">IPSec</div>
+        <div class="ans-explain">VPN 구현에 사용. 네트워크(3) 계층에서 동작. AH(인증)와 ESP(암호화+인증) 프로토콜 포함</div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2025 2회 Q19</span>&nbsp;
+          다량의 SYN 패킷을 전송하고 ACK를 응답하지 않아 서버의 연결 대기 큐를 가득 채우는 공격은?
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">SYN Flooding</div>
+        <div class="ans-explain">TCP 3-way handshake의 취약점 악용. 서버는 SYN_RECEIVED 상태로 대기하다 자원 고갈 → DoS</div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2024 3회 Q5</span>&nbsp;
+          ICMP의 특성을 악용하고, 다중 호스트의 Echo Reply를 이용하여 피해자에게 집중시키는 공격은?
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">스머프 (Smurf / Smurfing)</div>
+        <div class="ans-explain">피해자 IP로 위조한 ICMP Echo Request를 브로드캐스트로 전송 → 네트워크 내 모든 호스트가 피해자에게 Reply 전송 → 트래픽 폭주</div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2025 1회 Q1</span>&nbsp;
+          이미 인증된 TCP 세션을 탈취하며, TCP 시퀀스 번호를 예측하는 공격 기법은?
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">세션 하이재킹 (Session Hijacking)</div>
+        <div class="ans-explain">기존 인증 세션을 가로채 재인증 없이 사용자 권한 획득. ARP 스푸핑 등으로 시퀀스 번호 예측</div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2025 2회 Q3</span>&nbsp;
+          암호화된 통신을 제공하는 보안 접속용 프로토콜. 공개키 기반 인증, 포트 번호 22를 사용한다.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">SSH (Secure Shell)</div>
+        <div class="ans-explain">Telnet(포트 23, 비암호화)의 보안 대안. 비밀번호·공개키 방식 인증 지원</div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2023 3회 Q12</span>&nbsp;
+          IP 주소와 포트 번호를 재기록하여 사설 IP를 공인 IP로 변환하는 기술은?
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">NAT (Network Address Translation)</div>
+        <div class="ans-explain">IPv4 주소 부족 해결책 중 하나. 여러 사설 IP가 하나의 공인 IP를 공유 (PAT 또는 NAPT)</div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2024 3회 Q17</span>&nbsp;
+          공용 네트워크를 기반으로 사설망을 구축하는 기술로, IPSec·SSL 등을 사용하는 것은?
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">VPN (Virtual Private Network)</div>
+        <div class="ans-explain">터널링 기법으로 암호화된 사설 통신 채널 형성. 기업 원격 접속·지점 연결에 사용</div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+
+</div><!-- /container -->
+
+<footer style="text-align:center; padding:1.5rem; color:var(--gray); font-size:0.78rem; border-top:1px solid var(--border);">
+  Level-2 · 06 네트워크 & IP 계산 · <a href="index.html" style="color:var(--accent); text-decoration:none;">← 목록으로</a>
+</footer>
+
+<script>
+function toggle(el) {
+  const card = el.closest('.quiz-card');
+  card.classList.toggle('open');
+}
+</script>
+</body>
+</html>

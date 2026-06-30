@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>08. SQL 응용 | 정보처리기사 실기</title>
+<style>
+:root {
+  --primary: #0f766e;
+  --primary-light: #ccfbf1;
+  --secondary: #2563eb;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --dark: #1e293b;
+  --gray: #64748b;
+  --light: #f8fafc;
+  --border: #e2e8f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.6; }
+
+nav { position: sticky; top: 0; z-index: 100; background: var(--dark); padding: 0.6rem 1.5rem; display: flex; gap: 0.5rem; align-items: center; overflow-x: auto; scrollbar-width: none; }
+nav::-webkit-scrollbar { display: none; }
+nav .nav-title { color: #6ee7b7; font-weight: 700; font-size: 0.82rem; white-space: nowrap; margin-right: 0.5rem; }
+nav a { color: #94a3b8; text-decoration: none; font-size: 0.78rem; white-space: nowrap; padding: 0.3rem 0.7rem; border-radius: 5px; transition: all 0.2s; }
+nav a:hover, nav a.active { color: white; background: #334155; }
+
+.hero { background: linear-gradient(135deg, #134e4a 0%, #1e293b 100%); color: white; padding: 2.5rem 2rem; text-align: center; }
+.hero h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.4rem; }
+.hero .subtitle { color: #6ee7b7; font-size: 0.95rem; margin-bottom: 1rem; }
+.tags { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; }
+.tag { background: rgba(255,255,255,0.12); color: white; padding: 0.2rem 0.65rem; border-radius: 20px; font-size: 0.78rem; }
+
+.container { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem; }
+section { margin-bottom: 3rem; }
+.section-title { font-size: 1.3rem; font-weight: 700; color: var(--dark); margin-bottom: 1.25rem; padding-bottom: 0.6rem; border-bottom: 3px solid var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { width: 30px; height: 30px; background: var(--primary); color: white; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; flex-shrink: 0; }
+
+.card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-bottom: 1rem; }
+.card h3 { font-size: 0.95rem; margin-bottom: 0.75rem; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+
+.tabs { display: flex; gap: 0.4rem; margin-bottom: 1.25rem; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+.tab-btn { padding: 0.45rem 1rem; background: none; border: none; color: var(--gray); cursor: pointer; font-size: 0.85rem; font-weight: 600; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+table.base { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+table.base th { background: var(--dark); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+table.base td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+table.base tr:hover td { background: #f0fdfa; }
+
+/* SQL code blocks */
+.code-block { background: #0f172a; border-radius: 9px; padding: 1.1rem 1.25rem; font-family: 'Consolas', 'Courier New', monospace; font-size: 0.82rem; line-height: 1.75; color: #e2e8f0; overflow-x: auto; white-space: pre-wrap; margin: 0.75rem 0; }
+.kw  { color: #38bdf8; font-weight: 700; }
+.fn  { color: #c084fc; }
+.str { color: #86efac; }
+.cm  { color: #64748b; font-style: italic; }
+.num { color: #fbbf24; }
+.tb  { color: #fb923c; }
+.op  { color: #f472b6; }
+
+.hl  { background: #f0fdfa; border: 1px solid #99f6e4; border-left: 4px solid var(--primary); border-radius: 7px; padding: 0.8rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; }
+.hl.warn { background: #fffbeb; border-color: #fde68a; border-left-color: var(--warning); }
+.hl.danger { background: #fef2f2; border-color: #fecaca; border-left-color: var(--danger); }
+
+code.il { background: #f1f5f9; color: #0f766e; padding: 0.1rem 0.35rem; border-radius: 3px; font-family: monospace; font-size: 0.81rem; font-weight: 700; }
+
+/* 플래시카드 */
+.fc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 0.75rem; }
+.flip-card { height: 128px; perspective: 1000px; cursor: pointer; }
+.flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.55s; transform-style: preserve-3d; }
+.flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+.fc-front, .fc-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0.75rem; text-align: center; }
+.fc-front { background: white; border: 2px solid var(--primary); color: var(--dark); font-weight: 600; font-size: 0.84rem; }
+.fc-back { background: var(--primary); color: white; transform: rotateY(180deg); font-size: 0.77rem; line-height: 1.5; }
+
+/* SQL 실행 순서 */
+.sql-order { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; justify-content: center; margin-bottom: 1rem; }
+.sql-step { padding: 0.55rem 1rem; border-radius: 8px; font-size: 0.9rem; font-weight: 800; cursor: pointer; border: 2px solid transparent; transition: all 0.25s; font-family: monospace; }
+.sql-step:hover { transform: translateY(-2px); }
+.sql-step.active { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+.sql-arrow { color: var(--gray); font-size: 1.1rem; }
+.sql-detail { min-height: 70px; padding: 0.85rem 1.1rem; background: #f0fdfa; border-left: 4px solid var(--primary); border-radius: 7px; font-size: 0.85rem; }
+.ss1 { background: #dbeafe; color: #1e40af; }
+.ss2 { background: #fce7f3; color: #9d174d; }
+.ss3 { background: #dcfce7; color: #166534; }
+.ss4 { background: #fef3c7; color: #92400e; }
+.ss5 { background: #f3e8ff; color: #6b21a8; }
+.ss6 { background: #ffedd5; color: #9a3412; }
+
+/* JOIN 시각화 */
+.join-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.join-btn { padding: 0.45rem 1rem; border: 2px solid var(--primary); background: white; color: var(--primary); border-radius: 7px; cursor: pointer; font-size: 0.83rem; font-weight: 700; transition: all 0.2s; }
+.join-btn:hover, .join-btn.active { background: var(--primary); color: white; }
+.join-tables { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+.join-table-label { font-size: 0.78rem; font-weight: 700; color: var(--gray); margin-bottom: 0.3rem; }
+table.join-t { width: 100%; border-collapse: collapse; font-size: 0.81rem; }
+table.join-t th { background: #0f766e; color: white; padding: 0.35rem 0.65rem; text-align: left; }
+table.join-t td { padding: 0.35rem 0.65rem; border-bottom: 1px solid var(--border); }
+.null-cell { color: var(--danger); font-style: italic; }
+.join-venn { display: flex; justify-content: center; margin-bottom: 0.85rem; }
+.venn-svg { width: 180px; height: 80px; }
+.join-result-label { font-size: 0.82rem; font-weight: 700; color: var(--primary); margin-bottom: 0.4rem; }
+#join-sql-preview { display: none; }
+
+/* 퀴즈 */
+.quiz-item { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem; }
+.quiz-q { font-weight: 700; margin-bottom: 0.75rem; font-size: 0.9rem; }
+.opts { display: flex; flex-direction: column; gap: 0.4rem; }
+.opt { padding: 0.6rem 1rem; background: #f8fafc; border: 2px solid var(--border); border-radius: 7px; cursor: pointer; font-size: 0.84rem; transition: all 0.18s; }
+.opt:hover { border-color: var(--primary); background: #f0fdfa; }
+.opt.correct { border-color: #059669; background: #d1fae5; color: #065f46; font-weight: 700; }
+.opt.wrong { border-color: var(--danger); background: #fee2e2; color: #991b1b; }
+.exp { display: none; margin-top: 0.85rem; }
+.exp.show { display: block; }
+.exp-inner { padding: 0.7rem 0.9rem; background: #f0fdfa; border-left: 4px solid var(--primary); border-radius: 4px; font-size: 0.82rem; line-height: 1.7; }
+
+.score-box { background: white; border: 2px solid var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; margin-top: 1.25rem; display: none; }
+.score-num { font-size: 2.2rem; font-weight: 800; color: var(--primary); }
+
+.btn { padding: 0.5rem 1.1rem; border: none; border-radius: 7px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: opacity 0.2s; }
+.btn:hover { opacity: 0.85; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-blue   { background: var(--secondary); color: white; }
+.btn-gray   { background: var(--gray); color: white; }
+
+textarea.memo { width: 100%; min-height: 140px; padding: 0.9rem; border: 2px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.88rem; resize: vertical; background: #fffef7; }
+textarea.memo:focus { outline: none; border-color: var(--primary); }
+
+.scroll-top { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--primary); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; }
+.scroll-top.show { display: flex; }
+
+@media (max-width: 700px) {
+  .container { padding: 1rem; }
+  .hero h1 { font-size: 1.35rem; }
+  .card-grid { grid-template-columns: 1fr; }
+  .fc-grid { grid-template-columns: repeat(2, 1fr); }
+  .join-tables { grid-template-columns: 1fr; }
+  .sql-order { gap: 0.3rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">🗄️ 08. SQL 응용</span>
+  <a href="#s1">출제기준</a>
+  <a href="#s2">핵심개념</a>
+  <a href="#s3">키워드카드</a>
+  <a href="#s4">실행순서</a>
+  <a href="#s5">JOIN시각화</a>
+  <a href="#s6">코드예제</a>
+  <a href="#s7">문제풀이</a>
+  <a href="#s8">미니퀴즈</a>
+  <a href="#s9">오답노트</a>
+</nav>
+
+<div class="hero">
+  <h1>08. SQL 응용</h1>
+  <p class="subtitle">절차형 SQL · DDL/DML/DCL/TCL · JOIN · 서브쿼리 · 윈도우 함수</p>
+  <div class="tags">
+    <span class="tag">DDL/DML</span>
+    <span class="tag">DCL/TCL</span>
+    <span class="tag">JOIN</span>
+    <span class="tag">서브쿼리</span>
+    <span class="tag">프로시저</span>
+    <span class="tag">트리거</span>
+    <span class="tag">윈도우함수</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- S1 출제기준 -->
+<section id="s1">
+  <h2 class="section-title"><span class="sec-num">1</span> 출제기준 요약</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3 style="color:var(--primary)">📋 절차형 SQL 작성하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>프로시저(PROCEDURE)</li>
+        <li>사용자 정의 함수(FUNCTION)</li>
+        <li>트리거(TRIGGER)</li>
+        <li>커서(CURSOR)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--secondary)">🔍 응용 SQL 작성하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>DDL / DML / DCL / TCL</li>
+        <li>SELECT, JOIN, 서브쿼리, 집계</li>
+        <li>그룹 함수 (ROLLUP, CUBE)</li>
+        <li>윈도우 함수 (RANK, DENSE_RANK)</li>
+        <li>GRANT, REVOKE</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hl warn">
+    <strong>⚠️ 시험 핵심:</strong>
+    SQL <strong>실행 순서</strong>(FROM→WHERE→GROUP BY→HAVING→SELECT→ORDER BY),
+    <strong>JOIN 종류</strong>, <strong>프로시저/함수/트리거 구분</strong>,
+    <strong>RANK vs DENSE_RANK</strong>는 매회 출제됩니다.
+  </div>
+</section>
+
+<!-- S2 핵심 개념 -->
+<section id="s2">
+  <h2 class="section-title"><span class="sec-num">2</span> 핵심 개념</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="tab(this,'t-dcl')">SQL 분류</button>
+    <button class="tab-btn" onclick="tab(this,'t-sel')">SELECT 심화</button>
+    <button class="tab-btn" onclick="tab(this,'t-join')">JOIN</button>
+    <button class="tab-btn" onclick="tab(this,'t-proc')">절차형 SQL</button>
+    <button class="tab-btn" onclick="tab(this,'t-wf')">윈도우/그룹함수</button>
+  </div>
+
+  <!-- SQL 분류 -->
+  <div id="t-dcl" class="tab-content active">
+    <div class="card">
+      <h3>SQL 4대 분류 (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>분류</th><th>영문</th><th>명령어</th><th>특징</th></tr>
+        <tr>
+          <td><strong>DDL</strong></td>
+          <td>Data Definition Language</td>
+          <td><code class="il">CREATE</code> <code class="il">ALTER</code> <code class="il">DROP</code> <code class="il">TRUNCATE</code></td>
+          <td>구조 정의, <strong>자동 COMMIT</strong>, ROLLBACK 불가</td>
+        </tr>
+        <tr>
+          <td><strong>DML</strong></td>
+          <td>Data Manipulation Language</td>
+          <td><code class="il">SELECT</code> <code class="il">INSERT</code> <code class="il">UPDATE</code> <code class="il">DELETE</code></td>
+          <td>데이터 조작, COMMIT/ROLLBACK 가능</td>
+        </tr>
+        <tr>
+          <td><strong>DCL</strong></td>
+          <td>Data Control Language</td>
+          <td><code class="il">GRANT</code> <code class="il">REVOKE</code></td>
+          <td>권한 부여·회수</td>
+        </tr>
+        <tr>
+          <td><strong>TCL</strong></td>
+          <td>Transaction Control Language</td>
+          <td><code class="il">COMMIT</code> <code class="il">ROLLBACK</code> <code class="il">SAVEPOINT</code></td>
+          <td>트랜잭션 관리</td>
+        </tr>
+      </table>
+      <div class="hl warn" style="margin-top:0.75rem;">
+        <strong>DDL은 자동 COMMIT</strong> → ROLLBACK으로 되돌릴 수 없음!<br>
+        TRUNCATE는 DDL, DELETE는 DML이므로 TRUNCATE는 롤백 불가
+      </div>
+    </div>
+    <div class="card">
+      <h3>DDL - 주요 제약조건</h3>
+      <table class="base">
+        <tr><th>제약조건</th><th>설명</th></tr>
+        <tr><td><code class="il">PRIMARY KEY</code></td><td>기본키, NOT NULL + UNIQUE 자동 적용</td></tr>
+        <tr><td><code class="il">FOREIGN KEY</code></td><td>외래키, 참조 무결성 보장</td></tr>
+        <tr><td><code class="il">UNIQUE</code></td><td>중복 불허, NULL은 허용</td></tr>
+        <tr><td><code class="il">NOT NULL</code></td><td>NULL 값 불허</td></tr>
+        <tr><td><code class="il">CHECK</code></td><td>특정 조건 만족 여부 검사</td></tr>
+        <tr><td><code class="il">DEFAULT</code></td><td>값 미입력 시 기본값 설정</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>GRANT / REVOKE 문법 (필수 암기!)</h3>
+      <div class="code-block" data-code="grant"></div>
+      <div class="hl" style="margin-top:0.5rem;">
+        <strong>WITH GRANT OPTION</strong>: 받은 권한을 다른 사용자에게도 부여 가능<br>
+        <strong>CASCADE</strong>: 연쇄 권한 회수 (WITH GRANT OPTION으로 부여한 권한도 회수)
+      </div>
+    </div>
+  </div>
+
+  <!-- SELECT 심화 -->
+  <div id="t-sel" class="tab-content">
+    <div class="card">
+      <h3>SELECT 절 구조 및 실행 순서</h3>
+      <div class="code-block" data-code="select-full"></div>
+      <div class="hl warn" style="margin-top:0.5rem;">
+        실행 순서: <strong>FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY</strong><br>
+        WHERE는 그룹화 <em>전</em> 필터 / HAVING은 그룹화 <em>후</em> 필터
+      </div>
+    </div>
+    <div class="card">
+      <h3>서브쿼리 연산자</h3>
+      <table class="base">
+        <tr><th>연산자</th><th>반환 행</th><th>설명</th></tr>
+        <tr><td><code class="il">= 값</code></td><td>단일행</td><td>단일값 비교</td></tr>
+        <tr><td><code class="il">IN (서브쿼리)</code></td><td>다중행</td><td>목록 내 포함 여부</td></tr>
+        <tr><td><code class="il">ANY (서브쿼리)</code></td><td>다중행</td><td>하나라도 만족하면 TRUE</td></tr>
+        <tr><td><code class="il">ALL (서브쿼리)</code></td><td>다중행</td><td>모두 만족해야 TRUE</td></tr>
+        <tr><td><code class="il">EXISTS (서브쿼리)</code></td><td>다중행</td><td>결과가 하나라도 있으면 TRUE</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>집계 함수</h3>
+      <table class="base">
+        <tr><th>함수</th><th>설명</th><th>NULL 처리</th></tr>
+        <tr><td><code class="il">COUNT(*)</code></td><td>전체 행 수</td><td>NULL 포함</td></tr>
+        <tr><td><code class="il">COUNT(컬럼)</code></td><td>컬럼 행 수</td><td>NULL 제외</td></tr>
+        <tr><td><code class="il">SUM(컬럼)</code></td><td>합계</td><td>NULL 제외</td></tr>
+        <tr><td><code class="il">AVG(컬럼)</code></td><td>평균</td><td>NULL 제외 후 계산</td></tr>
+        <tr><td><code class="il">MAX/MIN</code></td><td>최대/최소</td><td>NULL 제외</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- JOIN -->
+  <div id="t-join" class="tab-content">
+    <div class="card">
+      <h3>JOIN 종류 요약</h3>
+      <table class="base">
+        <tr><th>JOIN 종류</th><th>결과</th><th>키워드</th></tr>
+        <tr><td><strong>INNER JOIN</strong></td><td>양쪽 모두 일치하는 행만</td><td><code class="il">JOIN</code> 또는 <code class="il">INNER JOIN</code></td></tr>
+        <tr><td><strong>LEFT OUTER JOIN</strong></td><td>왼쪽 전부 + 오른쪽 일치 (없으면 NULL)</td><td><code class="il">LEFT JOIN</code></td></tr>
+        <tr><td><strong>RIGHT OUTER JOIN</strong></td><td>오른쪽 전부 + 왼쪽 일치 (없으면 NULL)</td><td><code class="il">RIGHT JOIN</code></td></tr>
+        <tr><td><strong>FULL OUTER JOIN</strong></td><td>양쪽 전부 (없으면 NULL)</td><td><code class="il">FULL OUTER JOIN</code></td></tr>
+        <tr><td><strong>CROSS JOIN</strong></td><td>카티션 곱 (모든 조합)</td><td><code class="il">CROSS JOIN</code></td></tr>
+        <tr><td><strong>SELF JOIN</strong></td><td>같은 테이블을 두 번 사용</td><td>별칭(AS) 활용</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>JOIN SQL 예시</h3>
+      <div class="code-block" data-code="join-sql"></div>
+    </div>
+  </div>
+
+  <!-- 절차형 SQL -->
+  <div id="t-proc" class="tab-content">
+    <div class="card">
+      <h3>프로시저 / 함수 / 트리거 비교 (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>구분</th><th>프로시저</th><th>사용자 정의 함수</th><th>트리거</th></tr>
+        <tr><td>생성</td><td><code class="il">CREATE PROCEDURE</code></td><td><code class="il">CREATE FUNCTION</code></td><td><code class="il">CREATE TRIGGER</code></td></tr>
+        <tr><td>실행</td><td>CALL 또는 EXEC로 <strong>명시적</strong> 호출</td><td>SELECT 등에서 호출</td><td>DML 이벤트 시 <strong>자동</strong> 실행</td></tr>
+        <tr><td>반환값</td><td>없음 (OUT 파라미터 사용)</td><td>반드시 <strong>1개</strong> 반환</td><td>없음</td></tr>
+        <tr><td>DML 사용</td><td>INSERT/UPDATE/DELETE 가능</td><td>불가</td><td>INSERT/UPDATE/DELETE 가능</td></tr>
+        <tr><td>트랜잭션</td><td>가능</td><td>불가</td><td>이벤트에 종속</td></tr>
+      </table>
+      <div class="hl warn" style="margin-top:0.75rem;">
+        <strong>트리거</strong>: BEFORE / AFTER + INSERT, UPDATE, DELETE 이벤트에 자동 실행<br>
+        <strong>함수</strong>: 반드시 값을 반환, SELECT문에서 사용 가능
+      </div>
+    </div>
+  </div>
+
+  <!-- 윈도우/그룹 함수 -->
+  <div id="t-wf" class="tab-content">
+    <div class="card">
+      <h3>RANK vs DENSE_RANK vs ROW_NUMBER (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>함수</th><th>동점 처리</th><th>예시 (90,90,80)</th></tr>
+        <tr>
+          <td><code class="il">RANK()</code></td>
+          <td>동점 같은 순위, 다음 순위 건너뜀</td>
+          <td><strong>1, 1, 3</strong></td>
+        </tr>
+        <tr>
+          <td><code class="il">DENSE_RANK()</code></td>
+          <td>동점 같은 순위, 다음 순위 연속</td>
+          <td><strong>1, 1, 2</strong></td>
+        </tr>
+        <tr>
+          <td><code class="il">ROW_NUMBER()</code></td>
+          <td>무조건 고유 번호</td>
+          <td><strong>1, 2, 3</strong></td>
+        </tr>
+      </table>
+      <div class="code-block" data-code="window"></div>
+    </div>
+    <div class="card">
+      <h3>그룹 함수 (ROLLUP / CUBE)</h3>
+      <table class="base">
+        <tr><th>함수</th><th>설명</th><th>소계 생성</th></tr>
+        <tr>
+          <td><code class="il">ROLLUP(A, B)</code></td>
+          <td>계층적 소계 생성 (A+B → A → 전체)</td>
+          <td>오른쪽→왼쪽 순서로 누적</td>
+        </tr>
+        <tr>
+          <td><code class="il">CUBE(A, B)</code></td>
+          <td>모든 조합의 소계 생성 (A+B, A, B, 전체)</td>
+          <td>가능한 모든 조합</td>
+        </tr>
+        <tr>
+          <td><code class="il">GROUPING SETS</code></td>
+          <td>원하는 그룹 기준을 직접 지정</td>
+          <td>지정한 항목만</td>
+        </tr>
+      </table>
+      <div class="code-block" data-code="rollup"></div>
+    </div>
+  </div>
+</section>
+
+<!-- S3 플래시카드 -->
+<section id="s3">
+  <h2 class="section-title"><span class="sec-num">3</span> 시험용 키워드 플래시카드</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:0.85rem;">카드를 클릭하면 정의가 나옵니다.</p>
+  <div class="fc-grid" id="fc-container"></div>
+</section>
+
+<!-- S4 실행 순서 -->
+<section id="s4">
+  <h2 class="section-title"><span class="sec-num">4</span> SQL 실행 순서 시각화</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:1rem;">각 절을 클릭하면 실행 시점과 역할이 나타납니다.</p>
+    <div class="sql-order" id="sql-order-container"></div>
+    <div class="sql-detail" id="sql-detail">절을 클릭하면 설명이 나타납니다.</div>
+    <div class="hl" style="margin-top:0.85rem;">
+      <strong>암기법:</strong> <strong>프위그헤셀오</strong><br>
+      <strong>프</strong>롬(FROM) → <strong>위</strong>어(WHERE) → <strong>그</strong>룹바이(GROUP BY) → <strong>헤</strong>이빙(HAVING) → <strong>셀</strong>렉트(SELECT) → <strong>오</strong>더바이(ORDER BY)
+    </div>
+  </div>
+</section>
+
+<!-- S5 JOIN 시각화 -->
+<section id="s5">
+  <h2 class="section-title"><span class="sec-num">5</span> JOIN 결과 시각화</h2>
+  <div class="card">
+    <div class="join-tables">
+      <div>
+        <div class="join-table-label">📋 학생 테이블 (왼쪽)</div>
+        <table class="join-t">
+          <tr><th>학번</th><th>이름</th></tr>
+          <tr><td>001</td><td>홍길동</td></tr>
+          <tr><td>002</td><td>김철수</td></tr>
+          <tr><td>003</td><td>이영희</td></tr>
+        </table>
+      </div>
+      <div>
+        <div class="join-table-label">📋 수강 테이블 (오른쪽)</div>
+        <table class="join-t">
+          <tr><th>학번</th><th>과목</th></tr>
+          <tr><td>001</td><td>데이터베이스</td></tr>
+          <tr><td>002</td><td>운영체제</td></tr>
+          <tr><td>004</td><td>네트워크</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="join-btns">
+      <button class="join-btn active" onclick="showJoin('inner',this)">INNER JOIN</button>
+      <button class="join-btn" onclick="showJoin('left',this)">LEFT OUTER JOIN</button>
+      <button class="join-btn" onclick="showJoin('right',this)">RIGHT OUTER JOIN</button>
+      <button class="join-btn" onclick="showJoin('full',this)">FULL OUTER JOIN</button>
+    </div>
+    <div class="join-result-label" id="join-label">결과: INNER JOIN</div>
+    <div id="join-result"></div>
+    <div id="join-desc" style="margin-top:0.75rem;font-size:0.84rem;color:var(--gray);"></div>
+  </div>
+</section>
+
+<!-- S6 코드 예제 -->
+<section id="s6">
+  <h2 class="section-title"><span class="sec-num">6</span> 핵심 코드 예제</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="tab(this,'c-select')">SELECT</button>
+    <button class="tab-btn" onclick="tab(this,'c-subq')">서브쿼리</button>
+    <button class="tab-btn" onclick="tab(this,'c-ddl')">DDL</button>
+    <button class="tab-btn" onclick="tab(this,'c-proc')">프로시저</button>
+    <button class="tab-btn" onclick="tab(this,'c-func')">함수</button>
+    <button class="tab-btn" onclick="tab(this,'c-trig')">트리거</button>
+  </div>
+  <div id="c-select" class="tab-content active card"><div class="code-block" data-code="select-ex"></div></div>
+  <div id="c-subq"   class="tab-content card"><div class="code-block" data-code="subq-ex"></div></div>
+  <div id="c-ddl"    class="tab-content card"><div class="code-block" data-code="ddl-ex"></div></div>
+  <div id="c-proc"   class="tab-content card"><div class="code-block" data-code="proc-ex"></div></div>
+  <div id="c-func"   class="tab-content card"><div class="code-block" data-code="func-ex"></div></div>
+  <div id="c-trig"   class="tab-content card"><div class="code-block" data-code="trig-ex"></div></div>
+</section>
+
+<!-- S7 문제 풀이 -->
+<section id="s7">
+  <h2 class="section-title"><span class="sec-num">7</span> 대표 문제 유형</h2>
+  <div id="oq-container"></div>
+  <div class="score-box" id="oq-score">
+    <div class="score-num" id="oq-snum">0/0</div>
+    <p style="color:var(--gray);margin-top:0.4rem;" id="oq-smsg"></p>
+  </div>
+  <button class="btn btn-primary" style="margin-top:1rem;" onclick="resetOQ()">다시 풀기</button>
+</section>
+
+<!-- S8 미니 퀴즈 -->
+<section id="s8">
+  <h2 class="section-title"><span class="sec-num">8</span> 미니 퀴즈</h2>
+  <div id="mq-container"></div>
+  <button class="btn btn-blue" style="margin-top:0.85rem;" onclick="checkMQ()">채점하기</button>
+  <div id="mq-result" style="display:none;margin-top:1rem;"></div>
+</section>
+
+<!-- S9 오답노트 -->
+<section id="s9">
+  <h2 class="section-title"><span class="sec-num">9</span> 오답 노트</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.7rem;">틀린 문제나 헷갈리는 개념을 기록하세요. (자동 저장)</p>
+    <textarea class="memo" id="memo" placeholder="예) SQL 실행순서: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY&#10;예) DDL은 자동 COMMIT → ROLLBACK 불가 (TRUNCATE 포함)&#10;예) RANK: 1,1,3 / DENSE_RANK: 1,1,2 / ROW_NUMBER: 1,2,3&#10;예) 상향식=드라이버, 하향식=스텁 (← 헷갈리면 여기 기록)&#10;예) GRANT 권한 ON 객체 TO 사용자 WITH GRANT OPTION"></textarea>
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.5rem;">
+      <button class="btn btn-primary" onclick="saveMemo()">저장</button>
+      <span id="memo-ok" style="font-size:0.8rem;color:#059669;display:none;">✓ 저장됨</span>
+    </div>
+  </div>
+</section>
+
+</div>
+<button class="scroll-top" id="stbtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ── 코드 블록 데이터 ──────────────────────────────────────
+const CODE = {
+  'grant': '<span class="cm">-- 권한 부여</span>\n<span class="kw">GRANT</span> <span class="fn">SELECT</span>, <span class="fn">INSERT</span>, <span class="fn">UPDATE</span>\n<span class="kw">ON</span> <span class="tb">학생</span>\n<span class="kw">TO</span> user1\n<span class="kw">WITH GRANT OPTION</span>;\n\n<span class="cm">-- 권한 회수</span>\n<span class="kw">REVOKE</span> <span class="fn">SELECT</span>\n<span class="kw">ON</span> <span class="tb">학생</span>\n<span class="kw">FROM</span> user1 <span class="kw">CASCADE</span>;',
+
+  'select-full': '<span class="kw">SELECT</span>   <span class="cm">-- ⑤ 출력할 컬럼 선택</span>\n    부서, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> 인원수\n<span class="kw">FROM</span>     <span class="cm">-- ① 테이블 선택</span>\n    <span class="tb">직원</span>\n<span class="kw">WHERE</span>    <span class="cm">-- ② 행 필터 (그룹화 전)</span>\n    입사년도 <span class="op">&gt;=</span> <span class="num">2020</span>\n<span class="kw">GROUP BY</span> <span class="cm">-- ③ 그룹화</span>\n    부서\n<span class="kw">HAVING</span>   <span class="cm">-- ④ 그룹 필터 (그룹화 후)</span>\n    <span class="fn">COUNT</span>(*) <span class="op">&gt;=</span> <span class="num">3</span>\n<span class="kw">ORDER BY</span> <span class="cm">-- ⑥ 정렬</span>\n    인원수 <span class="kw">DESC</span>;',
+
+  'join-sql': '<span class="cm">-- INNER JOIN (일치하는 행만)</span>\n<span class="kw">SELECT</span> s.학번, s.이름, c.과목\n<span class="kw">FROM</span> <span class="tb">학생</span> s\n<span class="kw">INNER JOIN</span> <span class="tb">수강</span> c <span class="kw">ON</span> s.학번 = c.학번;\n\n<span class="cm">-- LEFT OUTER JOIN (왼쪽 전부)</span>\n<span class="kw">SELECT</span> s.학번, s.이름, c.과목\n<span class="kw">FROM</span> <span class="tb">학생</span> s\n<span class="kw">LEFT OUTER JOIN</span> <span class="tb">수강</span> c <span class="kw">ON</span> s.학번 = c.학번;\n\n<span class="cm">-- FULL OUTER JOIN (양쪽 전부)</span>\n<span class="kw">SELECT</span> s.학번, s.이름, c.과목\n<span class="kw">FROM</span> <span class="tb">학생</span> s\n<span class="kw">FULL OUTER JOIN</span> <span class="tb">수강</span> c <span class="kw">ON</span> s.학번 = c.학번;',
+
+  'window': '<span class="kw">SELECT</span>\n    이름, 점수,\n    <span class="fn">RANK</span>()        <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> 점수 <span class="kw">DESC</span>) <span class="kw">AS</span> rank_순위,\n    <span class="fn">DENSE_RANK</span>()  <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> 점수 <span class="kw">DESC</span>) <span class="kw">AS</span> dense_순위,\n    <span class="fn">ROW_NUMBER</span>()  <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> 점수 <span class="kw">DESC</span>) <span class="kw">AS</span> row_번호\n<span class="kw">FROM</span> <span class="tb">시험결과</span>;\n\n<span class="cm">-- 결과 예시 (90, 90, 80점인 경우)</span>\n<span class="cm">-- 이름   점수  rank  dense  row</span>\n<span class="cm">-- 홍길동  90    1     1      1</span>\n<span class="cm">-- 김철수  90    1     1      2</span>\n<span class="cm">-- 이영희  80    3     2      3</span>',
+
+  'rollup': '<span class="cm">-- ROLLUP: 계층적 소계</span>\n<span class="kw">SELECT</span> 부서, 직급, <span class="fn">SUM</span>(급여)\n<span class="kw">FROM</span> <span class="tb">직원</span>\n<span class="kw">GROUP BY ROLLUP</span>(부서, 직급);\n<span class="cm">-- 소계 순서: (부서+직급) → (부서) → (전체합계)</span>\n\n<span class="cm">-- CUBE: 모든 조합 소계</span>\n<span class="kw">SELECT</span> 부서, 직급, <span class="fn">SUM</span>(급여)\n<span class="kw">FROM</span> <span class="tb">직원</span>\n<span class="kw">GROUP BY CUBE</span>(부서, 직급);\n<span class="cm">-- 소계 순서: (부서+직급), (부서), (직급), (전체합계)</span>',
+
+  'select-ex': '<span class="cm">-- 기본 SELECT + WHERE + ORDER BY</span>\n<span class="kw">SELECT</span> 이름, 학과, 학점\n<span class="kw">FROM</span> <span class="tb">학생</span>\n<span class="kw">WHERE</span> 학점 <span class="op">&gt;=</span> <span class="num">3.5</span>\n<span class="kw">ORDER BY</span> 학점 <span class="kw">DESC</span>;\n\n<span class="cm">-- GROUP BY + HAVING</span>\n<span class="kw">SELECT</span> 학과, <span class="fn">AVG</span>(학점) <span class="kw">AS</span> 평균학점, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> 학생수\n<span class="kw">FROM</span> <span class="tb">학생</span>\n<span class="kw">GROUP BY</span> 학과\n<span class="kw">HAVING</span> <span class="fn">AVG</span>(학점) <span class="op">&gt;=</span> <span class="num">3.0</span>\n<span class="kw">ORDER BY</span> 평균학점 <span class="kw">DESC</span>;\n\n<span class="cm">-- DISTINCT</span>\n<span class="kw">SELECT DISTINCT</span> 학과\n<span class="kw">FROM</span> <span class="tb">학생</span>;',
+
+  'subq-ex': '<span class="cm">-- 단일행 서브쿼리 (= 사용)</span>\n<span class="kw">SELECT</span> 이름, 학점\n<span class="kw">FROM</span> <span class="tb">학생</span>\n<span class="kw">WHERE</span> 학점 <span class="op">=</span> (<span class="kw">SELECT MAX</span>(학점) <span class="kw">FROM</span> <span class="tb">학생</span>);\n\n<span class="cm">-- 다중행 서브쿼리 (IN 사용)</span>\n<span class="kw">SELECT</span> 이름\n<span class="kw">FROM</span> <span class="tb">학생</span>\n<span class="kw">WHERE</span> 학번 <span class="kw">IN</span>\n    (<span class="kw">SELECT</span> 학번 <span class="kw">FROM</span> <span class="tb">수강</span> <span class="kw">WHERE</span> 과목 <span class="op">=</span> <span class="str">\'데이터베이스\'</span>);\n\n<span class="cm">-- EXISTS 서브쿼리</span>\n<span class="kw">SELECT</span> 이름\n<span class="kw">FROM</span> <span class="tb">학생</span> s\n<span class="kw">WHERE EXISTS</span>\n    (<span class="kw">SELECT</span> <span class="num">1</span> <span class="kw">FROM</span> <span class="tb">수강</span> c <span class="kw">WHERE</span> c.학번 <span class="op">=</span> s.학번);\n\n<span class="cm">-- 인라인 뷰 (FROM 절 서브쿼리)</span>\n<span class="kw">SELECT</span> 학과, 평균학점\n<span class="kw">FROM</span>\n    (<span class="kw">SELECT</span> 학과, <span class="fn">AVG</span>(학점) <span class="kw">AS</span> 평균학점\n     <span class="kw">FROM</span> <span class="tb">학생</span>\n     <span class="kw">GROUP BY</span> 학과) <span class="kw">AS</span> dept_avg\n<span class="kw">WHERE</span> 평균학점 <span class="op">&gt;=</span> <span class="num">3.0</span>;',
+
+  'ddl-ex': '<span class="cm">-- 테이블 생성</span>\n<span class="kw">CREATE TABLE</span> <span class="tb">학생</span> (\n    학번    <span class="fn">CHAR</span>(<span class="num">10</span>)     <span class="kw">PRIMARY KEY</span>,\n    이름    <span class="fn">VARCHAR</span>(<span class="num">20</span>) <span class="kw">NOT NULL</span>,\n    학과    <span class="fn">VARCHAR</span>(<span class="num">30</span>),\n    학점    <span class="fn">DECIMAL</span>(<span class="num">3</span>,<span class="num">2</span>) <span class="kw">DEFAULT</span> <span class="num">0.0</span>,\n    <span class="kw">CONSTRAINT</span> chk_학점 <span class="kw">CHECK</span> (학점 <span class="kw">BETWEEN</span> <span class="num">0.0</span> <span class="kw">AND</span> <span class="num">4.5</span>)\n);\n\n<span class="cm">-- 컬럼 추가</span>\n<span class="kw">ALTER TABLE</span> <span class="tb">학생</span> <span class="kw">ADD</span> 전화번호 <span class="fn">VARCHAR</span>(<span class="num">15</span>);\n\n<span class="cm">-- 테이블 삭제 (구조+데이터 모두)</span>\n<span class="kw">DROP TABLE</span> <span class="tb">학생</span>;\n\n<span class="cm">-- 데이터만 삭제 (구조 유지, 롤백 불가)</span>\n<span class="kw">TRUNCATE TABLE</span> <span class="tb">학생</span>;',
+
+  'proc-ex': '<span class="cm">-- 프로시저: CALL로 명시적 호출, 반환값 없음</span>\n<span class="kw">CREATE OR REPLACE PROCEDURE</span> <span class="fn">학점_업데이트</span>(\n    p_학번  <span class="kw">IN</span>  <span class="fn">CHAR</span>,\n    p_학점  <span class="kw">IN</span>  <span class="fn">NUMBER</span>\n)\n<span class="kw">IS</span>\n<span class="kw">BEGIN</span>\n    <span class="kw">UPDATE</span> <span class="tb">학생</span>\n    <span class="kw">SET</span>    학점 <span class="op">=</span> p_학점\n    <span class="kw">WHERE</span>  학번 <span class="op">=</span> p_학번;\n\n    <span class="kw">COMMIT</span>;\n<span class="kw">EXCEPTION</span>\n    <span class="kw">WHEN OTHERS THEN</span>\n        <span class="kw">ROLLBACK</span>;\n<span class="kw">END</span>;\n<span class="op">/</span>\n\n<span class="cm">-- 호출</span>\n<span class="kw">CALL</span> <span class="fn">학점_업데이트</span>(<span class="str">\'001\'</span>, <span class="num">4.5</span>);',
+
+  'func-ex': '<span class="cm">-- 사용자 정의 함수: 반드시 값 반환, SELECT에서 사용</span>\n<span class="kw">CREATE OR REPLACE FUNCTION</span> <span class="fn">학점_등급</span>(\n    p_학점 <span class="kw">IN</span> <span class="fn">NUMBER</span>\n) <span class="kw">RETURN VARCHAR2</span>\n<span class="kw">IS</span>\n    v_등급 <span class="fn">VARCHAR2</span>(<span class="num">2</span>);\n<span class="kw">BEGIN</span>\n    <span class="kw">IF</span>    p_학점 <span class="op">&gt;=</span> <span class="num">4.0</span> <span class="kw">THEN</span> v_등급 <span class="op">:=</span> <span class="str">\'A\'</span>;\n    <span class="kw">ELSIF</span> p_학점 <span class="op">&gt;=</span> <span class="num">3.0</span> <span class="kw">THEN</span> v_등급 <span class="op">:=</span> <span class="str">\'B\'</span>;\n    <span class="kw">ELSE</span>                      v_등급 <span class="op">:=</span> <span class="str">\'C\'</span>;\n    <span class="kw">END IF</span>;\n    <span class="kw">RETURN</span> v_등급;\n<span class="kw">END</span>;\n<span class="op">/</span>\n\n<span class="cm">-- 사용</span>\n<span class="kw">SELECT</span> 이름, <span class="fn">학점_등급</span>(학점) <span class="kw">AS</span> 등급\n<span class="kw">FROM</span> <span class="tb">학생</span>;',
+
+  'trig-ex': '<span class="cm">-- 트리거: DML 이벤트 발생 시 자동 실행</span>\n<span class="kw">CREATE OR REPLACE TRIGGER</span> <span class="fn">학생_삭제_로그</span>\n<span class="kw">AFTER DELETE ON</span> <span class="tb">학생</span>   <span class="cm">-- BEFORE/AFTER + INSERT/UPDATE/DELETE</span>\n<span class="kw">FOR EACH ROW</span>              <span class="cm">-- 행 단위 트리거</span>\n<span class="kw">BEGIN</span>\n    <span class="cm">-- :OLD.컬럼 → 삭제 전 값</span>\n    <span class="cm">-- :NEW.컬럼 → 삽입/수정 후 값</span>\n    <span class="kw">INSERT INTO</span> <span class="tb">학생_로그</span>(학번, 이름, 삭제일시)\n    <span class="kw">VALUES</span> (:OLD.학번, :OLD.이름, <span class="fn">SYSDATE</span>);\n<span class="kw">END</span>;\n<span class="op">/</span>',
+};
+
+// ── 플래시카드 데이터 ──────────────────────────────────────
+const fcData = [
+  { f:'DDL',              b:'Data Definition Language\nCREATE, ALTER, DROP, TRUNCATE\n자동 COMMIT, 롤백 불가' },
+  { f:'DML',              b:'Data Manipulation Language\nSELECT, INSERT, UPDATE, DELETE\nCOMMIT/ROLLBACK 가능' },
+  { f:'DCL',              b:'Data Control Language\nGRANT, REVOKE\n권한 부여·회수' },
+  { f:'TCL',              b:'Transaction Control Language\nCOMMIT, ROLLBACK, SAVEPOINT\n트랜잭션 관리' },
+  { f:'RANK()',            b:'동점은 같은 순위\n다음 순위를 건너뜀\n예: 1,1,3' },
+  { f:'DENSE_RANK()',      b:'동점은 같은 순위\n다음 순위는 연속\n예: 1,1,2' },
+  { f:'ROW_NUMBER()',      b:'무조건 고유 번호 부여\n동점 구분\n예: 1,2,3' },
+  { f:'ROLLUP',           b:'계층적 소계 생성\nROLLUP(A,B) → A+B, A, 전체\n오른쪽→왼쪽 누적' },
+  { f:'CUBE',             b:'모든 조합 소계 생성\nCUBE(A,B) → A+B, A, B, 전체\n가능한 모든 조합' },
+  { f:'INNER JOIN',       b:'두 테이블에서\n일치하는 행만 반환\n교집합' },
+  { f:'LEFT OUTER JOIN',  b:'왼쪽 테이블 전부\n+ 오른쪽 일치 행\n없으면 NULL' },
+  { f:'프로시저',          b:'CALL로 명시적 호출\n반환값 없음 (OUT 파라미터)\nDML/트랜잭션 사용 가능' },
+  { f:'트리거',            b:'DML 이벤트 시 자동 실행\nBEFORE/AFTER 지정\n:OLD, :NEW 값 참조' },
+  { f:'사용자 정의 함수',   b:'반드시 값 1개 반환\nSELECT에서 사용\nDML/트랜잭션 불가' },
+  { f:'TRUNCATE vs DELETE', b:'TRUNCATE: DDL, 자동COMMIT, 롤백불가\nDELETE: DML, 롤백가능\n둘 다 데이터 삭제' },
+  { f:'WITH GRANT OPTION', b:'받은 권한을\n다른 사용자에게도 부여 가능\nREVOKE CASCADE로 연쇄 회수' },
+];
+
+// ── SQL 실행 순서 데이터 ──────────────────────────────────
+const sqlSteps = [
+  { label:'FROM',     cls:'ss1', desc:'<strong>① FROM</strong>: 데이터를 가져올 테이블을 지정합니다. JOIN이 있으면 테이블 결합도 이 단계에서 수행됩니다.' },
+  { label:'WHERE',    cls:'ss2', desc:'<strong>② WHERE</strong>: 행(row) 단위로 조건 필터링합니다. 그룹화 이전 단계이므로 집계함수(COUNT, SUM 등)를 사용할 수 없습니다.' },
+  { label:'GROUP BY', cls:'ss3', desc:'<strong>③ GROUP BY</strong>: 지정된 컬럼을 기준으로 행을 그룹화합니다. 집계함수가 각 그룹에 적용됩니다.' },
+  { label:'HAVING',   cls:'ss4', desc:'<strong>④ HAVING</strong>: 그룹화 이후 그룹에 조건을 적용합니다. 집계함수를 사용할 수 있습니다. (WHERE와 차이점!)' },
+  { label:'SELECT',   cls:'ss5', desc:'<strong>⑤ SELECT</strong>: 출력할 컬럼을 선택하고 별칭(AS)을 지정합니다. DISTINCT도 이 단계에서 처리됩니다.' },
+  { label:'ORDER BY', cls:'ss6', desc:'<strong>⑥ ORDER BY</strong>: 최종 결과를 정렬합니다. ASC(오름차순 기본) 또는 DESC(내림차순)를 지정합니다.' },
+];
+
+// ── JOIN 데이터 ───────────────────────────────────────────
+const joinData = {
+  inner: {
+    label:'INNER JOIN',
+    desc:'두 테이블에서 ON 조건이 일치하는 행만 반환합니다. (교집합)',
+    rows:[
+      ['001','홍길동','데이터베이스'],
+      ['002','김철수','운영체제'],
+    ],
+  },
+  left: {
+    label:'LEFT OUTER JOIN',
+    desc:'왼쪽(학생) 테이블의 모든 행을 반환합니다. 오른쪽(수강)에 없으면 NULL로 채웁니다.',
+    rows:[
+      ['001','홍길동','데이터베이스'],
+      ['002','김철수','운영체제'],
+      ['003','이영희','NULL'],
+    ],
+  },
+  right: {
+    label:'RIGHT OUTER JOIN',
+    desc:'오른쪽(수강) 테이블의 모든 행을 반환합니다. 왼쪽(학생)에 없으면 NULL로 채웁니다.',
+    rows:[
+      ['001','홍길동','데이터베이스'],
+      ['002','김철수','운영체제'],
+      ['004','NULL','네트워크'],
+    ],
+  },
+  full: {
+    label:'FULL OUTER JOIN',
+    desc:'양쪽 테이블의 모든 행을 반환합니다. 상대 테이블에 없으면 NULL로 채웁니다. (합집합)',
+    rows:[
+      ['001','홍길동','데이터베이스'],
+      ['002','김철수','운영체제'],
+      ['003','이영희','NULL'],
+      ['004','NULL','네트워크'],
+    ],
+  },
+};
+
+// ── 대표 문제 데이터 ─────────────────────────────────────
+const oqData = [
+  {
+    q:'다음 SQL 명령어 중 DDL에 해당하지 않는 것은?',
+    opts:['CREATE','ALTER','TRUNCATE','DELETE'],
+    ans:3,
+    exp:'DDL: CREATE, ALTER, DROP, TRUNCATE → 자동 COMMIT, 롤백 불가\nDML: SELECT, INSERT, UPDATE, DELETE → 롤백 가능\nDELETE는 DML입니다.',
+  },
+  {
+    q:'SQL 문장의 실행 순서로 올바른 것은?',
+    opts:[
+      'SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY',
+      'FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY',
+      'FROM → GROUP BY → WHERE → HAVING → SELECT → ORDER BY',
+      'WHERE → FROM → GROUP BY → HAVING → SELECT → ORDER BY',
+    ],
+    ans:1,
+    exp:'SQL 실행 순서: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY\n암기: 프(FROM)위(WHERE)그(GROUP BY)헤(HAVING)셀(SELECT)오(ORDER BY)',
+  },
+  {
+    q:'다음 중 RANK()와 DENSE_RANK()의 차이를 올바르게 설명한 것은?',
+    opts:[
+      'RANK는 NULL을 포함하고, DENSE_RANK는 NULL을 제외한다',
+      'RANK는 동점 시 다음 순위를 건너뛰고, DENSE_RANK는 연속 순위를 부여한다',
+      'RANK는 파티션별 순위를 매기고, DENSE_RANK는 전체 순위를 매긴다',
+      'RANK는 내림차순, DENSE_RANK는 오름차순만 지원한다',
+    ],
+    ans:1,
+    exp:'점수가 90, 90, 80인 경우:\nRANK():       1, 1, 3  (동점 후 3으로 건너뜀)\nDENSE_RANK(): 1, 1, 2  (동점 후 2로 연속)\nROW_NUMBER(): 1, 2, 3  (무조건 고유 번호)',
+  },
+  {
+    q:'GRANT 명령어에서 부여받은 권한을 다른 사용자에게 재부여할 수 있도록 하는 옵션은?',
+    opts:['WITH CHECK OPTION','CASCADE','WITH GRANT OPTION','ADMIN OPTION'],
+    ans:2,
+    exp:'WITH GRANT OPTION: 부여받은 권한을 다른 사용자에게도 부여할 수 있음\nREVOKE 시 CASCADE를 사용하면 연쇄 회수 가능\nGRANT 권한명 ON 객체 TO 사용자 WITH GRANT OPTION;',
+  },
+  {
+    q:'트리거(TRIGGER)에 대한 설명으로 옳지 않은 것은?',
+    opts:[
+      'INSERT, UPDATE, DELETE 이벤트에 반응하여 자동 실행된다',
+      'CALL 명령어로 명시적으로 호출한다',
+      'BEFORE 또는 AFTER를 지정할 수 있다',
+      ':OLD와 :NEW를 통해 변경 전후 값을 참조할 수 있다',
+    ],
+    ans:1,
+    exp:'트리거는 DML 이벤트 발생 시 자동으로 실행됩니다. CALL로 호출하는 것은 프로시저입니다.\n• 프로시저: CALL로 명시적 호출\n• 트리거: 이벤트 발생 시 자동 실행',
+  },
+  {
+    q:'다음 서브쿼리에서 사용된 연산자 중 성격이 다른 하나는?',
+    opts:['IN','ANY','ALL','='],
+    ans:3,
+    exp:'IN, ANY, ALL: 다중행(Multiple Row) 서브쿼리 연산자\n=, <, >, <=, >=: 단일행(Single Row) 서브쿼리 연산자\n단일행 연산자는 서브쿼리 결과가 반드시 1행이어야 합니다.',
+  },
+  {
+    q:'LEFT OUTER JOIN에 대한 설명으로 옳은 것은?',
+    opts:[
+      '오른쪽 테이블의 모든 행을 반환한다',
+      '두 테이블에서 일치하는 행만 반환한다',
+      '왼쪽 테이블의 모든 행과 오른쪽 테이블의 일치 행을 반환한다',
+      '두 테이블의 합집합을 반환한다',
+    ],
+    ans:2,
+    exp:'LEFT OUTER JOIN: 왼쪽 테이블의 모든 행 반환, 오른쪽에 없으면 NULL\n오른쪽 전부: RIGHT OUTER JOIN\n양쪽 전부:   FULL OUTER JOIN\n일치만:      INNER JOIN',
+  },
+  {
+    q:'ROLLUP(A, B)를 사용할 때 생성되는 소계 그룹의 순서로 올바른 것은?',
+    opts:[
+      '(A) → (A, B) → 전체',
+      '(A, B) → (A) → 전체',
+      '(B) → (A, B) → 전체',
+      '(A, B) → (B) → 전체',
+    ],
+    ans:1,
+    exp:'ROLLUP(A, B) 소계 순서: (A+B) → (A) → 전체합계\n오른쪽 컬럼부터 순차적으로 제거하며 소계 생성\nCUBE(A, B): (A+B), (A만), (B만), 전체 — 모든 조합',
+  },
+];
+
+// ── 미니 퀴즈 데이터 ─────────────────────────────────────
+const mqData = [
+  { q:'DELETE와 달리 ROLLBACK이 불가능한 삭제 명령어는?', opts:['DROP','TRUNCATE','REMOVE','CLEAR'], ans:1 },
+  { q:'COMMIT과 ROLLBACK을 관리하는 SQL 분류는?', opts:['DDL','DML','DCL','TCL'], ans:3 },
+  { q:'SQL 실행 순서에서 FROM 다음으로 실행되는 절은?', opts:['SELECT','GROUP BY','WHERE','HAVING'], ans:2 },
+  { q:'다중행 서브쿼리 연산자가 아닌 것은?', opts:['IN','ANY','ALL','='], ans:3 },
+  { q:'90, 90, 80점일 때 RANK()의 결과는?', opts:['1,1,2','1,2,3','1,1,3','2,2,3'], ans:2 },
+  { q:'DML 이벤트 발생 시 자동으로 실행되는 객체는?', opts:['프로시저','함수','트리거','커서'], ans:2 },
+  { q:'모든 조합의 소계를 생성하는 그룹 함수는?', opts:['ROLLUP','CUBE','GROUPING SETS','PIVOT'], ans:1 },
+  { q:'사용자 정의 함수가 반드시 가져야 하는 특성은?', opts:['DML 사용','반환값 1개','CALL로 호출','트랜잭션 지원'], ans:1 },
+];
+
+// ── 렌더링 ────────────────────────────────────────────────
+function renderCodeBlocks() {
+  document.querySelectorAll('.code-block[data-code]').forEach(el => {
+    el.innerHTML = CODE[el.dataset.code] || '';
+  });
+}
+
+function renderFC() {
+  document.getElementById('fc-container').innerHTML = fcData.map(c =>
+    `<div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-inner">
+        <div class="fc-front">${c.f.replace(/\n/g, '<br>')}</div>
+        <div class="fc-back">${c.b.replace(/\n/g, '<br>')}</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function renderSqlOrder() {
+  document.getElementById('sql-order-container').innerHTML = sqlSteps.map((s, i) =>
+    `${i > 0 ? '<span class="sql-arrow">→</span>' : ''}
+    <div class="sql-step ${s.cls}" onclick="showSqlStep(${i})" id="ss-${i}">${s.label}</div>`
+  ).join('');
+}
+
+let activeSqlStep = -1;
+function showSqlStep(i) {
+  sqlSteps.forEach((_, j) => {
+    const el = document.getElementById(`ss-${j}`);
+    if (el) el.classList.toggle('active', j === i);
+  });
+  const detail = document.getElementById('sql-detail');
+  if (activeSqlStep === i) { detail.textContent = '절을 클릭하면 설명이 나타납니다.'; activeSqlStep = -1; return; }
+  detail.innerHTML = sqlSteps[i].desc;
+  activeSqlStep = i;
+}
+
+function showJoin(type, btn) {
+  document.querySelectorAll('.join-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const data = joinData[type];
+  document.getElementById('join-label').textContent = '결과: ' + data.label;
+  document.getElementById('join-result').innerHTML =
+    `<table class="join-t" style="max-width:380px;">
+      <tr><th>학번</th><th>이름</th><th>과목</th></tr>
+      ${data.rows.map(r =>
+        `<tr>${r.map(cell => `<td class="${cell === 'NULL' ? 'null-cell' : ''}">${cell}</td>`).join('')}</tr>`
+      ).join('')}
+    </table>`;
+  document.getElementById('join-desc').textContent = data.desc;
+}
+
+let oqAnswered = {}, oqSelected = {};
+function renderOQ() {
+  oqAnswered = {}; oqSelected = {};
+  document.getElementById('oq-container').innerHTML = oqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi + 1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<div class="opt" onclick="pickOQ(${qi},${oi},this)" id="oq-${qi}-${oi}">${o}</div>`
+      ).join('')}</div>
+      <div class="exp" id="exp-${qi}"><div class="exp-inner">${q.exp.replace(/\n/g, '<br>')}</div></div>
+    </div>`
+  ).join('');
+  document.getElementById('oq-score').style.display = 'none';
+}
+
+function pickOQ(qi, oi, el) {
+  if (oqAnswered[qi]) return;
+  oqAnswered[qi] = true; oqSelected[qi] = oi;
+  const correct = oqData[qi].ans;
+  document.getElementById(`oq-${qi}-${correct}`).classList.add('correct');
+  if (oi !== correct) el.classList.add('wrong');
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  if (Object.keys(oqAnswered).length === oqData.length) {
+    const sc = oqData.filter((_, i) => oqSelected[i] === oqData[i].ans).length;
+    document.getElementById('oq-snum').textContent = `${sc}/${oqData.length}`;
+    document.getElementById('oq-smsg').textContent = sc === oqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 오답노트에 기록하세요!';
+    document.getElementById('oq-score').style.display = 'block';
+  }
+}
+
+function resetOQ() { renderOQ(); }
+
+function renderMQ() {
+  document.getElementById('mq-container').innerHTML = mqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi + 1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<label style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;background:#f8fafc;border:2px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.84rem;" id="mql-${qi}-${oi}">
+          <input type="radio" name="mq${qi}" value="${oi}" style="margin:0;flex-shrink:0;">${o}
+        </label>`
+      ).join('')}</div>
+    </div>`
+  ).join('');
+  document.getElementById('mq-result').style.display = 'none';
+}
+
+function checkMQ() {
+  let sc = 0;
+  mqData.forEach((q, qi) => {
+    const sel = document.querySelector(`input[name="mq${qi}"]:checked`);
+    const v = sel ? +sel.value : -1;
+    const lbl = id => document.getElementById(`mql-${qi}-${id}`);
+    lbl(q.ans).style.cssText += ';border-color:#059669;background:#d1fae5;';
+    if (v !== -1 && v !== q.ans) lbl(v).style.cssText += ';border-color:#dc2626;background:#fee2e2;';
+    if (v === q.ans) sc++;
+  });
+  const r = document.getElementById('mq-result');
+  r.style.display = 'block';
+  r.innerHTML = `<div class="card" style="text-align:center;">
+    <div class="score-num">${sc}/${mqData.length}</div>
+    <p style="color:var(--gray);margin-top:0.4rem;">${sc === mqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 다시 복습하세요!'}</p>
+  </div>`;
+}
+
+function tab(btn, id) {
+  btn.closest('section').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.closest('section').querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+  renderCodeBlocks();
+}
+
+function saveMemo() {
+  localStorage.setItem('sql_memo', document.getElementById('memo').value);
+  const ok = document.getElementById('memo-ok');
+  ok.style.display = 'inline';
+  setTimeout(() => { ok.style.display = 'none'; }, 2000);
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('stbtn').classList.toggle('show', window.scrollY > 300);
+  let cur = '';
+  document.querySelectorAll('section[id]').forEach(s => { if (window.scrollY >= s.offsetTop - 110) cur = s.id; });
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderCodeBlocks();
+  renderFC();
+  renderSqlOrder();
+  renderOQ();
+  renderMQ();
+  showJoin('inner', document.querySelector('.join-btn'));
+  const m = localStorage.getItem('sql_memo');
+  if (m) document.getElementById('memo').value = m;
+  document.getElementById('memo').addEventListener('input', () =>
+    localStorage.setItem('sql_memo', document.getElementById('memo').value)
+  );
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>07 OS 계산 문제 — Level-2</title>
+<style>
+:root {
+  --dark: #0f172a; --gray: #64748b; --light: #f8fafc; --border: #e2e8f0;
+  --accent: #b45309; --accent2: #d97706;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.7; }
+
+.hero { background: linear-gradient(135deg, #1c1107 0%, #2d1f06 60%, #44330a 100%); color: white; padding: 2.5rem 1.5rem 2rem; }
+.hero-inner { max-width: 900px; margin: 0 auto; }
+.hero-back { font-size: 0.78rem; color: #a8a29e; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; margin-bottom: 1rem; }
+.hero-back:hover { color: white; }
+.hero h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.3rem; }
+.hero p { color: #fcd34d; font-size: 0.88rem; }
+.hero-meta { display: flex; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
+.htag { background: rgba(255,255,255,0.12); padding: 0.22rem 0.65rem; border-radius: 20px; font-size: 0.75rem; }
+
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+.toc { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.5rem; margin-bottom: 2rem; }
+.toc-title { font-size: 0.78rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.7rem; }
+.toc-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.toc-list a { font-size: 0.8rem; color: var(--accent); text-decoration: none; border: 1px solid #fde68a; background: #fffbeb; padding: 0.2rem 0.6rem; border-radius: 8px; }
+.toc-list a:hover { background: #fef3c7; }
+
+.sec-title { font-size: 1.3rem; font-weight: 800; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 20px; }
+
+.formula-card { background: #fffbeb; border: 1.5px solid #fde68a; border-left: 5px solid var(--accent); border-radius: 10px; padding: 1.2rem 1.4rem; margin-bottom: 1rem; }
+.formula-card h4 { font-size: 0.82rem; font-weight: 700; color: var(--accent); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.formula { font-size: 0.95rem; font-weight: 700; color: var(--dark); font-family: 'Courier New', monospace; background: rgba(0,0,0,0.05); padding: 0.35rem 0.75rem; border-radius: 6px; display: inline-block; margin: 0.2rem 0; }
+
+.info { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #1e40af; margin: 1rem 0; }
+.warn { background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #713f12; margin: 1rem 0; }
+.success { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #166534; margin: 1rem 0; }
+
+/* Gantt Chart */
+.gantt-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+.gantt { display: flex; flex-direction: column; gap: 0.5rem; min-width: 500px; }
+.gantt-row { display: flex; align-items: center; gap: 0.5rem; }
+.gantt-label { width: 70px; font-size: 0.8rem; font-weight: 700; text-align: right; flex-shrink: 0; }
+.gantt-bars { display: flex; flex: 1; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; height: 32px; }
+.gantt-bar { display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: white; height: 100%; transition: opacity 0.2s; }
+.gantt-bar:hover { opacity: 0.85; }
+.gantt-idle { background: #e2e8f0; color: var(--gray); }
+.gantt-axis { display: flex; margin-left: 75px; }
+.gantt-tick { font-size: 0.68rem; color: var(--gray); text-align: center; border-left: 1px solid var(--border); padding-top: 2px; }
+
+/* Process Table */
+.proc-table { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+.proc-table-inner { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+.proc-table table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+.proc-table th { background: #1c1107; color: white; padding: 0.55rem 0.9rem; text-align: center; font-weight: 700; font-size: 0.78rem; }
+.proc-table td { padding: 0.5rem 0.9rem; border-bottom: 1px solid var(--border); text-align: center; }
+.proc-table tr:last-child td { border-bottom: none; }
+.proc-table tr:nth-child(even) td { background: #fafafa; }
+.highlight { background: #fef3c7 !important; font-weight: 700; }
+
+/* Page Frame */
+.frame-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+.page-sim { display: flex; flex-direction: column; gap: 0; min-width: 600px; }
+.ps-row { display: flex; align-items: center; }
+.ps-label { width: 90px; font-size: 0.75rem; font-weight: 700; color: var(--gray); text-align: right; padding-right: 0.7rem; flex-shrink: 0; }
+.ps-cells { display: flex; flex: 1; }
+.ps-cell { width: 36px; height: 36px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; font-family: monospace; flex-shrink: 0; }
+.ps-cell.ref { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
+.ps-cell.fault { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+.ps-cell.hit { background: #dcfce7; color: #15803d; border-color: #86efac; }
+.ps-cell.evict { background: #fef9c3; color: #854d0e; }
+.ps-cell.empty { background: #f8fafc; color: var(--gray); }
+.ps-fault-row .ps-cell { height: 20px; font-size: 0.65rem; }
+.ps-ref-header .ps-cell { background: #1c1107; color: white; border-color: #44330a; font-size: 0.75rem; }
+
+/* Step box */
+.steps { display: flex; flex-direction: column; gap: 0.6rem; margin: 0.8rem 0; }
+.step { display: flex; gap: 0.9rem; align-items: flex-start; }
+.step-num { width: 26px; height: 26px; background: var(--accent); color: white; border-radius: 50%; font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.15rem; }
+.step-body { flex: 1; font-size: 0.85rem; }
+.step-body strong { display: block; font-weight: 700; margin-bottom: 0.1rem; }
+code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.83rem; }
+
+/* Compare cards */
+.compare { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.8rem; margin: 1rem 0; }
+.cmp-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1rem; border-top: 4px solid var(--c); }
+.cmp-card .cname { font-size: 0.9rem; font-weight: 800; color: var(--c); margin-bottom: 0.3rem; }
+.cmp-card .cdesc { font-size: 0.78rem; color: var(--gray); line-height: 1.5; }
+.cmp-card .ctag { font-size: 0.7rem; font-weight: 700; background: color-mix(in srgb, var(--c) 12%, white); color: var(--c); padding: 0.15rem 0.45rem; border-radius: 20px; display: inline-block; margin-top: 0.4rem; }
+
+/* Tbl */
+.tbl-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+th { background: #1c1107; color: white; padding: 0.55rem 0.8rem; text-align: left; font-weight: 700; font-size: 0.78rem; }
+td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); }
+tr:nth-child(even) td { background: #fafafa; }
+tr:hover td { background: #fffbeb; }
+
+/* Quiz */
+.quiz-wrap { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 1rem; }
+.quiz-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.quiz-q { padding: 1rem 1.2rem; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
+.quiz-q:hover { background: #fafafa; }
+.quiz-q:active { background: #f5f5f5; }
+.quiz-badge { font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.quiz-badge.year { background: #fde68a; color: #92400e; }
+.quiz-chevron { font-size: 0.75rem; color: var(--gray); flex-shrink: 0; margin-top: 0.1rem; transition: transform 0.2s; }
+.quiz-card.open .quiz-chevron { transform: rotate(180deg); }
+.quiz-ans { display: none; padding: 0 1.2rem 1.1rem; border-top: 1px solid var(--border); }
+.quiz-card.open .quiz-ans { display: block; }
+.ans-label { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin: 0.8rem 0 0.3rem; }
+.ans-val { font-size: 0.95rem; font-weight: 700; color: var(--dark); font-family: monospace; }
+.ans-explain { font-size: 0.82rem; color: #374151; margin-top: 0.5rem; line-height: 1.6; }
+
+/* Deadlock */
+.condition-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 0.7rem; margin: 1rem 0; }
+.cond-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 0.85rem 1rem; border-left: 4px solid var(--accent); }
+.cond-num { font-size: 0.68rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 0.2rem; }
+.cond-name { font-size: 0.9rem; font-weight: 800; margin-bottom: 0.2rem; }
+.cond-desc { font-size: 0.78rem; color: var(--gray); }
+
+@media (max-width: 640px) {
+  /* Hero */
+  .hero { padding: 1.8rem 1rem 1.5rem; }
+  .hero h1 { font-size: 1.25rem; }
+  .hero p { font-size: 0.84rem; }
+  .htag { font-size: 0.7rem; padding: 0.18rem 0.55rem; }
+
+  /* Container */
+  .container { padding: 1.5rem 0.9rem 3rem; }
+
+  /* TOC */
+  .toc { padding: 0.9rem 1rem; }
+  .toc-list a { font-size: 0.74rem; padding: 0.18rem 0.5rem; }
+
+  /* Section title */
+  .sec-title { font-size: 1.1rem; margin: 2rem 0 0.85rem; }
+
+  /* Formula */
+  .formula-card { padding: 1rem 1.1rem; }
+  .formula { font-size: 0.8rem; word-break: break-all; display: block; white-space: normal; }
+
+  /* Compare cards: 1열 */
+  .compare { grid-template-columns: 1fr; }
+  .cmp-card { padding: 0.8rem 0.9rem; }
+  .cmp-card .cname { font-size: 0.88rem; }
+  .cmp-card .cdesc { font-size: 0.76rem; }
+
+  /* Tables */
+  .tbl-wrap { border-radius: 8px; border: 1px solid var(--border); background: white; }
+  .tbl-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; padding: 0.3rem 0.6rem 0; }
+  table { font-size: 0.75rem; }
+  th { font-size: 0.7rem; padding: 0.4rem 0.55rem; }
+  td { padding: 0.38rem 0.55rem; }
+
+  /* Process table */
+  .proc-table { border-radius: 10px; }
+  .proc-table table { font-size: 0.75rem; }
+  .proc-table th { font-size: 0.7rem; padding: 0.4rem 0.6rem; }
+  .proc-table td { padding: 0.38rem 0.6rem; }
+
+  /* Gantt */
+  .gantt-wrap { border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem; background: white; }
+  .gantt-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.3rem; }
+  .gantt-label { width: 50px; font-size: 0.72rem; }
+  .gantt-bar { font-size: 0.62rem; }
+  .gantt-axis { margin-left: 55px; font-size: 0.62rem; }
+
+  /* Page frame simulation */
+  .frame-wrap { border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem; background: white; }
+  .frame-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.3rem; }
+  .ps-label { width: 72px; font-size: 0.68rem; }
+  .ps-cell { width: 30px; height: 30px; font-size: 0.72rem; }
+  .ps-fault-row .ps-cell { height: 18px; font-size: 0.6rem; }
+
+  /* Steps */
+  .step-body { font-size: 0.82rem; }
+  .step-num { width: 24px; height: 24px; font-size: 0.72rem; }
+
+  /* Condition grid */
+  .condition-grid { grid-template-columns: 1fr 1fr; }
+  .cond-name { font-size: 0.85rem; }
+  .cond-desc { font-size: 0.74rem; }
+
+  /* Info / warn */
+  .info, .warn, .success { font-size: 0.8rem; padding: 0.85rem 1rem; }
+
+  /* Quiz */
+  .quiz-q { min-height: 52px; padding: 0.9rem 1rem; font-size: 0.83rem; }
+  .quiz-ans { padding: 0 1rem 1rem; }
+  .ans-val { font-size: 0.88rem; }
+  .ans-explain { font-size: 0.79rem; }
+  .quiz-badge { font-size: 0.64rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <a class="hero-back" href="index.html">← Level-2 목록</a>
+    <h1>⚙️ OS 계산 문제</h1>
+    <p>스케줄링 계산 · 페이지 교체 알고리즘 · 교착상태</p>
+    <div class="hero-meta">
+      <span class="htag">출제 빈도 ★★★★☆</span>
+      <span class="htag">07번</span>
+      <span class="htag">2020~2025 기출 포함</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="toc">
+    <div class="toc-title">목차</div>
+    <div class="toc-list">
+      <a href="#formula">계산 공식</a>
+      <a href="#fcfs">FCFS</a>
+      <a href="#sjf">SJF / SRT</a>
+      <a href="#rr">Round Robin</a>
+      <a href="#compare">알고리즘 비교</a>
+      <a href="#page">페이지 교체</a>
+      <a href="#fifo">FIFO</a>
+      <a href="#lru">LRU</a>
+      <a href="#opt">OPT</a>
+      <a href="#deadlock">교착상태</a>
+      <a href="#process">프로세스 상태</a>
+      <a href="#quiz">기출 문제</a>
+    </div>
+  </div>
+
+  <!-- ① 핵심 공식 -->
+  <div class="sec-title" id="formula"><span class="sec-num">01</span> 스케줄링 핵심 공식</div>
+
+  <div class="formula-card">
+    <h4>반드시 외울 공식 4가지</h4>
+    <div class="formula">반환시간 (Turnaround) = 완료시간 − 도착시간</div><br>
+    <div class="formula">대기시간 (Waiting)    = 반환시간 − 실행시간(Burst)</div><br>
+    <div class="formula">평균 대기시간         = 모든 프로세스 대기시간 합 ÷ 프로세스 수</div><br>
+    <div class="formula">응답시간 (Response)   = 첫 번째 CPU 할당 시작 − 도착시간</div>
+  </div>
+
+  <div class="info">💡 <strong>간트차트 먼저 그리기</strong>: 스케줄링 문제는 반드시 간트차트를 그린 뒤 각 프로세스의 완료시간을 구하세요. 완료시간만 알면 나머지는 공식으로 계산됩니다.</div>
+
+  <!-- ② FCFS -->
+  <div class="sec-title" id="fcfs"><span class="sec-num">02</span> FCFS (First Come First Served)</div>
+
+  <div class="info">도착 순서대로 실행. <strong>비선점</strong>. 구현 가장 단순하지만 Convoy Effect(긴 작업이 짧은 작업을 막음) 발생 가능.</div>
+
+  <div style="background:white; border:1px solid var(--border); border-radius:12px; padding:1.3rem 1.5rem; margin-bottom:1rem;">
+    <div style="font-size:0.9rem; font-weight:700; margin-bottom:1rem;">📌 예제</div>
+    <div class="proc-table">
+      <div class="proc-table-inner">
+        <table>
+          <tr><th>프로세스</th><th>도착시간</th><th>실행시간(Burst)</th><th>완료시간</th><th>반환시간</th><th>대기시간</th></tr>
+          <tr><td>P1</td><td>0</td><td>6</td><td>6</td><td>6</td><td class="highlight">0</td></tr>
+          <tr><td>P2</td><td>2</td><td>4</td><td>10</td><td>8</td><td class="highlight">4</td></tr>
+          <tr><td>P3</td><td>4</td><td>2</td><td>12</td><td>8</td><td class="highlight">6</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="gantt-wrap" style="margin-top:1rem;">
+      <div style="font-size:0.78rem; font-weight:700; color:var(--gray); margin-bottom:0.4rem;">간트차트</div>
+      <div class="gantt">
+        <div class="gantt-row">
+          <div class="gantt-label"></div>
+          <div class="gantt-bars">
+            <div class="gantt-bar" style="background:#b45309; width:50%;">P1 (6)</div>
+            <div class="gantt-bar" style="background:#d97706; width:33.3%;">P2 (4)</div>
+            <div class="gantt-bar" style="background:#f59e0b; width:16.7%;">P3 (2)</div>
+          </div>
+        </div>
+        <div class="gantt-axis" style="margin-left:75px;">
+          <div class="gantt-tick" style="width:50%;">0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6</div>
+          <div class="gantt-tick" style="width:33.3%;">10</div>
+          <div class="gantt-tick" style="width:16.7%;">12</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:1rem; font-size:0.85rem;">
+      평균 대기시간 = (0 + 4 + 6) ÷ 3 = <strong>10 ÷ 3 ≈ 3.33</strong>
+    </div>
+  </div>
+
+  <!-- ③ SJF / SRT -->
+  <div class="sec-title" id="sjf"><span class="sec-num">03</span> SJF & SRT</div>
+
+  <div class="compare">
+    <div class="cmp-card" style="--c:#0369a1">
+      <div class="cname">SJF</div>
+      <div class="cdesc">실행시간이 <strong>가장 짧은</strong> 프로세스 먼저 실행.<br>비선점 — 실행 중인 프로세스는 끝날 때까지 교체 안 함.</div>
+      <span class="ctag">비선점</span>
+    </div>
+    <div class="cmp-card" style="--c:#dc2626">
+      <div class="cname">SRT</div>
+      <div class="cdesc"><strong>남은 실행시간</strong>이 가장 짧은 프로세스 우선.<br>새 프로세스 도착 시 남은 시간 비교 후 선점 가능.</div>
+      <span class="ctag">선점 (SJF의 선점 버전)</span>
+    </div>
+  </div>
+
+  <div style="background:white; border:1px solid var(--border); border-radius:12px; padding:1.3rem 1.5rem; margin-bottom:1rem;">
+    <div style="font-size:0.9rem; font-weight:700; margin-bottom:1rem;">📌 SRT 예제 — <span style="color:#dc2626">2024 2회 Q12: 평균 대기시간 = ?</span></div>
+    <div class="proc-table">
+      <div class="proc-table-inner">
+        <table>
+          <tr><th>프로세스</th><th>도착시간</th><th>실행시간(Burst)</th></tr>
+          <tr><td>P1</td><td>0</td><td>8</td></tr>
+          <tr><td>P2</td><td>1</td><td>4</td></tr>
+          <tr><td>P3</td><td>2</td><td>9</td></tr>
+          <tr><td>P4</td><td>3</td><td>5</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="steps" style="margin-top:1rem;">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>t=0: P1 도착 (남은시간 8) → P1 실행 시작</strong>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>t=1: P2 도착 (남은시간 4) vs P1 남은시간 7 → P2 선점!</strong>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>t=2: P3 도착 (남은시간 9) → P2 남은시간 3이 더 짧음 → P2 계속</strong>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <strong>t=3: P4 도착 (남은시간 5) → P2 남은시간 2가 더 짧음 → P2 계속</strong>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <strong>t=5: P2 완료 → P1(7) vs P4(5) vs P3(9) → P4 선점</strong>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <strong>t=10: P4 완료 → P1(7) vs P3(9) → P1 실행 → t=17 P1 완료 → P3 → t=26 P3 완료</strong>
+        </div>
+      </div>
+    </div>
+    <div class="gantt-wrap" style="margin-top:1rem;">
+      <div style="font-size:0.78rem; font-weight:700; color:var(--gray); margin-bottom:0.4rem;">간트차트</div>
+      <div class="gantt">
+        <div class="gantt-row">
+          <div class="gantt-label"></div>
+          <div class="gantt-bars">
+            <div class="gantt-bar" style="background:#6366f1; width:3.85%;">P1</div>
+            <div class="gantt-bar" style="background:#0369a1; width:15.38%;">P2(4)</div>
+            <div class="gantt-bar" style="background:#dc2626; width:19.23%;">P4(5)</div>
+            <div class="gantt-bar" style="background:#6366f1; width:26.92%;">P1(7)</div>
+            <div class="gantt-bar" style="background:#16a34a; width:34.62%;">P3(9)</div>
+          </div>
+        </div>
+        <div class="gantt-axis" style="margin-left:75px; font-size:0.68rem; color:var(--gray);">
+          <span>0</span>&nbsp;&nbsp;<span>1</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>5</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>10</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>17</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>26</span>
+        </div>
+      </div>
+    </div>
+    <div class="proc-table" style="margin-top:1rem;">
+      <div class="proc-table-inner">
+        <table>
+          <tr><th>프로세스</th><th>도착</th><th>완료</th><th>반환(완료−도착)</th><th>대기(반환−Burst)</th></tr>
+          <tr><td>P1</td><td>0</td><td>17</td><td>17</td><td class="highlight">9</td></tr>
+          <tr><td>P2</td><td>1</td><td>5</td><td>4</td><td class="highlight">0</td></tr>
+          <tr><td>P3</td><td>2</td><td>26</td><td>24</td><td class="highlight">15</td></tr>
+          <tr><td>P4</td><td>3</td><td>10</td><td>7</td><td class="highlight">2</td></tr>
+        </table>
+      </div>
+    </div>
+    <div style="margin-top:0.8rem; font-size:0.9rem; font-weight:700; color:var(--accent);">
+      평균 대기시간 = (9 + 0 + 15 + 2) ÷ 4 = 26 ÷ 4 = <strong>6.5</strong>
+    </div>
+  </div>
+
+  <!-- ④ Round Robin -->
+  <div class="sec-title" id="rr"><span class="sec-num">04</span> Round Robin (RR)</div>
+
+  <div class="info">각 프로세스를 <strong>타임퀀텀(Time Quantum, q)</strong> 만큼만 실행하고 다음 프로세스로 순환. <strong>선점</strong>. 타임퀀텀이 크면 FCFS에 가까워지고, 작으면 문맥교환 오버헤드 증가.</div>
+
+  <div style="background:white; border:1px solid var(--border); border-radius:12px; padding:1.3rem 1.5rem; margin-bottom:1rem;">
+    <div style="font-size:0.9rem; font-weight:700; margin-bottom:1rem;">📌 RR 예제 — <span style="color:#dc2626">2025 2회 Q13: 평균 대기시간 = ?</span> (타임퀀텀 q=4)</div>
+    <div class="proc-table">
+      <div class="proc-table-inner">
+        <table>
+          <tr><th>프로세스</th><th>도착시간</th><th>실행시간(Burst)</th></tr>
+          <tr><td>P1</td><td>0</td><td>6</td></tr>
+          <tr><td>P2</td><td>3</td><td>5</td></tr>
+          <tr><td>P3</td><td>5</td><td>10</td></tr>
+          <tr><td>P4</td><td>7</td><td>3</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="gantt-wrap" style="margin-top:1rem;">
+      <div style="font-size:0.78rem; font-weight:700; color:var(--gray); margin-bottom:0.4rem;">간트차트 (q=4)</div>
+      <div class="gantt">
+        <div class="gantt-row">
+          <div class="gantt-label"></div>
+          <div class="gantt-bars">
+            <div class="gantt-bar" style="background:#7c3aed; width:16.67%;">P1(4)</div>
+            <div class="gantt-bar" style="background:#0369a1; width:16.67%;">P2(4)</div>
+            <div class="gantt-bar" style="background:#dc2626; width:8.33%;">P1(2)</div>
+            <div class="gantt-bar" style="background:#16a34a; width:12.5%;">P3(4) 잠깐</div>
+            <div class="gantt-bar" style="background:#0369a1; width:4.17%;">P2(1)</div>
+            <div class="gantt-bar" style="background:#f59e0b; width:12.5%;">P4(3)+여분</div>
+            <div class="gantt-bar" style="background:#16a34a; width:29.17%;">P3(6)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="warn" style="margin-top:0.5rem;">⚠️ RR은 도착순서 + 타임퀀텀에 따라 실행 순서가 달라집니다. 반드시 직접 시뮬레이션하세요.</div>
+
+    <div class="steps" style="margin-top:1rem;">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body"><strong>t=0~4: P1 실행 (4 소진) → 남은 P1=2, 큐: [P2, P3]</strong></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body"><strong>t=4~8: P2 실행 (4 소진) → 남은 P2=1, 큐: [P3, P4, P1]</strong></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body"><strong>t=8~12: P3 실행 (4 소진) → 남은 P3=6, 큐: [P4, P1, P2]</strong></div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body"><strong>t=12~15: P4 실행 (3 → 완료) → 큐: [P1, P2]</strong></div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body"><strong>t=15~17: P1 실행 (2 → 완료) → 큐: [P2, P3]</strong></div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body"><strong>t=17~18: P2 실행 (1 → 완료) → 큐: [P3]</strong></div>
+      </div>
+      <div class="step">
+        <div class="step-num">7</div>
+        <div class="step-body"><strong>t=18~24: P3 실행 (6 → 완료)</strong></div>
+      </div>
+    </div>
+
+    <div class="proc-table" style="margin-top:1rem;">
+      <div class="proc-table-inner">
+        <table>
+          <tr><th>프로세스</th><th>도착</th><th>Burst</th><th>완료</th><th>반환</th><th>대기</th></tr>
+          <tr><td>P1</td><td>0</td><td>6</td><td>17</td><td>17</td><td class="highlight">11</td></tr>
+          <tr><td>P2</td><td>3</td><td>5</td><td>18</td><td>15</td><td class="highlight">10</td></tr>
+          <tr><td>P3</td><td>5</td><td>10</td><td>24</td><td>19</td><td class="highlight">9</td></tr>
+          <tr><td>P4</td><td>7</td><td>3</td><td>15</td><td>8</td><td class="highlight">5</td></tr>
+        </table>
+      </div>
+    </div>
+    <div style="margin-top:0.8rem; font-size:0.9rem; font-weight:700; color:var(--accent);">
+      평균 대기시간 = (11 + 10 + 9 + 5) ÷ 4 = 35 ÷ 4 = <strong>11.75ms</strong>
+    </div>
+  </div>
+
+  <!-- ⑤ 알고리즘 비교 -->
+  <div class="sec-title" id="compare"><span class="sec-num">05</span> 스케줄링 알고리즘 비교</div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>알고리즘</th><th>선점</th><th>기준</th><th>특징</th><th>단점</th></tr>
+      <tr><td><strong>FCFS</strong></td><td>비선점</td><td>도착 순서</td><td>구현 단순</td><td>Convoy Effect (긴 작업이 짧은 작업 막음)</td></tr>
+      <tr><td><strong>SJF</strong></td><td>비선점</td><td>실행시간 짧은 순</td><td>평균 대기시간 최소</td><td>기아(Starvation) 발생 가능, 실행시간 예측 어려움</td></tr>
+      <tr><td><strong>SRT</strong></td><td>선점</td><td>남은 시간 짧은 순</td><td>SJF의 선점 버전</td><td>문맥교환 오버헤드, 기아 발생</td></tr>
+      <tr><td><strong>우선순위</strong></td><td>선점/비선점</td><td>우선순위 높은 순</td><td>중요 작업 빠른 처리</td><td>기아 → 에이징(Aging)으로 해결</td></tr>
+      <tr><td><strong>RR</strong></td><td>선점</td><td>도착 순서 + 타임퀀텀</td><td>공평성, 응답시간 우수</td><td>타임퀀텀에 따라 성능 차이, 문맥교환 오버헤드</td></tr>
+      <tr><td><strong>다단계 큐</strong></td><td>선점</td><td>큐 우선순위</td><td>여러 큐 계층 구조</td><td>큐 간 이동 없어 기아 가능</td></tr>
+    </table>
+  </div>
+
+  <!-- ⑥ 페이지 교체 -->
+  <div class="sec-title" id="page"><span class="sec-num">06</span> 페이지 교체 알고리즘 개요</div>
+
+  <div class="info">메모리 프레임이 꽉 찬 상태에서 새 페이지를 적재할 때 <strong>어떤 페이지를 내보낼지</strong> 결정하는 알고리즘. 페이지 부재(Page Fault) 횟수가 적을수록 좋음.</div>
+
+  <div class="compare">
+    <div class="cmp-card" style="--c:#7c3aed">
+      <div class="cname">FIFO</div>
+      <div class="cdesc">가장 먼저 들어온 페이지 교체.<br>구현 단순. Belady's Anomaly 발생 가능 (프레임 늘려도 부재 증가).</div>
+      <span class="ctag">큐 구조</span>
+    </div>
+    <div class="cmp-card" style="--c:#0369a1">
+      <div class="cname">LRU</div>
+      <div class="cdesc">가장 오래 전에 사용된 페이지 교체.<br>최근 사용 이력 기반. 실제 OS에서 많이 사용.</div>
+      <span class="ctag">최근 미사용</span>
+    </div>
+    <div class="cmp-card" style="--c:#16a34a">
+      <div class="cname">OPT</div>
+      <div class="cdesc">앞으로 가장 오래 사용되지 않을 페이지 교체.<br>이론적으로 최적. 미래 참조를 알아야 하므로 실제 구현 불가.</div>
+      <span class="ctag">이론상 최적</span>
+    </div>
+    <div class="cmp-card" style="--c:#dc2626">
+      <div class="cname">LFU</div>
+      <div class="cdesc">사용 빈도가 가장 낮은 페이지 교체.<br>빈도 동일 시 FIFO 또는 LRU 적용.</div>
+      <span class="ctag">최저 빈도</span>
+    </div>
+  </div>
+
+  <!-- ⑦ FIFO -->
+  <div class="sec-title" id="fifo"><span class="sec-num">07</span> FIFO 시뮬레이션</div>
+
+  <div style="background:white; border:1px solid var(--border); border-radius:12px; padding:1.3rem 1.5rem; margin-bottom:1rem;">
+    <div style="font-size:0.9rem; font-weight:700; margin-bottom:0.5rem;">참조 열: <code>1 2 3 4 1 2 5 1 2 3 4 5</code> / 프레임 3개</div>
+    <div class="frame-wrap">
+      <div class="page-sim">
+        <div class="ps-row ps-ref-header">
+          <div class="ps-label">참조 페이지</div>
+          <div class="ps-cells">
+            <div class="ps-cell ref">1</div><div class="ps-cell ref">2</div><div class="ps-cell ref">3</div>
+            <div class="ps-cell ref">4</div><div class="ps-cell ref">1</div><div class="ps-cell ref">2</div>
+            <div class="ps-cell ref">5</div><div class="ps-cell ref">1</div><div class="ps-cell ref">2</div>
+            <div class="ps-cell ref">3</div><div class="ps-cell ref">4</div><div class="ps-cell ref">5</div>
+          </div>
+        </div>
+        <div class="ps-row">
+          <div class="ps-label">프레임1</div>
+          <div class="ps-cells">
+            <div class="ps-cell fault">1</div><div class="ps-cell">1</div><div class="ps-cell">1</div>
+            <div class="ps-cell evict">4</div><div class="ps-cell">4</div><div class="ps-cell">4</div>
+            <div class="ps-cell evict">5</div><div class="ps-cell">5</div><div class="ps-cell">5</div>
+            <div class="ps-cell">5</div><div class="ps-cell evict">4</div><div class="ps-cell">4</div>
+          </div>
+        </div>
+        <div class="ps-row">
+          <div class="ps-label">프레임2</div>
+          <div class="ps-cells">
+            <div class="ps-cell empty">—</div><div class="ps-cell fault">2</div><div class="ps-cell">2</div>
+            <div class="ps-cell">2</div><div class="ps-cell evict">1</div><div class="ps-cell">1</div>
+            <div class="ps-cell">1</div><div class="ps-cell hit">1</div><div class="ps-cell">1</div>
+            <div class="ps-cell evict">3</div><div class="ps-cell">3</div><div class="ps-cell evict">5</div>
+          </div>
+        </div>
+        <div class="ps-row">
+          <div class="ps-label">프레임3</div>
+          <div class="ps-cells">
+            <div class="ps-cell empty">—</div><div class="ps-cell empty">—</div><div class="ps-cell fault">3</div>
+            <div class="ps-cell">3</div><div class="ps-cell">3</div><div class="ps-cell evict">2</div>
+            <div class="ps-cell">2</div><div class="ps-cell">2</div><div class="ps-cell hit">2</div>
+            <div class="ps-cell">2</div><div class="ps-cell">2</div><div class="ps-cell">2</div>
+          </div>
+        </div>
+        <div class="ps-row ps-fault-row">
+          <div class="ps-label">부재(F)/적중(H)</div>
+          <div class="ps-cells">
+            <div class="ps-cell fault">F</div><div class="ps-cell fault">F</div><div class="ps-cell fault">F</div>
+            <div class="ps-cell fault">F</div><div class="ps-cell fault">F</div><div class="ps-cell fault">F</div>
+            <div class="ps-cell fault">F</div><div class="ps-cell hit">H</div><div class="ps-cell hit">H</div>
+            <div class="ps-cell fault">F</div><div class="ps-cell fault">F</div><div class="ps-cell fault">F</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:0.8rem; font-size:0.85rem;">
+      <span style="color:#b91c1c; font-weight:700;">F(페이지 부재): 9회</span> &nbsp;|&nbsp; <span style="color:#15803d; font-weight:700;">H(적중): 2회</span>
+    </div>
+    <div style="margin-top:0.3rem; font-size:0.78rem; color:var(--gray);">
+      교체 순서(FIFO): 1→2→3→4→1→2→5 … 가장 먼저 들어온 것을 먼저 내보냄
+    </div>
+  </div>
+
+  <!-- ⑧ LRU -->
+  <div class="sec-title" id="lru"><span class="sec-num">08</span> LRU 시뮬레이션</div>
+
+  <div style="background:white; border:1px solid var(--border); border-radius:12px; padding:1.3rem 1.5rem; margin-bottom:1rem;">
+    <div style="font-size:0.9rem; font-weight:700; margin-bottom:0.5rem;">참조 열: <code>7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1</code> / 프레임 3개 — <span style="color:#dc2626">2024 3회 Q4: 페이지 부재 횟수 = ?</span></div>
+    <div class="info">LRU 풀이 전략: 페이지 부재 발생 시 <strong>가장 오래 전에 마지막으로 사용한</strong> 페이지를 교체. 각 시점에서 프레임에 있는 페이지들의 "마지막 사용 시간"을 비교!</div>
+    <div class="tbl-wrap">
+      <table style="font-family:monospace; font-size:0.78rem;">
+        <tr>
+          <th>시간</th><th>참조</th><th>F1</th><th>F2</th><th>F3</th><th>결과</th><th>교체된 것</th>
+        </tr>
+        <tr><td>1</td><td>7</td><td style="background:#fee2e2;">7</td><td>-</td><td>-</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>—</td></tr>
+        <tr><td>2</td><td>0</td><td>7</td><td style="background:#fee2e2;">0</td><td>-</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>—</td></tr>
+        <tr><td>3</td><td>1</td><td>7</td><td>0</td><td style="background:#fee2e2;">1</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>—</td></tr>
+        <tr><td>4</td><td>2</td><td style="background:#fee2e2;">2</td><td>0</td><td>1</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>7 (가장 오래전)</td></tr>
+        <tr><td>5</td><td>0</td><td>2</td><td style="background:#dcfce7;">0</td><td>1</td><td style="color:#16a34a;font-weight:700;">Hit</td><td>—</td></tr>
+        <tr><td>6</td><td>3</td><td>2</td><td>0</td><td style="background:#fee2e2;">3</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>1 (가장 오래전)</td></tr>
+        <tr><td>7</td><td>0</td><td>2</td><td style="background:#dcfce7;">0</td><td>3</td><td style="color:#16a34a;font-weight:700;">Hit</td><td>—</td></tr>
+        <tr><td>8</td><td>4</td><td style="background:#fee2e2;">4</td><td>0</td><td>3</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>2 (가장 오래전)</td></tr>
+        <tr><td>9</td><td>2</td><td>4</td><td>0</td><td style="background:#fee2e2;">2</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>3 (가장 오래전)</td></tr>
+        <tr><td>10</td><td>3</td><td style="background:#fee2e2;">3</td><td>0</td><td>2</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>4 (가장 오래전)</td></tr>
+        <tr><td>11</td><td>0</td><td>3</td><td style="background:#dcfce7;">0</td><td>2</td><td style="color:#16a34a;font-weight:700;">Hit</td><td>—</td></tr>
+        <tr><td>12</td><td>3</td><td style="background:#dcfce7;">3</td><td>0</td><td>2</td><td style="color:#16a34a;font-weight:700;">Hit</td><td>—</td></tr>
+        <tr><td>13</td><td>2</td><td>3</td><td>0</td><td style="background:#dcfce7;">2</td><td style="color:#16a34a;font-weight:700;">Hit</td><td>—</td></tr>
+        <tr><td>14</td><td>1</td><td>3</td><td style="background:#fee2e2;">1</td><td>2</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>0 (가장 오래전)</td></tr>
+        <tr><td>15</td><td>2</td><td>3</td><td>1</td><td style="background:#dcfce7;">2</td><td style="color:#16a34a;font-weight:700;">Hit</td><td>—</td></tr>
+        <tr><td>16</td><td>0</td><td style="background:#fee2e2;">0</td><td>1</td><td>2</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>3 (가장 오래전)</td></tr>
+        <tr><td>17</td><td>1</td><td>0</td><td style="background:#dcfce7;">1</td><td>2</td><td style="color:#16a34a;font-weight:700;">Hit</td><td>—</td></tr>
+        <tr><td>18</td><td>7</td><td>0</td><td>1</td><td style="background:#fee2e2;">7</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>2 (가장 오래전)</td></tr>
+        <tr><td>19</td><td>0</td><td style="background:#dcfce7;">0</td><td>1</td><td>7</td><td style="color:#16a34a;font-weight:700;">Hit</td><td>—</td></tr>
+        <tr><td>20</td><td>1</td><td>0</td><td style="background:#dcfce7;">1</td><td>7</td><td style="color:#16a34a;font-weight:700;">Hit</td><td>—</td></tr>
+      </table>
+    </div>
+    <div style="margin-top:0.8rem; font-size:0.92rem; font-weight:700; color:var(--accent);">
+      페이지 부재(Miss) 횟수 = <strong>12</strong>회
+    </div>
+  </div>
+
+  <!-- ⑨ OPT -->
+  <div class="sec-title" id="opt"><span class="sec-num">09</span> OPT (최적) 알고리즘</div>
+
+  <div style="background:white; border:1px solid var(--border); border-radius:12px; padding:1.3rem 1.5rem; margin-bottom:1rem;">
+    <div style="font-size:0.9rem; font-weight:700; margin-bottom:0.5rem;">참조 열: <code>1 2 3 4 1 2 5 1 2 3 4 5</code> / 프레임 3개</div>
+    <div class="info">OPT: 교체 시점에서 <strong>앞으로 가장 늦게 사용될</strong> 페이지를 교체. 미래 정보가 필요하므로 실제 구현 불가 — 다른 알고리즘 성능 비교 기준으로만 사용.</div>
+    <div class="tbl-wrap">
+      <table style="font-family:monospace; font-size:0.78rem;">
+        <tr><th>시간</th><th>참조</th><th>F1</th><th>F2</th><th>F3</th><th>결과</th><th>교체</th></tr>
+        <tr><td>1</td><td>1</td><td style="background:#fee2e2;">1</td><td>-</td><td>-</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>—</td></tr>
+        <tr><td>2</td><td>2</td><td>1</td><td style="background:#fee2e2;">2</td><td>-</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>—</td></tr>
+        <tr><td>3</td><td>3</td><td>1</td><td>2</td><td style="background:#fee2e2;">3</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>—</td></tr>
+        <tr><td>4</td><td>4</td><td>1</td><td>2</td><td style="background:#fee2e2;">4</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>3 (다음 참조: 10번째로 가장 늦음)</td></tr>
+        <tr><td>5</td><td>1</td><td style="background:#dcfce7;">1</td><td>2</td><td>4</td><td style="color:#16a34a;font-weight:700;">Hit</td><td>—</td></tr>
+        <tr><td>6</td><td>2</td><td>1</td><td style="background:#dcfce7;">2</td><td>4</td><td style="color:#16a34a;font-weight:700;">Hit</td><td>—</td></tr>
+        <tr><td>7</td><td>5</td><td>1</td><td>2</td><td style="background:#fee2e2;">5</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>4 (앞으로 참조 없음)</td></tr>
+        <tr><td>8</td><td>1</td><td style="background:#dcfce7;">1</td><td>2</td><td>5</td><td style="color:#16a34a;font-weight:700;">Hit</td><td>—</td></tr>
+        <tr><td>9</td><td>2</td><td>1</td><td style="background:#dcfce7;">2</td><td>5</td><td style="color:#16a34a;font-weight:700;">Hit</td><td>—</td></tr>
+        <tr><td>10</td><td>3</td><td>1</td><td style="background:#fee2e2;">3</td><td>5</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>2 (앞으로 참조 없음)</td></tr>
+        <tr><td>11</td><td>4</td><td>1</td><td style="background:#fee2e2;">4</td><td>5</td><td style="color:#dc2626;font-weight:700;">Miss</td><td>3 (앞으로 참조 없음)</td></tr>
+        <tr><td>12</td><td>5</td><td>1</td><td>4</td><td style="background:#dcfce7;">5</td><td style="color:#16a34a;font-weight:700;">Hit</td><td>—</td></tr>
+      </table>
+    </div>
+    <div style="margin-top:0.8rem; font-size:0.92rem; font-weight:700; color:#16a34a;">
+      페이지 부재(Miss) 횟수 = <strong>6</strong>회 (FIFO 9회, LRU보다 적거나 같음 — 이론상 최소)
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>알고리즘</th><th>교체 기준</th><th>Belady's Anomaly</th><th>실제 구현</th><th>성능</th></tr>
+      <tr><td><strong>FIFO</strong></td><td>가장 먼저 들어온 페이지</td><td><span style="color:#dc2626;font-weight:700;">발생 가능</span></td><td>가능</td><td>낮음</td></tr>
+      <tr><td><strong>LRU</strong></td><td>가장 오래 전에 사용된 페이지</td><td>발생 안 함</td><td>가능</td><td>높음</td></tr>
+      <tr><td><strong>OPT</strong></td><td>앞으로 가장 늦게 사용될 페이지</td><td>발생 안 함</td><td><span style="color:#dc2626;font-weight:700;">불가</span></td><td>최적</td></tr>
+      <tr><td><strong>LFU</strong></td><td>사용 빈도 가장 낮은 페이지</td><td>—</td><td>가능</td><td>중간</td></tr>
+    </table>
+  </div>
+
+  <!-- ⑩ 교착상태 -->
+  <div class="sec-title" id="deadlock"><span class="sec-num">10</span> 교착상태 (Deadlock)</div>
+
+  <div class="warn">암기: <strong>상점비순</strong> — 상호배제, 점유대기, 비선점, 순환대기 (4가지 조건 모두 성립할 때만 교착상태 발생)</div>
+
+  <div class="condition-grid">
+    <div class="cond-card">
+      <div class="cond-num">조건 1</div>
+      <div class="cond-name">상호배제</div>
+      <div class="cond-desc">자원은 한 번에 하나의 프로세스만 사용 가능</div>
+    </div>
+    <div class="cond-card">
+      <div class="cond-num">조건 2</div>
+      <div class="cond-name">점유대기</div>
+      <div class="cond-desc">자원을 점유한 채 다른 자원을 기다림</div>
+    </div>
+    <div class="cond-card">
+      <div class="cond-num">조건 3</div>
+      <div class="cond-name">비선점</div>
+      <div class="cond-desc">점유된 자원을 강제로 빼앗을 수 없음</div>
+    </div>
+    <div class="cond-card">
+      <div class="cond-num">조건 4</div>
+      <div class="cond-name">순환대기</div>
+      <div class="cond-desc">프로세스들이 원형으로 서로의 자원을 기다림</div>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>처리 방법</th><th>설명</th></tr>
+      <tr><td><strong>예방 (Prevention)</strong></td><td>4가지 조건 중 하나를 제거. 자원 낭비 심함</td></tr>
+      <tr><td><strong>회피 (Avoidance)</strong></td><td>안전 상태 유지 — 은행원 알고리즘(Banker's Algorithm)</td></tr>
+      <tr><td><strong>탐지 (Detection)</strong></td><td>교착 발생 후 탐지 → 자원 할당 그래프</td></tr>
+      <tr><td><strong>회복 (Recovery)</strong></td><td>프로세스 종료 또는 자원 선점하여 해제</td></tr>
+    </table>
+  </div>
+
+  <!-- ⑪ 프로세스 상태 -->
+  <div class="sec-title" id="process"><span class="sec-num">11</span> 프로세스 상태 전이</div>
+
+  <div style="background:white; border:1px solid var(--border); border-radius:12px; padding:1.3rem 1.5rem; margin-bottom:1rem;">
+    <div style="display:flex; gap:1rem; align-items:center; justify-content:center; flex-wrap:wrap; padding:1rem 0; font-size:0.88rem; font-weight:700;">
+      <div style="background:#dbeafe; border:2px solid #3b82f6; border-radius:8px; padding:0.5rem 1rem; color:#1d4ed8;">생성 (New)</div>
+      <div style="color:var(--gray); font-size:0.78rem;">→ 승인</div>
+      <div style="background:#fffbeb; border:2px solid var(--accent); border-radius:8px; padding:0.5rem 1rem; color:var(--accent);">준비 (Ready)</div>
+      <div style="color:var(--gray); font-size:0.78rem;">→ 디스패치</div>
+      <div style="background:#f0fdf4; border:2px solid #16a34a; border-radius:8px; padding:0.5rem 1rem; color:#15803d;">실행 (Running)</div>
+      <div style="color:var(--gray); font-size:0.78rem;">→ I/O 요청</div>
+      <div style="background:#fef9c3; border:2px solid #ca8a04; border-radius:8px; padding:0.5rem 1rem; color:#92400e;">대기 (Waiting)</div>
+    </div>
+    <div style="font-size:0.82rem; color:var(--gray); text-align:center; margin-top:0.5rem;">
+      실행 → 준비: 타임퀀텀 초과(선점) · 실행 → 대기: I/O 요청 · 대기 → 준비: I/O 완료 · 실행 → 종료: 작업 완료
+    </div>
+  </div>
+
+  <!-- ⑫ 기출 문제 -->
+  <div class="sec-title" id="quiz"><span class="sec-num">12</span> 기출 문제</div>
+
+  <div class="quiz-wrap">
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2025 2회 Q13</span>&nbsp;
+          RR 스케줄링에서 타임퀀텀 q=4일 때, 위 예제(P1:도착0/Burst6, P2:도착3/Burst5, P3:도착5/Burst10, P4:도착7/Burst3)의 평균 대기시간을 구하시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">11.75ms</div>
+        <div class="ans-explain">
+          완료 시간: P1=17, P2=18, P3=24, P4=15<br>
+          대기시간: P1=17-6=11, P2=18-3-5=10, P3=24-5-10=9, P4=15-7-3=5<br>
+          평균 = (11+10+9+5) ÷ 4 = 35 ÷ 4 = <strong>11.75</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2024 2회 Q12</span>&nbsp;
+          SRT 스케줄링에서 P1(도착0/Burst8), P2(도착1/Burst4), P3(도착2/Burst9), P4(도착3/Burst5)의 평균 대기시간을 구하시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">6.5</div>
+        <div class="ans-explain">
+          실행 순서: P1(t0~1) → P2(t1~5) → P4(t5~10) → P1(t10~17) → P3(t17~26)<br>
+          대기시간: P1=17-8-0=9, P2=5-4-1=0, P3=26-9-2=15, P4=10-5-3=2<br>
+          평균 = (9+0+15+2) ÷ 4 = 26 ÷ 4 = <strong>6.5</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2024 3회 Q4</span>&nbsp;
+          LRU 알고리즘, 프레임 3개, 참조 열: 7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1 일 때 페이지 부재 횟수는?
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">12</div>
+        <div class="ans-explain">위 표 참조. 총 20번 참조 중 Miss 12회, Hit 8회.</div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2024 1회 Q9</span>&nbsp;
+          프레임 3개, 참조 열 7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1 일 때,<br>
+          (1) LRU 알고리즘의 페이지 부재 횟수 (2) LFU 알고리즘의 페이지 부재 횟수
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">(1) LRU: 6 &nbsp; (2) LFU: 6</div>
+        <div class="ans-explain">이 회차는 다른 참조열 사용 (복원 기준). LRU와 LFU 모두 6회 부재 결과.</div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2022 3회 Q16</span>&nbsp;
+          다음 설명에 맞는 스케줄링 알고리즘 이름을 쓰시오.<br>
+          (1) 실행시간이 가장 짧은 프로세스 먼저 &nbsp; (2) 정해진 시간만큼 순환 실행 &nbsp; (3) 남은 실행시간이 가장 짧은 프로세스 선점
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">(1) SJF &nbsp; (2) RR (Round Robin) &nbsp; (3) SRT</div>
+        <div class="ans-explain">SJF=비선점, RR=선점(타임퀀텀), SRT=선점(SJF의 선점 버전)</div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2020 4회 Q13</span>&nbsp;
+          프로세스의 3가지 상태를 쓰시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">준비(Ready), 실행(Running), 대기(Waiting)</div>
+        <div class="ans-explain">생성(New)과 종료(Terminated)를 포함하면 5가지 상태. 시험에선 3가지로 묻는 경우 준비/실행/대기.</div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">개념 확인</span>&nbsp;
+          교착상태(Deadlock) 발생의 4가지 필요 조건을 쓰시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">상호배제, 점유대기, 비선점, 순환대기</div>
+        <div class="ans-explain">암기: <strong>상점비순</strong>. 4가지 조건이 동시에 성립할 때만 교착상태 발생. 하나라도 제거하면 예방 가능.</div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">개념 확인</span>&nbsp;
+          FIFO 페이지 교체 알고리즘에서 발생할 수 있는 현상으로, 프레임 수를 늘려도 오히려 페이지 부재가 증가하는 현상은?
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">Belady's Anomaly (벨레이디 이상 현상)</div>
+        <div class="ans-explain">FIFO에서만 발생. LRU, OPT에서는 발생하지 않음 (Stack Algorithm이므로).</div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+
+</div><!-- /container -->
+
+<footer style="text-align:center; padding:1.5rem; color:var(--gray); font-size:0.78rem; border-top:1px solid var(--border);">
+  Level-2 · 07 OS 계산 문제 · <a href="index.html" style="color:var(--accent); text-decoration:none;">← 목록으로</a>
+</footer>
+
+<script>
+function toggle(el) {
+  const card = el.closest('.quiz-card');
+  card.classList.toggle('open');
+}
+</script>
+</body>
+</html>

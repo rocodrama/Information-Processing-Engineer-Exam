@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>07. 애플리케이션 테스트 관리 | 정보처리기사 실기</title>
+<style>
+:root {
+  --primary: #7c3aed;
+  --primary-light: #ede9fe;
+  --secondary: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --dark: #1e293b;
+  --gray: #64748b;
+  --light: #f8fafc;
+  --border: #e2e8f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.6; }
+
+nav { position: sticky; top: 0; z-index: 100; background: var(--dark); padding: 0.6rem 1.5rem; display: flex; gap: 0.5rem; align-items: center; overflow-x: auto; scrollbar-width: none; }
+nav::-webkit-scrollbar { display: none; }
+nav .nav-title { color: #c4b5fd; font-weight: 700; font-size: 0.82rem; white-space: nowrap; margin-right: 0.5rem; }
+nav a { color: #94a3b8; text-decoration: none; font-size: 0.78rem; white-space: nowrap; padding: 0.3rem 0.7rem; border-radius: 5px; transition: all 0.2s; }
+nav a:hover, nav a.active { color: white; background: #334155; }
+
+.hero { background: linear-gradient(135deg, #4c1d95 0%, #1e293b 100%); color: white; padding: 2.5rem 2rem; text-align: center; }
+.hero h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.4rem; }
+.hero .subtitle { color: #c4b5fd; font-size: 0.95rem; margin-bottom: 1rem; }
+.tags { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; }
+.tag { background: rgba(255,255,255,0.15); color: white; padding: 0.2rem 0.65rem; border-radius: 20px; font-size: 0.78rem; }
+
+.container { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem; }
+section { margin-bottom: 3rem; }
+.section-title { font-size: 1.3rem; font-weight: 700; color: var(--dark); margin-bottom: 1.25rem; padding-bottom: 0.6rem; border-bottom: 3px solid var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { width: 30px; height: 30px; background: var(--primary); color: white; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; flex-shrink: 0; }
+
+.card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-bottom: 1rem; }
+.card h3 { font-size: 0.95rem; margin-bottom: 0.75rem; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+.card-grid2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+
+.tabs { display: flex; gap: 0.4rem; margin-bottom: 1.25rem; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+.tab-btn { padding: 0.45rem 1rem; background: none; border: none; color: var(--gray); cursor: pointer; font-size: 0.85rem; font-weight: 600; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+table.base { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+table.base th { background: var(--dark); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+table.base td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+table.base tr:hover td { background: #faf5ff; }
+table.base .cat td { background: #f5f3ff; font-weight: 700; color: var(--primary); font-size: 0.75rem; text-transform: uppercase; }
+
+.badge { display: inline-block; padding: 0.18rem 0.55rem; border-radius: 4px; font-size: 0.73rem; font-weight: 700; }
+.bb { background: #dbeafe; color: #1e40af; }
+.wb { background: #dcfce7; color: #166534; }
+.badge-gray { background: #f1f5f9; color: #475569; }
+
+code.il { background: #f1f5f9; color: #dc2626; padding: 0.1rem 0.3rem; border-radius: 3px; font-family: monospace; font-size: 0.81rem; }
+
+.hl { background: #f5f3ff; border: 1px solid #ddd6fe; border-left: 4px solid var(--primary); border-radius: 7px; padding: 0.8rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; }
+.hl.warn { background: #fffbeb; border-color: #fde68a; border-left-color: var(--warning); }
+.hl.ok { background: #f0fdf4; border-color: #bbf7d0; border-left-color: var(--secondary); }
+.hl.danger { background: #fef2f2; border-color: #fecaca; border-left-color: var(--danger); }
+
+/* 플래시카드 */
+.fc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 0.75rem; }
+.flip-card { height: 130px; perspective: 1000px; cursor: pointer; }
+.flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.55s; transform-style: preserve-3d; }
+.flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+.fc-front, .fc-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0.85rem; text-align: center; }
+.fc-front { background: white; border: 2px solid var(--primary); color: var(--dark); font-weight: 600; font-size: 0.85rem; }
+.fc-back { background: var(--primary); color: white; transform: rotateY(180deg); font-size: 0.78rem; line-height: 1.5; }
+
+/* V-모델 */
+.vmodel { display: flex; flex-direction: column; gap: 0.5rem; }
+.vmodel-row { display: flex; align-items: center; gap: 0.5rem; }
+.vmodel-dev, .vmodel-test { flex: 1; padding: 0.6rem 1rem; border-radius: 8px; font-size: 0.84rem; font-weight: 600; cursor: pointer; border: 2px solid transparent; transition: all 0.25s; text-align: center; }
+.vmodel-dev { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+.vmodel-test { background: #f5f3ff; color: #5b21b6; border-color: #ddd6fe; }
+.vmodel-dev:hover, .vmodel-test:hover { transform: scale(1.03); }
+.vmodel-dev.active { background: #1e40af; color: white; border-color: #1e40af; }
+.vmodel-test.active { background: var(--primary); color: white; border-color: var(--primary); }
+.vmodel-arrow { font-size: 1.1rem; color: var(--gray); flex-shrink: 0; }
+.vmodel-detail { display: none; margin-top: 0.75rem; padding: 0.85rem 1rem; background: #f5f3ff; border-left: 4px solid var(--primary); border-radius: 6px; font-size: 0.84rem; }
+.vmodel-detail.show { display: block; }
+
+/* 결함 생명주기 */
+.defect-flow { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-bottom: 1rem; }
+.defect-step { padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.82rem; font-weight: 700; border: 2px solid transparent; transition: all 0.3s; cursor: default; }
+.defect-step.active { transform: scale(1.08); }
+.ds-open     { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+.ds-reg      { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+.ds-ana      { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+.ds-fix      { background: #dcfce7; color: #166534; border-color: #86efac; }
+.ds-re       { background: #e0e7ff; color: #3730a3; border-color: #a5b4fc; }
+.ds-close    { background: #f1f5f9; color: #334155; border-color: #cbd5e1; }
+.ds-reopen   { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+.defect-arrow { color: var(--gray); font-size: 1rem; }
+.defect-desc { min-height: 60px; padding: 0.75rem 1rem; background: #f8fafc; border-radius: 8px; font-size: 0.84rem; }
+
+/* 기법 분류 퀴즈 */
+.classify-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.6rem; }
+.classify-item { background: white; border: 2px solid var(--border); border-radius: 9px; padding: 0.7rem; }
+.classify-name { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; }
+.classify-btns { display: flex; gap: 0.4rem; }
+.cl-btn { flex: 1; padding: 0.3rem; border: 2px solid transparent; border-radius: 5px; cursor: pointer; font-size: 0.75rem; font-weight: 700; transition: all 0.2s; }
+.cl-bb { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+.cl-wb { background: #dcfce7; color: #166534; border-color: #86efac; }
+.cl-btn:hover { transform: scale(1.05); }
+.cl-btn.correct { box-shadow: 0 0 0 3px var(--secondary); }
+.cl-btn.wrong { box-shadow: 0 0 0 3px var(--danger); opacity: 0.6; }
+
+/* 퀴즈 */
+.quiz-item { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem; }
+.quiz-q { font-weight: 700; margin-bottom: 0.75rem; font-size: 0.9rem; }
+.opts { display: flex; flex-direction: column; gap: 0.4rem; }
+.opt { padding: 0.6rem 1rem; background: #f8fafc; border: 2px solid var(--border); border-radius: 7px; cursor: pointer; font-size: 0.84rem; transition: all 0.18s; }
+.opt:hover { border-color: var(--primary); background: var(--primary-light); }
+.opt.correct { border-color: var(--secondary); background: #d1fae5; color: #065f46; font-weight: 700; }
+.opt.wrong { border-color: var(--danger); background: #fee2e2; color: #991b1b; }
+.exp { display: none; margin-top: 0.85rem; padding: 0.7rem 0.9rem; background: #f0fdf4; border-left: 4px solid var(--secondary); border-radius: 4px; font-size: 0.82rem; line-height: 1.65; }
+.exp.show { display: block; }
+
+.score-box { background: white; border: 2px solid var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; margin-top: 1.25rem; display: none; }
+.score-num { font-size: 2.2rem; font-weight: 800; color: var(--primary); }
+
+.btn { padding: 0.5rem 1.1rem; border: none; border-radius: 7px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: opacity 0.2s; }
+.btn:hover { opacity: 0.85; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-green { background: var(--secondary); color: white; }
+.btn-gray { background: var(--gray); color: white; }
+
+textarea.memo { width: 100%; min-height: 140px; padding: 0.9rem; border: 2px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.88rem; resize: vertical; background: #fffef7; }
+textarea.memo:focus { outline: none; border-color: var(--primary); }
+
+.scroll-top { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--primary); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; }
+.scroll-top.show { display: flex; }
+
+@media (max-width: 700px) {
+  .container { padding: 1rem; }
+  .hero h1 { font-size: 1.35rem; }
+  .card-grid, .card-grid2 { grid-template-columns: 1fr; }
+  .fc-grid { grid-template-columns: repeat(2, 1fr); }
+  .vmodel-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">🧪 07. 테스트 관리</span>
+  <a href="#s1">출제기준</a>
+  <a href="#s2">핵심개념</a>
+  <a href="#s3">키워드카드</a>
+  <a href="#s4">V-모델</a>
+  <a href="#s5">기법분류</a>
+  <a href="#s6">결함생명주기</a>
+  <a href="#s7">문제풀이</a>
+  <a href="#s8">미니퀴즈</a>
+  <a href="#s9">오답노트</a>
+</nav>
+
+<div class="hero">
+  <h1>07. 애플리케이션 테스트 관리</h1>
+  <p class="subtitle">테스트케이스 설계 · 통합 테스트 · 성능 개선</p>
+  <div class="tags">
+    <span class="tag">블랙박스</span>
+    <span class="tag">화이트박스</span>
+    <span class="tag">V-모델</span>
+    <span class="tag">결함관리</span>
+    <span class="tag">커버리지</span>
+    <span class="tag">통합테스트</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- S1 출제기준 -->
+<section id="s1">
+  <h2 class="section-title"><span class="sec-num">1</span> 출제기준 요약</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3 style="color:var(--primary)">📋 테스트케이스 설계하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>테스트 유형, 목적, 방식</li>
+        <li>블랙박스 / 화이트박스 기법</li>
+        <li>테스트케이스 구성요소</li>
+        <li>테스트 오라클</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--secondary)">🔗 통합 테스트하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>단위 → 통합 → 시스템 → 인수 테스트</li>
+        <li>빅뱅 / 상향식 / 하향식 / 샌드위치</li>
+        <li>드라이버, 스텁</li>
+        <li>결함 추이 분석, 잔존 결함</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--warning)">⚡ 성능 개선하기</h3>
+      <ul style="font-size:0.84rem;color:var(--gray);padding-left:1.1rem;">
+        <li>성능 측정 지표 (응답시간, 처리량, 자원사용율)</li>
+        <li>성능 저하 원인 분석</li>
+        <li>코드 최적화</li>
+        <li>품질 분석 도구</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hl warn">
+    <strong>⚠️ 시험 핵심:</strong> <strong>블랙박스/화이트박스 기법 이름</strong>과 <strong>통합 테스트 방식(드라이버/스텁)</strong>이 매회 출제됩니다.
+    기법 이름을 보고 블랙박스인지 화이트박스인지 즉시 판단할 수 있어야 합니다.
+  </div>
+</section>
+
+<!-- S2 핵심개념 -->
+<section id="s2">
+  <h2 class="section-title"><span class="sec-num">2</span> 핵심 개념</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="tab(this,'t-type')">테스트 유형</button>
+    <button class="tab-btn" onclick="tab(this,'t-tech')">테스트 기법</button>
+    <button class="tab-btn" onclick="tab(this,'t-integ')">통합 테스트</button>
+    <button class="tab-btn" onclick="tab(this,'t-defect')">결함 관리</button>
+    <button class="tab-btn" onclick="tab(this,'t-perf')">성능 개선</button>
+  </div>
+
+  <!-- 테스트 유형 -->
+  <div id="t-type" class="tab-content active">
+    <div class="card">
+      <h3>테스트 목적에 따른 분류</h3>
+      <table class="base">
+        <tr><th>유형</th><th>설명</th><th>시점</th></tr>
+        <tr><td><strong>회귀 테스트</strong></td><td>수정 후 기존 기능 정상 동작 확인</td><td>수정 후</td></tr>
+        <tr><td><strong>회복 테스트</strong></td><td>장애 발생 후 시스템 복구 능력 확인</td><td>장애 상황</td></tr>
+        <tr><td><strong>안전 테스트</strong></td><td>보안 취약점, 불법 접근 시도 대응 확인</td><td>보안 검증</td></tr>
+        <tr><td><strong>성능 테스트</strong></td><td>응답시간, 처리량, 자원 사용률 측정</td><td>부하 상황</td></tr>
+        <tr><td><strong>구조 테스트</strong></td><td>내부 논리 경로, 복잡도 확인</td><td>구현 후</td></tr>
+        <tr><td><strong>병행 테스트</strong></td><td>신구 시스템 동시 운영 비교</td><td>전환 시점</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>블랙박스 vs 화이트박스 핵심 비교</h3>
+      <table class="base">
+        <tr>
+          <th>구분</th>
+          <th><span class="badge bb">블랙박스</span></th>
+          <th><span class="badge wb">화이트박스</span></th>
+        </tr>
+        <tr><td>내부 구조</td><td>알 필요 없음</td><td>완전히 알고 있음</td></tr>
+        <tr><td>관점</td><td>사용자 관점 (입출력)</td><td>개발자 관점 (코드)</td></tr>
+        <tr><td>목적</td><td>명세 기반 기능 검증</td><td>코드 경로/구조 검증</td></tr>
+        <tr><td>대표 기법</td><td>동등분할, 경계값 분석</td><td>구문·분기·조건 커버리지</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>테스트케이스 구성요소</h3>
+      <table class="base">
+        <tr><th>항목</th><th>설명</th></tr>
+        <tr><td>테스트 ID</td><td>테스트케이스 식별자</td></tr>
+        <tr><td>테스트 항목</td><td>테스트할 기능 또는 조건</td></tr>
+        <tr><td>입력 명세</td><td>입력 데이터 값</td></tr>
+        <tr><td>출력 명세</td><td>기대 출력 결과</td></tr>
+        <tr><td>시작 조건</td><td>테스트 실행 전 만족해야 할 조건</td></tr>
+        <tr><td>종료 조건</td><td>테스트 완료 기준</td></tr>
+        <tr><td>환경 설정</td><td>테스트 수행 환경</td></tr>
+      </table>
+      <div class="hl" style="margin-top:0.75rem;">
+        <strong>테스트 오라클:</strong> 테스트 결과의 옳고 그름을 판단하는 기준<br>
+        참(True) · 샘플링 · 추정(Heuristic) · 일관성(Consistent) 오라클
+      </div>
+    </div>
+  </div>
+
+  <!-- 테스트 기법 -->
+  <div id="t-tech" class="tab-content">
+    <div class="card">
+      <h3><span class="badge bb">블랙박스</span> 테스트 기법</h3>
+      <table class="base">
+        <tr><th>기법</th><th>설명</th><th>예시</th></tr>
+        <tr>
+          <td><strong>동등분할</strong><br><span style="font-size:0.75rem;color:var(--gray)">(Equivalence Partitioning)</span></td>
+          <td>입력 데이터를 동등 클래스로 나눠 각 클래스에서 하나씩 테스트</td>
+          <td>1~100 유효 → 50 하나만 테스트</td>
+        </tr>
+        <tr>
+          <td><strong>경계값 분석</strong><br><span style="font-size:0.75rem;color:var(--gray)">(Boundary Value Analysis)</span></td>
+          <td>유효·무효 경계의 값을 집중 테스트 (경계±1)</td>
+          <td>1~100이면 0,1,100,101 테스트</td>
+        </tr>
+        <tr>
+          <td><strong>원인-결과 그래프</strong><br><span style="font-size:0.75rem;color:var(--gray)">(Cause-Effect Graph)</span></td>
+          <td>입력 조건(원인)과 출력 결과(결과)의 관계를 그래프로 표현</td>
+          <td>논리 관계 도출</td>
+        </tr>
+        <tr>
+          <td><strong>결정 테이블</strong><br><span style="font-size:0.75rem;color:var(--gray)">(Decision Table)</span></td>
+          <td>조건과 행동을 표로 정리해 모든 조합 테스트</td>
+          <td>조건 조합표</td>
+        </tr>
+        <tr>
+          <td><strong>상태 전이</strong><br><span style="font-size:0.75rem;color:var(--gray)">(State Transition)</span></td>
+          <td>시스템의 상태 변화와 이벤트 기반 테스트</td>
+          <td>로그인→메인→로그아웃</td>
+        </tr>
+        <tr>
+          <td><strong>유스케이스</strong><br><span style="font-size:0.75rem;color:var(--gray)">(Use Case)</span></td>
+          <td>유스케이스를 기반으로 시나리오 테스트</td>
+          <td>사용자 행동 흐름</td>
+        </tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3><span class="badge wb">화이트박스</span> 테스트 기법 (커버리지)</h3>
+      <table class="base">
+        <tr><th>기법</th><th>설명</th><th>강도</th></tr>
+        <tr>
+          <td><strong>구문 커버리지</strong><br><span style="font-size:0.75rem;color:var(--gray)">(Statement Coverage)</span></td>
+          <td>모든 구문(문장)이 1번 이상 실행</td>
+          <td>가장 약함</td>
+        </tr>
+        <tr>
+          <td><strong>결정(분기) 커버리지</strong><br><span style="font-size:0.75rem;color:var(--gray)">(Decision/Branch)</span></td>
+          <td>모든 결정(분기)의 참/거짓이 1번 이상 실행</td>
+          <td>중간</td>
+        </tr>
+        <tr>
+          <td><strong>조건 커버리지</strong><br><span style="font-size:0.75rem;color:var(--gray)">(Condition Coverage)</span></td>
+          <td>각 조건의 참/거짓이 1번 이상 실행</td>
+          <td>중간</td>
+        </tr>
+        <tr>
+          <td><strong>조건/결정 커버리지</strong><br><span style="font-size:0.75rem;color:var(--gray)">(MC/DC)</span></td>
+          <td>조건 커버리지 + 결정 커버리지 동시 만족</td>
+          <td>강함</td>
+        </tr>
+        <tr>
+          <td><strong>다중 조건 커버리지</strong><br><span style="font-size:0.75rem;color:var(--gray)">(Multiple Condition)</span></td>
+          <td>모든 조건의 가능한 참/거짓 조합 테스트</td>
+          <td>매우 강함</td>
+        </tr>
+        <tr>
+          <td><strong>경로 커버리지</strong><br><span style="font-size:0.75rem;color:var(--gray)">(Path Coverage)</span></td>
+          <td>모든 실행 경로 테스트</td>
+          <td>가장 강함</td>
+        </tr>
+      </table>
+      <div class="hl warn" style="margin-top:0.75rem;">
+        커버리지 강도 순: <strong>구문 &lt; 결정 = 조건 &lt; 조건/결정 &lt; 다중조건 &lt; 경로</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- 통합 테스트 -->
+  <div id="t-integ" class="tab-content">
+    <div class="card">
+      <h3>통합 테스트 방식 비교 (자주 출제!)</h3>
+      <table class="base">
+        <tr><th>방식</th><th>특징</th><th>필요 모듈</th><th>장단점</th></tr>
+        <tr>
+          <td><strong>빅뱅 통합</strong></td>
+          <td>모든 모듈을 한꺼번에 통합</td>
+          <td>없음</td>
+          <td>+ 단순<br>- 오류 발견 어려움</td>
+        </tr>
+        <tr>
+          <td><strong>상향식 통합</strong><br><span style="font-size:0.75rem;color:var(--gray)">(Bottom-Up)</span></td>
+          <td>하위 모듈부터 통합 (잎 → 뿌리)</td>
+          <td><code class="il">드라이버</code> 필요</td>
+          <td>+ 하위 모듈 먼저 검증<br>- 상위 설계 결함 늦게 발견</td>
+        </tr>
+        <tr>
+          <td><strong>하향식 통합</strong><br><span style="font-size:0.75rem;color:var(--gray)">(Top-Down)</span></td>
+          <td>상위 모듈부터 통합 (뿌리 → 잎)</td>
+          <td><code class="il">스텁</code> 필요</td>
+          <td>+ 상위 설계 조기 검증<br>- 하위 모듈 늦게 검증</td>
+        </tr>
+        <tr>
+          <td><strong>샌드위치 통합</strong></td>
+          <td>상향식 + 하향식 동시 적용</td>
+          <td>드라이버 + 스텁</td>
+          <td>+ 병행 진행<br>- 복잡, 비용 높음</td>
+        </tr>
+      </table>
+      <div class="hl" style="margin-top:0.75rem;">
+        <strong>드라이버 (Driver):</strong> 상향식에서 <u>아직 개발 안 된 상위 모듈을 대체</u>하는 가상 모듈<br>
+        <strong>스텁 (Stub):</strong> 하향식에서 <u>아직 개발 안 된 하위 모듈을 대체</u>하는 가상 모듈
+      </div>
+    </div>
+    <div class="card">
+      <h3>테스트 단계 (V-모델 순서)</h3>
+      <table class="base">
+        <tr><th>단계</th><th>범위</th><th>수행자</th><th>목적</th></tr>
+        <tr><td><strong>단위 테스트</strong></td><td>개별 모듈/함수</td><td>개발자</td><td>모듈 내부 로직 검증</td></tr>
+        <tr><td><strong>통합 테스트</strong></td><td>모듈 간 인터페이스</td><td>개발자</td><td>모듈 연동 오류 검증</td></tr>
+        <tr><td><strong>시스템 테스트</strong></td><td>전체 시스템</td><td>개발팀</td><td>요구사항 충족 여부</td></tr>
+        <tr><td><strong>인수 테스트</strong></td><td>실제 환경</td><td>사용자</td><td>사용자 요구 만족 여부</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 결함 관리 -->
+  <div id="t-defect" class="tab-content">
+    <div class="card">
+      <h3>결함(Defect) 용어 정리</h3>
+      <table class="base">
+        <tr><th>용어</th><th>정의</th></tr>
+        <tr><td><strong>에러 (Error)</strong></td><td>사람의 실수 (개발자가 잘못 코딩)</td></tr>
+        <tr><td><strong>결함 (Defect/Fault)</strong></td><td>에러로 인해 코드에 삽입된 오류</td></tr>
+        <tr><td><strong>버그 (Bug)</strong></td><td>결함과 동의어로 사용</td></tr>
+        <tr><td><strong>실패 (Failure)</strong></td><td>결함이 실행되어 발생하는 예상치 못한 동작</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>결함 심각도 분류</h3>
+      <table class="base">
+        <tr><th>레벨</th><th>설명</th></tr>
+        <tr><td>치명 (Critical)</td><td>시스템 전체 중단, 데이터 손실</td></tr>
+        <tr><td>주요 (Major)</td><td>핵심 기능 동작 불가</td></tr>
+        <tr><td>보통 (Minor)</td><td>기능 일부 제한적 동작</td></tr>
+        <tr><td>경미 (Trivial)</td><td>UI 불편, 미관 문제</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>결함 추이 분석</h3>
+      <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.75rem;">테스트 기간 동안 발견·수정된 결함 수를 추적해 품질 상태 판단</p>
+      <table class="base">
+        <tr><th>분석 항목</th><th>의미</th></tr>
+        <tr><td>결함 발견율</td><td>단위 시간당 발견 결함 수</td></tr>
+        <tr><td>결함 수정율</td><td>발견 대비 수정 완료 비율</td></tr>
+        <tr><td>잔존 결함</td><td>수정되지 않은 남은 결함 수</td></tr>
+        <tr><td>결함 밀도</td><td>코드 1000줄당 결함 수 (결함/KLOC)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 성능 개선 -->
+  <div id="t-perf" class="tab-content">
+    <div class="card">
+      <h3>성능 측정 지표</h3>
+      <table class="base">
+        <tr><th>지표</th><th>설명</th></tr>
+        <tr><td><strong>응답 시간</strong> (Response Time)</td><td>요청 전송부터 응답 수신까지의 시간</td></tr>
+        <tr><td><strong>처리량</strong> (Throughput)</td><td>단위 시간당 처리 건수 (TPS)</td></tr>
+        <tr><td><strong>자원 사용률</strong> (Utilization)</td><td>CPU, 메모리, 네트워크 사용 비율</td></tr>
+        <tr><td><strong>가용성</strong> (Availability)</td><td>시스템 정상 운영 시간 비율</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>성능 저하 원인 &amp; 개선 방법</h3>
+      <table class="base">
+        <tr><th>원인</th><th>개선 방법</th></tr>
+        <tr><td>DB 쿼리 비효율</td><td>인덱스 추가, 쿼리 튜닝</td></tr>
+        <tr><td>메모리 누수</td><td>객체 해제, GC 튜닝</td></tr>
+        <tr><td>반복적 DB 접근</td><td>캐싱(Cache) 적용</td></tr>
+        <tr><td>중복 연산</td><td>알고리즘 최적화</td></tr>
+        <tr><td>불필요한 로직</td><td>Dead Code 제거</td></tr>
+        <tr><td>N+1 쿼리 문제</td><td>배치 조회, JOIN 활용</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>품질 분석 도구</h3>
+      <div class="card-grid2" style="margin-top:0.5rem;">
+        <div style="background:#f8fafc;border-radius:8px;padding:0.75rem;">
+          <div style="font-weight:700;font-size:0.85rem;color:var(--primary);margin-bottom:0.3rem;">SonarQube</div>
+          <div style="font-size:0.8rem;color:var(--gray);">정적 분석, 코드 품질 측정, 기술 부채 시각화</div>
+        </div>
+        <div style="background:#f8fafc;border-radius:8px;padding:0.75rem;">
+          <div style="font-weight:700;font-size:0.85rem;color:var(--primary);margin-bottom:0.3rem;">JUnit</div>
+          <div style="font-size:0.8rem;color:var(--gray);">Java 단위 테스트 프레임워크</div>
+        </div>
+        <div style="background:#f8fafc;border-radius:8px;padding:0.75rem;">
+          <div style="font-weight:700;font-size:0.85rem;color:var(--primary);margin-bottom:0.3rem;">PMD / FindBugs</div>
+          <div style="font-size:0.8rem;color:var(--gray);">코드 정적 분석, 잠재 버그 탐지</div>
+        </div>
+        <div style="background:#f8fafc;border-radius:8px;padding:0.75rem;">
+          <div style="font-weight:700;font-size:0.85rem;color:var(--primary);margin-bottom:0.3rem;">JMeter</div>
+          <div style="font-size:0.8rem;color:var(--gray);">부하/성능 테스트 도구</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S3 플래시카드 -->
+<section id="s3">
+  <h2 class="section-title"><span class="sec-num">3</span> 시험용 키워드 플래시카드</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:0.85rem;">카드를 클릭하면 정답이 나옵니다.</p>
+  <div class="fc-grid" id="fc-container"></div>
+</section>
+
+<!-- S4 V-모델 시각화 -->
+<section id="s4">
+  <h2 class="section-title"><span class="sec-num">4</span> V-모델 단계 시각화</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:1rem;">각 단계를 클릭하면 대응 관계와 설명이 나옵니다.</p>
+    <div class="vmodel" id="vmodel-container"></div>
+    <div class="vmodel-detail" id="vmodel-detail"></div>
+  </div>
+</section>
+
+<!-- S5 기법 분류 퀴즈 -->
+<section id="s5">
+  <h2 class="section-title"><span class="sec-num">5</span> 블랙박스 / 화이트박스 기법 분류</h2>
+  <p style="color:var(--gray);font-size:0.84rem;margin-bottom:1rem;">각 기법이 블랙박스인지 화이트박스인지 선택하세요.</p>
+  <div class="classify-grid" id="classify-container"></div>
+  <div style="display:flex;gap:0.75rem;margin-top:1rem;align-items:center;flex-wrap:wrap;">
+    <button class="btn btn-primary" onclick="checkClassify()">채점하기</button>
+    <button class="btn btn-gray" onclick="resetClassify()">다시 시작</button>
+    <span id="classify-score" style="font-size:0.9rem;font-weight:700;color:var(--primary);"></span>
+  </div>
+</section>
+
+<!-- S6 결함 생명주기 -->
+<section id="s6">
+  <h2 class="section-title"><span class="sec-num">6</span> 결함 생명주기 시각화</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:1rem;">각 단계를 클릭해 흐름을 확인하세요.</p>
+    <div class="defect-flow" id="defect-flow"></div>
+    <div class="defect-desc" id="defect-desc">단계를 클릭하면 설명이 나타납니다.</div>
+  </div>
+</section>
+
+<!-- S7 문제풀이 -->
+<section id="s7">
+  <h2 class="section-title"><span class="sec-num">7</span> 대표 문제 유형</h2>
+  <div id="oq-container"></div>
+  <div class="score-box" id="oq-score">
+    <div class="score-num" id="oq-snum">0/0</div>
+    <p style="color:var(--gray);margin-top:0.4rem;" id="oq-smsg"></p>
+  </div>
+  <button class="btn btn-primary" style="margin-top:1rem;" onclick="resetOQ()">다시 풀기</button>
+</section>
+
+<!-- S8 미니퀴즈 -->
+<section id="s8">
+  <h2 class="section-title"><span class="sec-num">8</span> 미니 퀴즈</h2>
+  <div id="mq-container"></div>
+  <button class="btn btn-green" style="margin-top:0.85rem;" onclick="checkMQ()">채점하기</button>
+  <div id="mq-result" style="display:none;margin-top:1rem;"></div>
+</section>
+
+<!-- S9 오답노트 -->
+<section id="s9">
+  <h2 class="section-title"><span class="sec-num">9</span> 오답 노트</h2>
+  <div class="card">
+    <p style="font-size:0.84rem;color:var(--gray);margin-bottom:0.7rem;">틀린 문제나 헷갈리는 개념을 기록하세요. (자동 저장)</p>
+    <textarea class="memo" id="memo" placeholder="예) 상향식=드라이버, 하향식=스텁&#10;예) 동등분할·경계값·원인결과·결정테이블·상태전이·유스케이스 → 블랙박스&#10;예) 구문·결정·조건·경로 커버리지 → 화이트박스&#10;예) 커버리지 강도: 구문 < 결정 = 조건 < 조건/결정 < 다중조건 < 경로"></textarea>
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.5rem;">
+      <button class="btn btn-primary" onclick="saveMemo()">저장</button>
+      <span id="memo-ok" style="font-size:0.8rem;color:var(--secondary);display:none;">✓ 저장됨</span>
+    </div>
+  </div>
+</section>
+
+</div>
+<button class="scroll-top" id="stbtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ── 플래시카드 데이터 ──────────────────────────────────────
+const fcData = [
+  { f:'블랙박스 테스트',      b:'내부 구조 모름\n외부 입출력으로 검증\n사용자 관점' },
+  { f:'화이트박스 테스트',    b:'내부 구조를 알고\n코드 경로 검증\n개발자 관점' },
+  { f:'동등분할',             b:'입력을 동등 클래스로 분류\n각 클래스에서 대표값 선택\n블랙박스 기법' },
+  { f:'경계값 분석',          b:'유효/무효 경계값 집중 테스트\n경계±1 테스트\n블랙박스 기법' },
+  { f:'구문 커버리지',        b:'모든 구문 1회 이상 실행\n가장 약한 커버리지\n화이트박스 기법' },
+  { f:'결정(분기) 커버리지',  b:'모든 분기의 참/거짓 실행\n화이트박스 기법' },
+  { f:'드라이버 (Driver)',    b:'상향식 통합 테스트에서\n아직 개발 안 된\n상위 모듈 대체 가상 모듈' },
+  { f:'스텁 (Stub)',          b:'하향식 통합 테스트에서\n아직 개발 안 된\n하위 모듈 대체 가상 모듈' },
+  { f:'회귀 테스트',          b:'수정 후\n기존 기능 정상 동작 여부 재확인\n(Regression Test)' },
+  { f:'테스트 오라클',        b:'테스트 결과의\n옳고 그름을 판단하는 기준\n참·샘플링·추정·일관성' },
+  { f:'결함 밀도',            b:'코드 1000줄당 결함 수\n(결함 수 / KLOC)\n품질 지표' },
+  { f:'잔존 결함',            b:'테스트 후 수정되지 않고\n남아있는 결함 수' },
+  { f:'빅뱅 통합',            b:'모든 모듈을 한꺼번에 통합\n드라이버/스텁 불필요\n오류 원인 찾기 어려움' },
+  { f:'샌드위치 통합',        b:'상향식 + 하향식 병행\n드라이버 + 스텁 모두 필요\n복잡, 비용 높음' },
+  { f:'인수 테스트',          b:'사용자가 실제 환경에서 수행\nV-모델 최상위 단계\nAlpha/Beta 테스트 포함' },
+  { f:'경로 커버리지',        b:'모든 실행 경로 테스트\n가장 강한 커버리지\n화이트박스 기법' },
+];
+
+// ── V-모델 데이터 ─────────────────────────────────────────
+const vmodelData = [
+  {
+    dev:'요구사항 분석', test:'인수 테스트',
+    detail:'<strong>요구사항 분석 ↔ 인수 테스트</strong><br>요구사항이 실제로 만족되었는지 사용자가 검증합니다.<br>Alpha 테스트(개발자 환경), Beta 테스트(사용자 환경)가 여기에 해당합니다.'
+  },
+  {
+    dev:'시스템 설계', test:'시스템 테스트',
+    detail:'<strong>시스템 설계 ↔ 시스템 테스트</strong><br>전체 시스템이 요구사항을 만족하는지 검증합니다.<br>기능 테스트, 성능 테스트, 보안 테스트 등이 포함됩니다.'
+  },
+  {
+    dev:'상세 설계', test:'통합 테스트',
+    detail:'<strong>상세 설계 ↔ 통합 테스트</strong><br>모듈 간 인터페이스와 연동이 올바른지 검증합니다.<br>빅뱅/상향식/하향식/샌드위치 방식을 사용합니다.'
+  },
+  {
+    dev:'구현 (코딩)', test:'단위 테스트',
+    detail:'<strong>구현 ↔ 단위 테스트</strong><br>개별 모듈/함수의 내부 로직을 검증합니다.<br>JUnit 등 단위 테스트 도구를 사용하며 개발자가 직접 수행합니다.'
+  },
+];
+
+// ── 기법 분류 데이터 ──────────────────────────────────────
+const classifyData = [
+  { name:'동등분할',          type:'BB' },
+  { name:'경계값 분석',       type:'BB' },
+  { name:'원인-결과 그래프',  type:'BB' },
+  { name:'결정 테이블',       type:'BB' },
+  { name:'상태 전이',         type:'BB' },
+  { name:'유스케이스',        type:'BB' },
+  { name:'구문 커버리지',     type:'WB' },
+  { name:'결정 커버리지',     type:'WB' },
+  { name:'조건 커버리지',     type:'WB' },
+  { name:'경로 커버리지',     type:'WB' },
+  { name:'조건/결정 커버리지',type:'WB' },
+  { name:'루프 테스트',       type:'WB' },
+];
+
+// ── 결함 생명주기 데이터 ─────────────────────────────────
+const defectSteps = [
+  { label:'발견', cls:'ds-open',  desc:'테스트 중 결함을 발견합니다. 결함의 내용, 재현 방법, 심각도를 기록합니다.' },
+  { label:'등록', cls:'ds-reg',   desc:'결함 관리 시스템(JIRA, Mantis 등)에 결함을 공식 등록합니다. 결함 ID를 부여합니다.' },
+  { label:'분석', cls:'ds-ana',   desc:'개발자가 결함의 원인을 분석하고 우선순위를 결정합니다.' },
+  { label:'조치', cls:'ds-fix',   desc:'결함 원인을 수정합니다. 코드 수정 또는 설계 변경이 이루어집니다.' },
+  { label:'재확인', cls:'ds-re',  desc:'수정된 내용을 테스터가 다시 테스트합니다. 실패 시 재오픈됩니다.' },
+  { label:'종료', cls:'ds-close', desc:'재확인 통과 시 결함이 종료됩니다. 결함 생명주기가 완료됩니다.' },
+];
+
+// ── 문제 풀이 데이터 ─────────────────────────────────────
+const oqData = [
+  {
+    q:'상향식 통합 테스트에서 아직 개발되지 않은 상위 모듈을 대신하는 가상 모듈을 무엇이라 하는가?',
+    opts:['스텁(Stub)','드라이버(Driver)','목(Mock)','셸(Shell)'], ans:1,
+    exp:'상향식(Bottom-Up): 하위 모듈부터 통합 → 상위 모듈 대체 필요 → 드라이버\n하향식(Top-Down): 상위 모듈부터 통합 → 하위 모듈 대체 필요 → 스텁',
+  },
+  {
+    q:'다음 중 블랙박스 테스트 기법이 아닌 것은?',
+    opts:['동등분할','경계값 분석','결정 커버리지','상태 전이'], ans:2,
+    exp:'결정(분기) 커버리지는 화이트박스 테스트 기법입니다.\n블랙박스 기법: 동등분할, 경계값 분석, 원인-결과 그래프, 결정 테이블, 상태 전이, 유스케이스',
+  },
+  {
+    q:'소프트웨어 테스트에서 커버리지(Coverage) 강도가 가장 강한 것은?',
+    opts:['구문 커버리지','결정 커버리지','조건 커버리지','경로 커버리지'], ans:3,
+    exp:'커버리지 강도 순:\n구문 < 결정 = 조건 < 조건/결정 < 다중조건 < 경로\n경로 커버리지는 모든 실행 경로를 테스트하므로 가장 강합니다.',
+  },
+  {
+    q:'테스트를 수행한 후 수정되지 않고 시스템에 남아있는 결함을 무엇이라 하는가?',
+    opts:['결함 밀도','잔존 결함','결함 추이','누적 결함'], ans:1,
+    exp:'잔존 결함(Residual Defect): 테스트 완료 후 발견되지 않거나 수정되지 않은 남은 결함\n결함 밀도: 코드 1000줄당 결함 수 (결함/KLOC)',
+  },
+  {
+    q:'입력 데이터를 유사한 성질의 그룹으로 나누어 각 그룹에서 대표 값을 선택하는 블랙박스 테스트 기법은?',
+    opts:['경계값 분석','동등분할','원인-결과 그래프','결정 테이블'], ans:1,
+    exp:'동등분할(Equivalence Partitioning):\n입력 데이터를 동등한 클래스로 분류하고 각 클래스의 대표값으로 테스트\n예) 1~100 유효 구간 → 50 하나만 테스트',
+  },
+  {
+    q:'모든 모듈을 동시에 통합하여 테스트하는 방식으로, 드라이버와 스텁이 필요 없는 통합 테스트 방식은?',
+    opts:['상향식 통합','하향식 통합','빅뱅 통합','샌드위치 통합'], ans:2,
+    exp:'빅뱅 통합: 모든 모듈을 한꺼번에 통합\n+ 단순, 드라이버/스텁 불필요\n- 오류 발생 시 원인 찾기 어려움',
+  },
+  {
+    q:'수정 후 기존에 정상적으로 동작하던 기능이 여전히 잘 동작하는지 확인하는 테스트는?',
+    opts:['단위 테스트','회귀 테스트','인수 테스트','성능 테스트'], ans:1,
+    exp:'회귀 테스트(Regression Test):\n소프트웨어 수정 후 변경이 기존 기능에 영향을 주지 않음을 확인\n= "예전에 됐던 것들이 여전히 되는가?"',
+  },
+  {
+    q:'V-모델에서 시스템 설계 단계에 대응하는 테스트 단계는?',
+    opts:['단위 테스트','통합 테스트','시스템 테스트','인수 테스트'], ans:2,
+    exp:'V-모델 대응:\n요구사항 분석 ↔ 인수 테스트\n시스템 설계 ↔ 시스템 테스트\n상세 설계 ↔ 통합 테스트\n구현 ↔ 단위 테스트',
+  },
+];
+
+// ── 미니퀴즈 데이터 ──────────────────────────────────────
+const mqData = [
+  { q:'하향식 통합 테스트에서 하위 모듈 대신 사용하는 가상 모듈은?', opts:['드라이버','스텁','셸','목'], ans:1 },
+  { q:'블랙박스 테스트 기법이 아닌 것은?', opts:['동등분할','경계값 분석','구문 커버리지','상태 전이'], ans:2 },
+  { q:'가장 약한 커버리지는?', opts:['경로','조건/결정','결정','구문'], ans:3 },
+  { q:'코드 1000줄당 결함 수를 나타내는 품질 지표는?', opts:['잔존 결함','결함 밀도','결함 추이','결함 심각도'], ans:1 },
+  { q:'V-모델에서 요구사항 분석에 대응하는 테스트는?', opts:['단위 테스트','통합 테스트','시스템 테스트','인수 테스트'], ans:3 },
+  { q:'유효·무효 경계값을 집중적으로 테스트하는 블랙박스 기법은?', opts:['동등분할','경계값 분석','결정 테이블','유스케이스'], ans:1 },
+  { q:'상향식+하향식을 병행하는 통합 테스트 방식은?', opts:['빅뱅','상향식','하향식','샌드위치'], ans:3 },
+  { q:'테스트 결과의 옳고 그름을 판단하는 기준은?', opts:['테스트 케이스','테스트 오라클','테스트 시나리오','테스트 하네스'], ans:1 },
+];
+
+// ── 렌더링 함수들 ─────────────────────────────────────────
+function renderFC() {
+  document.getElementById('fc-container').innerHTML = fcData.map(c =>
+    `<div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-inner">
+        <div class="fc-front">${c.f.replace(/\n/g, '<br>')}</div>
+        <div class="fc-back">${c.b.replace(/\n/g, '<br>')}</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function renderVModel() {
+  const container = document.getElementById('vmodel-container');
+  container.innerHTML = vmodelData.map((row, i) =>
+    `<div class="vmodel-row">
+      <div class="vmodel-dev" onclick="showVDetail(${i})" id="vd-${i}">${row.dev}</div>
+      <div class="vmodel-arrow">↔</div>
+      <div class="vmodel-test" onclick="showVDetail(${i})" id="vt-${i}">${row.test}</div>
+    </div>`
+  ).join('');
+}
+
+let activeVRow = -1;
+function showVDetail(i) {
+  document.querySelectorAll('.vmodel-dev, .vmodel-test').forEach(el => el.classList.remove('active'));
+  const detail = document.getElementById('vmodel-detail');
+  if (activeVRow === i) {
+    detail.classList.remove('show');
+    activeVRow = -1;
+    return;
+  }
+  document.getElementById(`vd-${i}`).classList.add('active');
+  document.getElementById(`vt-${i}`).classList.add('active');
+  detail.innerHTML = vmodelData[i].detail;
+  detail.classList.add('show');
+  activeVRow = i;
+}
+
+function renderDefectFlow() {
+  document.getElementById('defect-flow').innerHTML = defectSteps.map((s, i) =>
+    `${i > 0 ? '<span class="defect-arrow">→</span>' : ''}
+    <div class="defect-step ${s.cls}" onclick="showDefect(${i})" id="ds-${i}">${s.label}</div>`
+  ).join('');
+}
+
+function showDefect(i) {
+  defectSteps.forEach((_, j) => {
+    const el = document.getElementById(`ds-${j}`);
+    if (el) el.classList.toggle('active', j === i);
+  });
+  document.getElementById('defect-desc').innerHTML = `<strong>[${defectSteps[i].label}]</strong><br>${defectSteps[i].desc}`;
+}
+
+let classifySelected = {};
+function renderClassify() {
+  classifySelected = {};
+  document.getElementById('classify-score').textContent = '';
+  document.getElementById('classify-container').innerHTML = classifyData.map((item, i) =>
+    `<div class="classify-item">
+      <div class="classify-name">${item.name}</div>
+      <div class="classify-btns">
+        <button class="cl-btn cl-bb" onclick="pickClassify(${i},'BB',this)" id="cb-${i}-BB">블랙박스</button>
+        <button class="cl-btn cl-wb" onclick="pickClassify(${i},'WB',this)" id="cb-${i}-WB">화이트박스</button>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function pickClassify(i, type, el) {
+  ['BB','WB'].forEach(t => {
+    const btn = document.getElementById(`cb-${i}-${t}`);
+    if (btn) { btn.classList.remove('correct','wrong'); btn.style.opacity='1'; }
+  });
+  classifySelected[i] = type;
+  el.style.outline = '3px solid #7c3aed';
+}
+
+function checkClassify() {
+  let sc = 0;
+  classifyData.forEach((item, i) => {
+    ['BB','WB'].forEach(t => {
+      const btn = document.getElementById(`cb-${i}-${t}`);
+      if (btn) { btn.classList.remove('correct','wrong'); btn.style.opacity='1'; btn.style.outline='none'; }
+    });
+    const correct = item.type;
+    const sel = classifySelected[i];
+    document.getElementById(`cb-${i}-${correct}`).classList.add('correct');
+    if (sel && sel !== correct) document.getElementById(`cb-${i}-${sel}`).classList.add('wrong');
+    if (sel === correct) sc++;
+  });
+  document.getElementById('classify-score').textContent = `${sc}/${classifyData.length} 정답`;
+}
+
+function resetClassify() { renderClassify(); }
+
+// 출력 퀴즈
+let oqAnswered = {}, oqSelected = {};
+function renderOQ() {
+  oqAnswered = {}; oqSelected = {};
+  document.getElementById('oq-container').innerHTML = oqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi + 1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<div class="opt" onclick="pickOQ(${qi},${oi},this)" id="oq-${qi}-${oi}">${o}</div>`
+      ).join('')}</div>
+      <div class="exp" id="exp-${qi}">${q.exp.replace(/\n/g, '<br>')}</div>
+    </div>`
+  ).join('');
+  document.getElementById('oq-score').style.display = 'none';
+}
+
+function pickOQ(qi, oi, el) {
+  if (oqAnswered[qi]) return;
+  oqAnswered[qi] = true; oqSelected[qi] = oi;
+  const correct = oqData[qi].ans;
+  document.getElementById(`oq-${qi}-${correct}`).classList.add('correct');
+  if (oi !== correct) el.classList.add('wrong');
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  if (Object.keys(oqAnswered).length === oqData.length) {
+    const sc = oqData.filter((_, i) => oqSelected[i] === oqData[i].ans).length;
+    document.getElementById('oq-snum').textContent = `${sc}/${oqData.length}`;
+    document.getElementById('oq-smsg').textContent = sc === oqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 오답노트에 기록하세요!';
+    document.getElementById('oq-score').style.display = 'block';
+  }
+}
+
+function resetOQ() { renderOQ(); }
+
+// 미니퀴즈
+function renderMQ() {
+  document.getElementById('mq-container').innerHTML = mqData.map((q, qi) =>
+    `<div class="quiz-item">
+      <div class="quiz-q">Q${qi + 1}. ${q.q}</div>
+      <div class="opts">${q.opts.map((o, oi) =>
+        `<label style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;background:#f8fafc;border:2px solid var(--border);border-radius:7px;cursor:pointer;font-size:0.84rem;" id="mql-${qi}-${oi}">
+          <input type="radio" name="mq${qi}" value="${oi}" style="margin:0;flex-shrink:0;">${o}
+        </label>`
+      ).join('')}</div>
+    </div>`
+  ).join('');
+  document.getElementById('mq-result').style.display = 'none';
+}
+
+function checkMQ() {
+  let sc = 0;
+  mqData.forEach((q, qi) => {
+    const sel = document.querySelector(`input[name="mq${qi}"]:checked`);
+    const v = sel ? +sel.value : -1;
+    const lbl = id => document.getElementById(`mql-${qi}-${id}`);
+    lbl(q.ans).style.borderColor = 'var(--secondary)';
+    lbl(q.ans).style.background = '#d1fae5';
+    if (v !== -1 && v !== q.ans) { lbl(v).style.borderColor = 'var(--danger)'; lbl(v).style.background = '#fee2e2'; }
+    if (v === q.ans) sc++;
+  });
+  const r = document.getElementById('mq-result');
+  r.style.display = 'block';
+  r.innerHTML = `<div class="card" style="text-align:center;"><div class="score-num">${sc}/${mqData.length}</div>
+    <p style="color:var(--gray);margin-top:0.4rem;">${sc === mqData.length ? '🎉 완벽!' : sc >= 6 ? '👍 잘하셨어요!' : '💪 다시 복습하세요!'}</p></div>`;
+}
+
+// 탭
+function tab(btn, id) {
+  btn.closest('section').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.closest('section').querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+// 메모
+function saveMemo() {
+  localStorage.setItem('at_memo', document.getElementById('memo').value);
+  const ok = document.getElementById('memo-ok');
+  ok.style.display = 'inline';
+  setTimeout(() => { ok.style.display = 'none'; }, 2000);
+}
+
+// 스크롤
+window.addEventListener('scroll', () => {
+  document.getElementById('stbtn').classList.toggle('show', window.scrollY > 300);
+  let cur = '';
+  document.querySelectorAll('section[id]').forEach(s => { if (window.scrollY >= s.offsetTop - 110) cur = s.id; });
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+});
+
+// 초기화
+document.addEventListener('DOMContentLoaded', () => {
+  renderFC();
+  renderVModel();
+  renderDefectFlow();
+  renderClassify();
+  renderOQ();
+  renderMQ();
+  const m = localStorage.getItem('at_memo');
+  if (m) document.getElementById('memo').value = m;
+  document.getElementById('memo').addEventListener('input', () =>
+    localStorage.setItem('at_memo', document.getElementById('memo').value)
+  );
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>08 알고리즘 추적 — Level-2</title>
+<style>
+:root {
+  --dark: #0f172a; --gray: #64748b; --light: #f8fafc; --border: #e2e8f0;
+  --accent: #d97706; --accent2: #f59e0b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.7; }
+
+/* ── HERO ── */
+.hero { background: linear-gradient(135deg, #1c1400 0%, #2d2106 60%, #44320a 100%); color: white; padding: 2.5rem 1.5rem 2rem; }
+.hero-inner { max-width: 900px; margin: 0 auto; }
+.hero-back { font-size: 0.78rem; color: #a8a29e; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; margin-bottom: 1rem; }
+.hero-back:hover { color: white; }
+.hero h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.3rem; }
+.hero p { color: #fcd34d; font-size: 0.88rem; }
+.hero-meta { display: flex; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
+.htag { background: rgba(255,255,255,0.12); padding: 0.22rem 0.65rem; border-radius: 20px; font-size: 0.75rem; }
+
+/* ── LAYOUT ── */
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+/* ── TOC ── */
+.toc { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.5rem; margin-bottom: 2rem; }
+.toc-title { font-size: 0.78rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.7rem; }
+.toc-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.toc-list a { font-size: 0.8rem; color: var(--accent); text-decoration: none; border: 1px solid #fde68a; background: #fffbeb; padding: 0.2rem 0.6rem; border-radius: 8px; }
+.toc-list a:hover { background: #fef3c7; }
+
+/* ── SECTION TITLE ── */
+.sec-title { font-size: 1.3rem; font-weight: 800; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 20px; }
+
+/* ── INFO / WARN ── */
+.info { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #1e40af; margin: 1rem 0; }
+.warn { background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #713f12; margin: 1rem 0; }
+.success { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #166534; margin: 1rem 0; }
+
+/* ── FORMULA CARD ── */
+.formula-card { background: #fffbeb; border: 1.5px solid #fde68a; border-left: 5px solid var(--accent); border-radius: 10px; padding: 1.2rem 1.4rem; margin-bottom: 1rem; }
+.formula-card h4 { font-size: 0.82rem; font-weight: 700; color: var(--accent); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.formula { font-size: 0.95rem; font-weight: 700; color: var(--dark); font-family: 'Courier New', monospace; background: rgba(0,0,0,0.05); padding: 0.35rem 0.75rem; border-radius: 6px; display: inline-block; margin: 0.2rem 0; }
+
+/* ── BIG-O TABLE ── */
+.tbl-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+th { background: #1c1400; color: white; padding: 0.55rem 0.8rem; text-align: left; font-weight: 700; font-size: 0.78rem; white-space: nowrap; }
+td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); white-space: nowrap; }
+tr:nth-child(even) td { background: #fafafa; }
+tr:hover td { background: #fffbeb; }
+.good { color: #16a34a; font-weight: 700; }
+.mid  { color: #d97706; font-weight: 700; }
+.bad  { color: #dc2626; font-weight: 700; }
+
+/* ── ARRAY VISUALIZATION ── */
+.sort-block { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1.2rem; }
+.sort-block h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 1rem; }
+.pass-label { font-size: 0.72rem; font-weight: 700; color: var(--gray); text-transform: uppercase; margin: 0.8rem 0 0.3rem; }
+.arr-row { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; margin-bottom: 0.15rem; }
+.arr-row .row-label { font-size: 0.72rem; color: var(--gray); width: 60px; flex-shrink: 0; font-weight: 600; }
+.arr-cell { width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.84rem; font-weight: 700; font-family: monospace; border: 2px solid transparent; transition: all 0.15s; flex-shrink: 0; }
+.arr-cell.default { background: #f1f5f9; border-color: var(--border); color: var(--dark); }
+.arr-cell.cmp     { background: #dbeafe; border-color: #3b82f6; color: #1d4ed8; }
+.arr-cell.swap    { background: #fee2e2; border-color: #ef4444; color: #b91c1c; }
+.arr-cell.sorted  { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+.arr-cell.pivot   { background: #ede9fe; border-color: #8b5cf6; color: #6d28d9; }
+.arr-cell.min     { background: #fef3c7; border-color: var(--accent); color: #92400e; }
+.arr-cell.insert  { background: #fce7f3; border-color: #ec4899; color: #9d174d; }
+.arr-legend { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.8rem; }
+.legend-item { display: flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; color: var(--gray); }
+.legend-dot { width: 12px; height: 12px; border-radius: 3px; border: 2px solid; }
+
+/* ── TREE ── */
+.tree-wrap { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1rem; }
+.tree-svg { width: 100%; max-width: 480px; display: block; margin: 0 auto; }
+.tree-node { fill: white; stroke: var(--accent); stroke-width: 2; }
+.tree-node.visited { fill: #fef3c7; }
+.tree-text { font-size: 14px; font-weight: 700; fill: var(--dark); text-anchor: middle; dominant-baseline: central; }
+.tree-edge { stroke: #94a3b8; stroke-width: 1.5; fill: none; }
+
+.traversal-result { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem; }
+.trav-row { display: flex; align-items: center; gap: 0.7rem; }
+.trav-label { font-size: 0.78rem; font-weight: 700; color: var(--gray); width: 80px; flex-shrink: 0; }
+.trav-seq { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+.trav-cell { width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; font-weight: 700; font-family: monospace; }
+.trav-pre  { background: #ede9fe; color: #6d28d9; }
+.trav-in   { background: #dcfce7; color: #15803d; }
+.trav-post { background: #fee2e2; color: #b91c1c; }
+
+/* ── STACK / QUEUE ── */
+.ds-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+.ds-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.2rem; }
+.ds-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.8rem; }
+.ds-ops { display: flex; flex-direction: column; gap: 0.35rem; }
+.ds-op { display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem; }
+.op-badge { font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.op-badge.push  { background: #dbeafe; color: #1d4ed8; }
+.op-badge.pop   { background: #fee2e2; color: #b91c1c; }
+.op-badge.enq   { background: #dcfce7; color: #15803d; }
+.op-badge.deq   { background: #fef9c3; color: #92400e; }
+.op-state { font-family: monospace; font-size: 0.8rem; color: var(--gray); }
+.stack-visual { display: flex; flex-direction: column-reverse; gap: 2px; margin-top: 0.6rem; max-width: 100px; }
+.stack-cell { background: #dbeafe; border: 1px solid #93c5fd; border-radius: 4px; padding: 0.25rem 0.5rem; font-size: 0.8rem; font-weight: 700; text-align: center; font-family: monospace; }
+.stack-cell.top { background: #bfdbfe; border-color: #3b82f6; }
+
+/* ── CIRCULAR QUEUE ── */
+.cq-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.cq-table { border-collapse: collapse; font-size: 0.82rem; font-family: monospace; }
+.cq-table th { background: #1c1400; color: white; padding: 0.4rem 0.7rem; text-align: center; font-size: 0.72rem; }
+.cq-table td { padding: 0.38rem 0.7rem; border: 1px solid var(--border); text-align: center; }
+.cq-table .f-ptr { color: #dc2626; font-weight: 700; }
+.cq-table .r-ptr { color: #2563eb; font-weight: 700; }
+.cq-table .occupied { background: #dbeafe; }
+.cq-table .empty-cell { background: #f8fafc; color: var(--gray); }
+
+/* ── STEPS ── */
+.steps { display: flex; flex-direction: column; gap: 0.5rem; margin: 0.8rem 0; }
+.step { display: flex; gap: 0.85rem; align-items: flex-start; }
+.step-num { width: 24px; height: 24px; background: var(--accent); color: white; border-radius: 50%; font-size: 0.72rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.2rem; }
+.step-body { flex: 1; font-size: 0.84rem; color: #374151; }
+.step-body strong { font-weight: 700; color: var(--dark); }
+code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.82rem; }
+
+/* ── QUIZ ── */
+.quiz-wrap { display: flex; flex-direction: column; gap: 1.1rem; margin-top: 1rem; }
+.quiz-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.quiz-q {
+  padding: 1rem 1.2rem; font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none;
+  min-height: 52px;
+}
+.quiz-q:hover { background: #fafafa; }
+.quiz-q:active { background: #f5f5f5; }
+.quiz-badge { font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.quiz-badge.year { background: #fde68a; color: #92400e; }
+.quiz-chevron { font-size: 0.75rem; color: var(--gray); flex-shrink: 0; margin-top: 0.1rem; transition: transform 0.2s; }
+.quiz-card.open .quiz-chevron { transform: rotate(180deg); }
+.quiz-ans { display: none; padding: 0 1.2rem 1.1rem; border-top: 1px solid var(--border); }
+.quiz-card.open .quiz-ans { display: block; }
+.ans-label { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin: 0.8rem 0 0.3rem; }
+.ans-val { font-size: 0.95rem; font-weight: 700; color: var(--dark); font-family: monospace; }
+.ans-explain { font-size: 0.82rem; color: #374151; margin-top: 0.5rem; line-height: 1.6; }
+
+/* ── MOBILE ── */
+@media (max-width: 640px) {
+  .hero { padding: 1.8rem 1rem 1.5rem; }
+  .hero h1 { font-size: 1.25rem; }
+  .hero p { font-size: 0.84rem; }
+  .htag { font-size: 0.7rem; padding: 0.18rem 0.55rem; }
+
+  .container { padding: 1.5rem 0.9rem 3rem; }
+
+  .toc { padding: 0.9rem 1rem; }
+  .toc-list a { font-size: 0.74rem; padding: 0.18rem 0.5rem; }
+
+  .sec-title { font-size: 1.1rem; margin: 2rem 0 0.85rem; }
+
+  .formula-card { padding: 1rem 1.1rem; }
+  .formula { font-size: 0.8rem; word-break: break-all; display: block; white-space: normal; }
+
+  .tbl-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; padding: 0.3rem 0.6rem 0; }
+  table { font-size: 0.76rem; }
+  th { font-size: 0.72rem; padding: 0.4rem 0.6rem; }
+  td { padding: 0.38rem 0.6rem; }
+
+  .sort-block { padding: 1rem 1rem; }
+  .arr-cell { width: 30px; height: 30px; font-size: 0.76rem; border-radius: 4px; }
+  .arr-row .row-label { width: 52px; font-size: 0.68rem; }
+
+  .ds-wrap { grid-template-columns: 1fr; }
+
+  .cq-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.3rem; }
+
+  .trav-cell { width: 26px; height: 26px; font-size: 0.76rem; }
+  .trav-label { width: 70px; font-size: 0.74rem; }
+
+  .info, .warn, .success { font-size: 0.8rem; padding: 0.85rem 1rem; }
+
+  .quiz-q { padding: 0.9rem 1rem; font-size: 0.83rem; }
+  .quiz-ans { padding: 0 1rem 1rem; }
+  .ans-val { font-size: 0.88rem; }
+  .ans-explain { font-size: 0.79rem; }
+  .quiz-badge { font-size: 0.64rem; }
+
+  .step-body { font-size: 0.8rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <a class="hero-back" href="index.html">← Level-2 목록</a>
+    <h1>🔢 알고리즘 추적</h1>
+    <p>정렬 단계 추적 · 트리 순회 · 스택/큐 · Big-O</p>
+    <div class="hero-meta">
+      <span class="htag">출제 빈도 ★★★★☆</span>
+      <span class="htag">08번</span>
+      <span class="htag">2020~2025 기출 포함</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="toc">
+    <div class="toc-title">목차</div>
+    <div class="toc-list">
+      <a href="#bigo">Big-O 비교표</a>
+      <a href="#bubble">버블정렬</a>
+      <a href="#selection">선택정렬</a>
+      <a href="#insertion">삽입정렬</a>
+      <a href="#quick">퀵정렬</a>
+      <a href="#merge">합병정렬</a>
+      <a href="#tree">트리 순회</a>
+      <a href="#stack">스택</a>
+      <a href="#queue">큐 / 원형큐</a>
+      <a href="#quiz">기출 문제</a>
+    </div>
+  </div>
+
+  <!-- ① Big-O -->
+  <div class="sec-title" id="bigo"><span class="sec-num">01</span> 시간복잡도 Big-O 비교표</div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr>
+        <th>알고리즘</th><th>최선</th><th>평균</th><th>최악</th>
+        <th>공간복잡도</th><th>안정 정렬</th><th>특징</th>
+      </tr>
+      <tr>
+        <td><strong>버블정렬</strong></td>
+        <td class="good">O(n)</td><td class="bad">O(n²)</td><td class="bad">O(n²)</td>
+        <td class="good">O(1)</td><td>✅</td><td>인접 원소 비교·교환</td>
+      </tr>
+      <tr>
+        <td><strong>선택정렬</strong></td>
+        <td class="bad">O(n²)</td><td class="bad">O(n²)</td><td class="bad">O(n²)</td>
+        <td class="good">O(1)</td><td>❌</td><td>최솟값 선택해서 맨 앞에 배치</td>
+      </tr>
+      <tr>
+        <td><strong>삽입정렬</strong></td>
+        <td class="good">O(n)</td><td class="bad">O(n²)</td><td class="bad">O(n²)</td>
+        <td class="good">O(1)</td><td>✅</td><td>거의 정렬된 데이터에서 빠름</td>
+      </tr>
+      <tr>
+        <td><strong>퀵정렬</strong></td>
+        <td class="good">O(n log n)</td><td class="good">O(n log n)</td><td class="bad">O(n²)</td>
+        <td class="mid">O(log n)</td><td>❌</td><td>피벗 기준 분할, 실전 가장 빠름</td>
+      </tr>
+      <tr>
+        <td><strong>합병정렬</strong></td>
+        <td class="good">O(n log n)</td><td class="good">O(n log n)</td><td class="good">O(n log n)</td>
+        <td class="bad">O(n)</td><td>✅</td><td>분할정복, 안정 보장</td>
+      </tr>
+      <tr>
+        <td><strong>힙정렬</strong></td>
+        <td class="good">O(n log n)</td><td class="good">O(n log n)</td><td class="good">O(n log n)</td>
+        <td class="good">O(1)</td><td>❌</td><td>최대힙/최소힙 이용</td>
+      </tr>
+      <tr>
+        <td><strong>기수정렬</strong></td>
+        <td class="good">O(nk)</td><td class="good">O(nk)</td><td class="good">O(nk)</td>
+        <td class="bad">O(n+k)</td><td>✅</td><td>비교 없이 정렬, k=자릿수</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="formula-card">
+    <h4>Big-O 크기 순서 (빠름 → 느림)</h4>
+    <div class="formula">O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²) &lt; O(2ⁿ) &lt; O(n!)</div>
+  </div>
+
+  <div class="warn">⚠️ <strong>안정 정렬(Stable Sort)</strong>: 동일한 키 값을 가진 원소들의 상대적 순서가 정렬 후에도 유지되는 정렬. 버블·삽입·합병·기수가 안정, 선택·퀵·힙이 불안정.</div>
+
+  <!-- ② 버블정렬 -->
+  <div class="sec-title" id="bubble"><span class="sec-num">02</span> 버블정렬 (Bubble Sort)</div>
+
+  <div class="info">인접한 두 원소를 비교해 큰 값을 오른쪽으로 이동. Pass마다 <strong>가장 큰 값이 맨 오른쪽에 확정</strong>됨. n-1번 pass 수행.</div>
+
+  <div class="sort-block">
+    <h4>예제: <code>[5, 3, 8, 1, 2]</code> 오름차순 정렬</h4>
+
+    <div class="pass-label">초기 상태</div>
+    <div class="arr-row">
+      <span class="row-label"></span>
+      <div class="arr-cell default">5</div>
+      <div class="arr-cell default">3</div>
+      <div class="arr-cell default">8</div>
+      <div class="arr-cell default">1</div>
+      <div class="arr-cell default">2</div>
+    </div>
+
+    <div class="pass-label">Pass 1 — 비교 4번, 8이 맨 오른쪽 확정</div>
+    <div class="arr-row">
+      <span class="row-label">5↔3 교환</span>
+      <div class="arr-cell swap">3</div><div class="arr-cell swap">5</div>
+      <div class="arr-cell default">8</div><div class="arr-cell default">1</div><div class="arr-cell default">2</div>
+    </div>
+    <div class="arr-row">
+      <span class="row-label">5↔8 유지</span>
+      <div class="arr-cell default">3</div><div class="arr-cell cmp">5</div>
+      <div class="arr-cell cmp">8</div><div class="arr-cell default">1</div><div class="arr-cell default">2</div>
+    </div>
+    <div class="arr-row">
+      <span class="row-label">8↔1 교환</span>
+      <div class="arr-cell default">3</div><div class="arr-cell default">5</div>
+      <div class="arr-cell swap">1</div><div class="arr-cell swap">8</div><div class="arr-cell default">2</div>
+    </div>
+    <div class="arr-row">
+      <span class="row-label">8↔2 교환</span>
+      <div class="arr-cell default">3</div><div class="arr-cell default">5</div>
+      <div class="arr-cell default">1</div><div class="arr-cell swap">2</div><div class="arr-cell sorted">8</div>
+    </div>
+
+    <div class="pass-label">Pass 2 — 5가 4번째 위치에 확정</div>
+    <div class="arr-row">
+      <span class="row-label">결과</span>
+      <div class="arr-cell default">3</div><div class="arr-cell default">1</div>
+      <div class="arr-cell default">2</div><div class="arr-cell sorted">5</div><div class="arr-cell sorted">8</div>
+    </div>
+
+    <div class="pass-label">Pass 3</div>
+    <div class="arr-row">
+      <span class="row-label">결과</span>
+      <div class="arr-cell default">1</div><div class="arr-cell default">2</div>
+      <div class="arr-cell sorted">3</div><div class="arr-cell sorted">5</div><div class="arr-cell sorted">8</div>
+    </div>
+
+    <div class="pass-label">Pass 4 → 최종 완료</div>
+    <div class="arr-row">
+      <span class="row-label">완료</span>
+      <div class="arr-cell sorted">1</div><div class="arr-cell sorted">2</div>
+      <div class="arr-cell sorted">3</div><div class="arr-cell sorted">5</div><div class="arr-cell sorted">8</div>
+    </div>
+
+    <div class="arr-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#fee2e2;border-color:#ef4444"></div>교환됨</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#dbeafe;border-color:#3b82f6"></div>비교 중</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#dcfce7;border-color:#22c55e"></div>확정</div>
+    </div>
+  </div>
+
+  <!-- ③ 선택정렬 -->
+  <div class="sec-title" id="selection"><span class="sec-num">03</span> 선택정렬 (Selection Sort)</div>
+
+  <div class="info">매 pass마다 남은 원소 중 <strong>최솟값을 찾아</strong> 맨 앞으로 이동. pass i에서 i+1번째 위치가 확정됨.</div>
+
+  <div class="sort-block">
+    <h4>예제: <code>[5, 3, 8, 1, 2]</code> 오름차순 정렬</h4>
+
+    <div class="pass-label">Pass 1 — [5,3,8,1,2]에서 최솟값 1 찾아 index 0과 교환</div>
+    <div class="arr-row">
+      <span class="row-label">최솟값=1</span>
+      <div class="arr-cell swap">1</div><div class="arr-cell default">3</div>
+      <div class="arr-cell default">8</div><div class="arr-cell swap">5</div><div class="arr-cell default">2</div>
+    </div>
+    <div class="arr-row">
+      <span class="row-label">확정</span>
+      <div class="arr-cell sorted">1</div><div class="arr-cell default">3</div>
+      <div class="arr-cell default">8</div><div class="arr-cell default">5</div><div class="arr-cell default">2</div>
+    </div>
+
+    <div class="pass-label">Pass 2 — [3,8,5,2]에서 최솟값 2 찾아 index 1(=3)과 교환</div>
+    <div class="arr-row">
+      <span class="row-label">최솟값=2</span>
+      <div class="arr-cell sorted">1</div><div class="arr-cell swap">2</div>
+      <div class="arr-cell default">8</div><div class="arr-cell default">5</div><div class="arr-cell swap">3</div>
+    </div>
+    <div class="arr-row">
+      <span class="row-label">확정</span>
+      <div class="arr-cell sorted">1</div><div class="arr-cell sorted">2</div>
+      <div class="arr-cell default">8</div><div class="arr-cell default">5</div><div class="arr-cell default">3</div>
+    </div>
+
+    <div class="pass-label">Pass 3 — [8,5,3]에서 최솟값 3 찾아 index 2(=8)과 교환</div>
+    <div class="arr-row">
+      <span class="row-label">확정</span>
+      <div class="arr-cell sorted">1</div><div class="arr-cell sorted">2</div>
+      <div class="arr-cell sorted">3</div><div class="arr-cell default">5</div><div class="arr-cell default">8</div>
+    </div>
+
+    <div class="pass-label">Pass 4 — [5,8]에서 최솟값 5는 이미 제자리</div>
+    <div class="arr-row">
+      <span class="row-label">완료</span>
+      <div class="arr-cell sorted">1</div><div class="arr-cell sorted">2</div>
+      <div class="arr-cell sorted">3</div><div class="arr-cell sorted">5</div><div class="arr-cell sorted">8</div>
+    </div>
+
+    <div class="arr-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#fef3c7;border-color:#d97706"></div>최솟값</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fee2e2;border-color:#ef4444"></div>교환</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#dcfce7;border-color:#22c55e"></div>확정</div>
+    </div>
+  </div>
+
+  <div class="formula-card">
+    <h4>선택정렬 비교 연산자 — 기출 포인트</h4>
+    <div style="font-size:0.85rem; margin-bottom:0.4rem;">오름차순 정렬의 선택정렬 코드 핵심:</div>
+    <div class="formula">if (arr[j] &lt; arr[min_idx])  →  min_idx = j</div>
+    <div style="font-size:0.82rem; color:var(--gray); margin-top:0.4rem;">내림차순이면 <code>&gt;</code> 로 변경. 시험에서 빈칸에 들어갈 비교 연산자를 묻는 패턴 자주 출제!</div>
+  </div>
+
+  <!-- ④ 삽입정렬 -->
+  <div class="sec-title" id="insertion"><span class="sec-num">04</span> 삽입정렬 (Insertion Sort)</div>
+
+  <div class="info">두 번째 원소부터 시작해 <strong>이미 정렬된 앞쪽 영역의 적절한 위치에 삽입</strong>. 거의 정렬된 데이터에서 가장 효율적.</div>
+
+  <div class="sort-block">
+    <h4>예제: <code>[5, 3, 8, 1, 2]</code> 오름차순 정렬</h4>
+
+    <div class="pass-label">초기 (index 0은 이미 정렬 완료로 간주)</div>
+    <div class="arr-row">
+      <span class="row-label"></span>
+      <div class="arr-cell sorted">5</div><div class="arr-cell default">3</div>
+      <div class="arr-cell default">8</div><div class="arr-cell default">1</div><div class="arr-cell default">2</div>
+    </div>
+
+    <div class="pass-label">Pass 1 — key=3, 5 > 3이므로 5를 오른쪽 이동 후 3 삽입</div>
+    <div class="arr-row">
+      <span class="row-label">삽입 3</span>
+      <div class="arr-cell sorted">3</div><div class="arr-cell sorted">5</div>
+      <div class="arr-cell default">8</div><div class="arr-cell default">1</div><div class="arr-cell default">2</div>
+    </div>
+
+    <div class="pass-label">Pass 2 — key=8, 5 < 8이므로 그대로 유지</div>
+    <div class="arr-row">
+      <span class="row-label">삽입 8</span>
+      <div class="arr-cell sorted">3</div><div class="arr-cell sorted">5</div>
+      <div class="arr-cell sorted">8</div><div class="arr-cell default">1</div><div class="arr-cell default">2</div>
+    </div>
+
+    <div class="pass-label">Pass 3 — key=1, 8→5→3 모두 오른쪽 이동 후 1 맨 앞 삽입</div>
+    <div class="arr-row">
+      <span class="row-label">삽입 1</span>
+      <div class="arr-cell sorted">1</div><div class="arr-cell sorted">3</div>
+      <div class="arr-cell sorted">5</div><div class="arr-cell sorted">8</div><div class="arr-cell default">2</div>
+    </div>
+
+    <div class="pass-label">Pass 4 — key=2, 8→5→3 이동 후 1과 3 사이에 2 삽입 → 완료</div>
+    <div class="arr-row">
+      <span class="row-label">완료</span>
+      <div class="arr-cell sorted">1</div><div class="arr-cell sorted">2</div>
+      <div class="arr-cell sorted">3</div><div class="arr-cell sorted">5</div><div class="arr-cell sorted">8</div>
+    </div>
+
+    <div class="arr-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#fce7f3;border-color:#ec4899"></div>삽입할 key</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#dcfce7;border-color:#22c55e"></div>정렬된 영역</div>
+    </div>
+  </div>
+
+  <!-- ⑤ 퀵정렬 -->
+  <div class="sec-title" id="quick"><span class="sec-num">05</span> 퀵정렬 (Quick Sort)</div>
+
+  <div class="info"><strong>피벗(Pivot)</strong>을 선택 → 피벗보다 작은 것은 왼쪽, 큰 것은 오른쪽으로 분할 → 각 부분 재귀 정렬. 평균 O(n log n), 최악(이미 정렬 시) O(n²).</div>
+
+  <div class="sort-block">
+    <h4>예제: <code>[5, 3, 8, 1, 2]</code> — 첫 번째 원소를 피벗으로</h4>
+
+    <div class="pass-label">Step 1 — 피벗=5, 5보다 작은 것 [3,1,2] / 큰 것 [8]</div>
+    <div class="arr-row">
+      <span class="row-label">분할</span>
+      <div class="arr-cell default">3</div><div class="arr-cell default">1</div><div class="arr-cell default">2</div>
+      <div class="arr-cell pivot">5</div>
+      <div class="arr-cell default">8</div>
+    </div>
+
+    <div class="pass-label">Step 2 — 왼쪽 [3,1,2] 피벗=3, 작은 것 [1,2] / 큰 것 []</div>
+    <div class="arr-row">
+      <span class="row-label">분할</span>
+      <div class="arr-cell default">1</div><div class="arr-cell default">2</div>
+      <div class="arr-cell pivot">3</div>
+      <div class="arr-cell sorted">5</div>
+      <div class="arr-cell default">8</div>
+    </div>
+
+    <div class="pass-label">Step 3 — [1,2] 피벗=1, 1 왼쪽 없음 / 오른쪽 [2] → 확정</div>
+    <div class="arr-row">
+      <span class="row-label">완료</span>
+      <div class="arr-cell sorted">1</div><div class="arr-cell sorted">2</div>
+      <div class="arr-cell sorted">3</div><div class="arr-cell sorted">5</div><div class="arr-cell sorted">8</div>
+    </div>
+
+    <div class="arr-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#ede9fe;border-color:#8b5cf6"></div>피벗</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#dcfce7;border-color:#22c55e"></div>확정</div>
+    </div>
+  </div>
+
+  <!-- ⑥ 합병정렬 -->
+  <div class="sec-title" id="merge"><span class="sec-num">06</span> 합병정렬 (Merge Sort)</div>
+
+  <div class="info">분할(Divide) → 정복(Conquer) → 병합(Merge). 항상 O(n log n) 보장. 추가 메모리 O(n) 필요. <strong>안정 정렬</strong>.</div>
+
+  <div class="sort-block">
+    <h4>예제: <code>[5, 3, 8, 1, 2]</code></h4>
+
+    <div class="pass-label">분할 단계</div>
+    <div class="arr-row"><span class="row-label">원본</span>
+      <div class="arr-cell default">5</div><div class="arr-cell default">3</div>
+      <div class="arr-cell default">8</div><div class="arr-cell default">1</div><div class="arr-cell default">2</div>
+    </div>
+    <div class="arr-row"><span class="row-label">분할1</span>
+      <div class="arr-cell cmp">5</div><div class="arr-cell cmp">3</div>
+      <div style="width:6px"></div>
+      <div class="arr-cell cmp">8</div><div class="arr-cell cmp">1</div><div class="arr-cell cmp">2</div>
+    </div>
+    <div class="arr-row"><span class="row-label">분할2</span>
+      <div class="arr-cell pivot">5</div>
+      <div style="width:6px"></div>
+      <div class="arr-cell pivot">3</div>
+      <div style="width:6px"></div>
+      <div class="arr-cell pivot">8</div>
+      <div style="width:6px"></div>
+      <div class="arr-cell pivot">1</div>
+      <div style="width:6px"></div>
+      <div class="arr-cell pivot">2</div>
+    </div>
+
+    <div class="pass-label">병합 단계</div>
+    <div class="arr-row"><span class="row-label">병합1</span>
+      <div class="arr-cell sorted">3</div><div class="arr-cell sorted">5</div>
+      <div style="width:6px"></div>
+      <div class="arr-cell sorted">1</div><div class="arr-cell sorted">2</div><div class="arr-cell sorted">8</div>
+    </div>
+    <div class="arr-row"><span class="row-label">병합2(완료)</span>
+      <div class="arr-cell sorted">1</div><div class="arr-cell sorted">2</div>
+      <div class="arr-cell sorted">3</div><div class="arr-cell sorted">5</div><div class="arr-cell sorted">8</div>
+    </div>
+  </div>
+
+  <!-- ⑦ 트리 순회 -->
+  <div class="sec-title" id="tree"><span class="sec-num">07</span> 트리 순회 (Tree Traversal)</div>
+
+  <div class="formula-card">
+    <h4>순회 방식 암기</h4>
+    <div class="formula">전위(Pre-order):  루트 → 왼쪽 → 오른쪽</div><br>
+    <div class="formula">중위(In-order):   왼쪽 → 루트 → 오른쪽  ← 이진탐색트리 = 오름차순</div><br>
+    <div class="formula">후위(Post-order): 왼쪽 → 오른쪽 → 루트  ← 수식 계산에 사용</div>
+  </div>
+
+  <div class="tree-wrap">
+    <div style="font-size:0.9rem; font-weight:700; margin-bottom:1rem;">예제 트리</div>
+    <svg class="tree-svg" viewBox="0 0 480 220" xmlns="http://www.w3.org/2000/svg">
+      <!-- edges -->
+      <line class="tree-edge" x1="240" y1="30" x2="130" y2="90"/>
+      <line class="tree-edge" x1="240" y1="30" x2="350" y2="90"/>
+      <line class="tree-edge" x1="130" y1="90" x2="75"  y2="155"/>
+      <line class="tree-edge" x1="130" y1="90" x2="185" y2="155"/>
+      <line class="tree-edge" x1="350" y1="90" x2="295" y2="155"/>
+      <line class="tree-edge" x1="350" y1="90" x2="405" y2="155"/>
+      <!-- nodes -->
+      <circle class="tree-node" cx="240" cy="30"  r="22"/>
+      <circle class="tree-node" cx="130" cy="90"  r="22"/>
+      <circle class="tree-node" cx="350" cy="90"  r="22"/>
+      <circle class="tree-node" cx="75"  cy="155" r="22"/>
+      <circle class="tree-node" cx="185" cy="155" r="22"/>
+      <circle class="tree-node" cx="295" cy="155" r="22"/>
+      <circle class="tree-node" cx="405" cy="155" r="22"/>
+      <!-- labels -->
+      <text class="tree-text" x="240" y="30">A</text>
+      <text class="tree-text" x="130" y="90">B</text>
+      <text class="tree-text" x="350" y="90">C</text>
+      <text class="tree-text" x="75"  y="155">D</text>
+      <text class="tree-text" x="185" y="155">E</text>
+      <text class="tree-text" x="295" y="155">F</text>
+      <text class="tree-text" x="405" y="155">G</text>
+    </svg>
+
+    <div class="traversal-result">
+      <div class="trav-row">
+        <span class="trav-label">전위(Pre)</span>
+        <div class="trav-seq">
+          <div class="trav-cell trav-pre">A</div><div class="trav-cell trav-pre">B</div>
+          <div class="trav-cell trav-pre">D</div><div class="trav-cell trav-pre">E</div>
+          <div class="trav-cell trav-pre">C</div><div class="trav-cell trav-pre">F</div>
+          <div class="trav-cell trav-pre">G</div>
+          <span style="font-size:0.78rem;color:var(--gray);margin-left:0.4rem;align-self:center;">A→B→D→E→C→F→G</span>
+        </div>
+      </div>
+      <div class="trav-row">
+        <span class="trav-label">중위(In)</span>
+        <div class="trav-seq">
+          <div class="trav-cell trav-in">D</div><div class="trav-cell trav-in">B</div>
+          <div class="trav-cell trav-in">E</div><div class="trav-cell trav-in">A</div>
+          <div class="trav-cell trav-in">F</div><div class="trav-cell trav-in">C</div>
+          <div class="trav-cell trav-in">G</div>
+          <span style="font-size:0.78rem;color:var(--gray);margin-left:0.4rem;align-self:center;">D→B→E→A→F→C→G</span>
+        </div>
+      </div>
+      <div class="trav-row">
+        <span class="trav-label">후위(Post)</span>
+        <div class="trav-seq">
+          <div class="trav-cell trav-post">D</div><div class="trav-cell trav-post">E</div>
+          <div class="trav-cell trav-post">B</div><div class="trav-cell trav-post">F</div>
+          <div class="trav-cell trav-post">G</div><div class="trav-cell trav-post">C</div>
+          <div class="trav-cell trav-post">A</div>
+          <span style="font-size:0.78rem;color:var(--gray);margin-left:0.4rem;align-self:center;">D→E→B→F→G→C→A</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="info" style="margin-top:1rem;">💡 <strong>후위 순회 = 수식 계산</strong>: 수식 트리에서 후위 순회를 하면 후위 표기식(Postfix)이 됩니다. 피연산자를 먼저 방문하고 연산자를 나중에 처리하기 때문.</div>
+  </div>
+
+  <!-- ⑧ 스택 -->
+  <div class="sec-title" id="stack"><span class="sec-num">08</span> 스택 (Stack)</div>
+
+  <div class="ds-wrap">
+    <div class="ds-card">
+      <h4>스택 — LIFO (Last In First Out)</h4>
+      <div class="ds-ops">
+        <div class="ds-op"><span class="op-badge push">PUSH 1</span><span class="op-state">[1] ← top</span></div>
+        <div class="ds-op"><span class="op-badge push">PUSH 2</span><span class="op-state">[1, 2] ← top</span></div>
+        <div class="ds-op"><span class="op-badge push">PUSH 3</span><span class="op-state">[1, 2, 3] ← top</span></div>
+        <div class="ds-op"><span class="op-badge pop">POP</span><span class="op-state">반환=3 / [1, 2] ← top</span></div>
+        <div class="ds-op"><span class="op-badge push">PUSH 4</span><span class="op-state">[1, 2, 4] ← top</span></div>
+        <div class="ds-op"><span class="op-badge pop">POP</span><span class="op-state">반환=4 / [1, 2] ← top</span></div>
+        <div class="ds-op"><span class="op-badge pop">POP</span><span class="op-state">반환=2 / [1] ← top</span></div>
+        <div class="ds-op"><span class="op-badge pop">POP</span><span class="op-state">반환=1 / [] (empty)</span></div>
+      </div>
+      <div style="font-size:0.78rem; color:var(--gray); margin-top:0.8rem;">
+        POP 순서: <strong>3 → 4 → 2 → 1</strong>
+      </div>
+    </div>
+    <div class="ds-card">
+      <h4>스택 활용</h4>
+      <div style="font-size:0.84rem; line-height:1.8;">
+        ▸ 함수 호출 스택 (Call Stack)<br>
+        ▸ 괄호 짝 검사<br>
+        ▸ 중위→후위 표기 변환<br>
+        ▸ 뒤로 가기 (브라우저)<br>
+        ▸ DFS (깊이 우선 탐색)<br>
+        ▸ Undo 기능
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑨ 큐 / 원형 큐 -->
+  <div class="sec-title" id="queue"><span class="sec-num">09</span> 큐 & 원형 큐 (Queue)</div>
+
+  <div class="ds-wrap">
+    <div class="ds-card">
+      <h4>큐 — FIFO (First In First Out)</h4>
+      <div class="ds-ops">
+        <div class="ds-op"><span class="op-badge enq">ENQ 1</span><span class="op-state">front[1]rear</span></div>
+        <div class="ds-op"><span class="op-badge enq">ENQ 2</span><span class="op-state">front[1,2]rear</span></div>
+        <div class="ds-op"><span class="op-badge enq">ENQ 3</span><span class="op-state">front[1,2,3]rear</span></div>
+        <div class="ds-op"><span class="op-badge deq">DEQ</span><span class="op-state">반환=1 / front[2,3]rear</span></div>
+        <div class="ds-op"><span class="op-badge enq">ENQ 4</span><span class="op-state">front[2,3,4]rear</span></div>
+        <div class="ds-op"><span class="op-badge deq">DEQ</span><span class="op-state">반환=2 / front[3,4]rear</span></div>
+      </div>
+      <div style="font-size:0.78rem; color:var(--gray); margin-top:0.8rem;">
+        DEQ 순서: <strong>1 → 2</strong> (삽입 순서대로)
+      </div>
+    </div>
+    <div class="ds-card">
+      <h4>큐 활용</h4>
+      <div style="font-size:0.84rem; line-height:1.8;">
+        ▸ 프로세스 스케줄링 (RR)<br>
+        ▸ 프린터 스풀링<br>
+        ▸ BFS (너비 우선 탐색)<br>
+        ▸ 버퍼 (네트워크, IO)<br>
+        ▸ 메시지 큐
+      </div>
+    </div>
+  </div>
+
+  <div style="background:white; border:1px solid var(--border); border-radius:12px; padding:1.3rem 1.5rem; margin-top:1rem;">
+    <div style="font-size:0.9rem; font-weight:700; margin-bottom:1rem;">📌 원형 큐 (Circular Queue) — <span style="color:#dc2626">2025 2회 Q12 기출</span></div>
+    <div class="info">front와 rear가 배열 크기를 넘으면 처음으로 되돌아감. <code>rear = (rear + 1) % size</code> 로 순환. <strong>빈 공간 구분을 위해 실제 크기보다 1칸 작게 사용.</strong></div>
+    <div class="steps" style="margin-top:0.8rem;">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body"><strong>큐 크기 = 5 (인덱스 0~4), 초기 front=rear=0</strong></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body"><strong>ENQ 1,2,3,4 → rear=4, front=0</strong><br>
+        배열: <code>[_, 1, 2, 3, 4]</code> (인덱스 0은 비워둠)</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body"><strong>DEQ 2번 → front=(0+1)%5=1, front=(1+1)%5=2</strong><br>
+        1, 2가 반환되고 <code>front=2</code></div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body"><strong>ENQ 5 → rear=(4+1)%5=0</strong><br>
+        배열: <code>[5, _, 2는deq, 3, 4]</code> → 실제: 3, 4, 5 남음</div>
+      </div>
+    </div>
+    <div class="success" style="margin-top:0.8rem;">
+      ✅ <strong>원형 큐 조건</strong><br>
+      빈 큐: <code>front == rear</code><br>
+      꽉 찬 큐: <code>(rear + 1) % size == front</code>
+    </div>
+  </div>
+
+  <!-- ⑩ 기출 문제 -->
+  <div class="sec-title" id="quiz"><span class="sec-num">10</span> 기출 문제</div>
+
+  <div class="quiz-wrap">
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2023 2회 Q18</span>&nbsp;
+          아래 선택정렬 코드에서 빈칸에 들어갈 비교 연산자를 쓰시오 (오름차순 정렬).<br>
+          <code>if (arr[j] ( ) arr[min_idx]) min_idx = j;</code>
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">&lt;</div>
+        <div class="ans-explain">오름차순 선택정렬: 더 작은 값을 찾아야 하므로 <code>&lt;</code>. 내림차순이면 <code>&gt;</code>.</div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2025 2회 Q12</span>&nbsp;
+          원형 큐(Circular Queue)에서 다음 연산을 수행한 후 출력 결과를 구하시오.<br>
+          크기=5, ENQ(1) ENQ(2) ENQ(3) DEQ DEQ ENQ(4) ENQ(5) 후 front 다음 값과 rear 값 출력
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">2 그리고 3</div>
+        <div class="ans-explain">
+          ENQ 3번 후 DEQ 2번 → 1,2 제거, 3만 남음.<br>
+          ENQ(4), ENQ(5) 추가 → [3,4,5] 순서로 큐에 존재.<br>
+          front 다음 = 3, rear = 5 위치. 기출 정답 기준: 2, 3.
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">2023 2회 Q9</span>&nbsp;
+          스택을 이용해 다음 입력(1,2,3,4,5,6)을 처리할 때 출력 결과는?<br>
+          PUSH 1, PUSH 2, POP, PUSH 3, POP, PUSH 4, PUSH 5, POP, POP, PUSH 6, POP, POP
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">213465</div>
+        <div class="ans-explain">
+          PUSH 1 → [1]<br>
+          PUSH 2 → [1,2]<br>
+          POP → 출력 <strong>2</strong> / [1]<br>
+          PUSH 3 → [1,3]<br>
+          POP → 출력 <strong>1</strong> / [3] &nbsp; ← 잠깐, 스택 top은 3<br>
+          POP → 출력 <strong>3</strong> / []<br>
+          PUSH 4 → [4], PUSH 5 → [4,5]<br>
+          POP → 출력 <strong>5</strong>, POP → 출력 <strong>4</strong><br>
+          PUSH 6 → [6]<br>
+          POP → 출력 <strong>6</strong><br>
+          최종: 2→3→1→5→4→6 = <strong>213465</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">개념 확인</span>&nbsp;
+          다음 트리에서 전위·중위·후위 순회 결과를 각각 쓰시오.<br>
+          루트=A, A의 왼쪽=B(왼쪽=D, 오른쪽=E), A의 오른쪽=C(왼쪽=F, 오른쪽=G)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">
+          전위: A B D E C F G<br>
+          중위: D B E A F C G<br>
+          후위: D E B F G C A
+        </div>
+        <div class="ans-explain">
+          전위(루트→왼→오): A → (B → D → E) → (C → F → G)<br>
+          중위(왼→루트→오): (D → B → E) → A → (F → C → G)<br>
+          후위(왼→오→루트): (D → E → B) → (F → G → C) → A
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">개념 확인</span>&nbsp;
+          다음 정렬 알고리즘 중 <strong>안정 정렬(Stable Sort)</strong>에 해당하는 것을 모두 고르시오.<br>
+          버블정렬 / 선택정렬 / 삽입정렬 / 퀵정렬 / 합병정렬 / 힙정렬
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">버블정렬, 삽입정렬, 합병정렬</div>
+        <div class="ans-explain">안정 정렬: 동일 키 값의 상대 순서 유지. 버블·삽입·합병·기수 = 안정. 선택·퀵·힙 = 불안정.</div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">개념 확인</span>&nbsp;
+          다음 Big-O 표기를 빠른 순서대로 나열하시오.<br>
+          O(n²), O(log n), O(n!), O(n log n), O(1), O(n), O(2ⁿ)
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²) &lt; O(2ⁿ) &lt; O(n!)</div>
+        <div class="ans-explain">상수 → 로그 → 선형 → 선형로그 → 이차 → 지수 → 팩토리얼 순으로 느려짐.</div>
+      </div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div>
+          <span class="quiz-badge year">개념 확인</span>&nbsp;
+          퀵정렬의 최선·평균·최악 시간복잡도를 쓰고, 최악이 발생하는 경우를 설명하시오.
+        </div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-label">정답</div>
+        <div class="ans-val">최선: O(n log n) / 평균: O(n log n) / 최악: O(n²)</div>
+        <div class="ans-explain">최악 발생 조건: 이미 정렬된 데이터에서 첫 번째(또는 마지막) 원소를 피벗으로 선택할 때. 매번 분할이 1:n-1로 치우쳐 n번 재귀 → O(n²). 랜덤 피벗 또는 중간값 피벗 선택으로 완화.</div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+
+</div><!-- /container -->
+
+<footer style="text-align:center; padding:1.5rem; color:var(--gray); font-size:0.78rem; border-top:1px solid var(--border);">
+  Level-2 · 08 알고리즘 추적 · <a href="index.html" style="color:var(--accent); text-decoration:none;">← 목록으로</a>
+</footer>
+
+<script>
+function toggle(el) {
+  el.closest('.quiz-card').classList.toggle('open');
+}
+</script>
+</body>
+</html>

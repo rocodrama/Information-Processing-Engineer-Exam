@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>정보처리기사 실기 학습 자료</title>
+<style>
+:root {
+  --dark: #0f172a;
+  --gray: #64748b;
+  --light: #f8fafc;
+  --border: #e2e8f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.6; }
+
+.hero { background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #334155 100%); color: white; padding: 3rem 1.5rem 2.5rem; text-align: center; }
+.hero h1 { font-size: 1.9rem; font-weight: 800; margin-bottom: 0.5rem; }
+.hero p { color: #cbd5e1; font-size: 0.92rem; }
+.hero .meta { margin-top: 0.6rem; display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+.tag { background: rgba(255,255,255,0.12); padding: 0.25rem 0.7rem; border-radius: 20px; font-size: 0.78rem; }
+
+.progress-bar { max-width: 720px; margin: -1.4rem auto 0; background: white; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); padding: 1rem 1.25rem; display: flex; align-items: center; gap: 1rem; position: relative; z-index: 5; }
+.progress-bar .pct { font-size: 1.4rem; font-weight: 800; color: var(--dark); white-space: nowrap; }
+.progress-track { flex: 1; height: 10px; background: var(--border); border-radius: 6px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #4338ca, #0369a1); border-radius: 6px; transition: width 0.3s; width: 0%; }
+.progress-label { font-size: 0.78rem; color: var(--gray); white-space: nowrap; }
+
+.container { max-width: 1080px; margin: 0 auto; padding: 2.5rem 1.5rem 3rem; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.1rem; }
+
+.ch-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.15rem 1.25rem; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.06); transition: transform 0.15s, box-shadow 0.15s; border-left: 5px solid var(--accent); }
+.ch-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+.ch-card.done { opacity: 0.55; }
+
+.ch-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.5rem; }
+.ch-badges { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+.badge { font-size: 0.7rem; font-weight: 700; padding: 0.18rem 0.5rem; border-radius: 20px; white-space: nowrap; }
+.badge.priority { background: var(--accent); color: white; }
+.badge.chnum { background: #f1f5f9; color: var(--gray); }
+
+.ch-check { width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: white; background: white; transition: all 0.15s; }
+.ch-check.checked { background: var(--accent); border-color: var(--accent); }
+
+.ch-title { font-size: 1.02rem; font-weight: 700; margin-bottom: 0.35rem; }
+.ch-title a { color: var(--dark); text-decoration: none; }
+.ch-title a:hover { color: var(--accent); }
+.ch-desc { font-size: 0.81rem; color: var(--gray); margin-bottom: 0.75rem; }
+.ch-tags { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+.ch-tags span { background: #f8fafc; border: 1px solid var(--border); color: var(--gray); font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 12px; }
+
+.ch-open { display: inline-block; margin-top: 0.8rem; font-size: 0.78rem; font-weight: 700; color: var(--accent); text-decoration: none; }
+.ch-open:hover { text-decoration: underline; }
+
+.section-label { font-size: 0.85rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 1rem; }
+
+footer { text-align: center; padding: 1.5rem; color: var(--gray); font-size: 0.78rem; }
+
+@media (max-width: 600px) {
+  .hero h1 { font-size: 1.4rem; }
+  .progress-bar { flex-wrap: wrap; margin: -1rem 0.75rem 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>📚 정보처리기사 실기 학습 자료</h1>
+  <p>출제기준 12개 항목 · 핵심개념 + 키워드 + 인터랙션 + 문제풀이</p>
+  <div class="meta">
+    <span class="tag">필답형 · 2시간 30분</span>
+    <span class="tag">적용기간 2026.01.01 ~ 2026.12.31</span>
+    <span class="tag">총 12개 챕터</span>
+  </div>
+</div>
+
+<div class="progress-bar">
+  <div class="pct" id="pct">0%</div>
+  <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+  <div class="progress-label" id="plabel">0 / 12 완료</div>
+</div>
+
+<div class="container">
+  <p class="section-label">학습 추천 순서 (우선순위)</p>
+  <div class="grid" id="grid"></div>
+</div>
+
+<footer>정보처리기사 실기 대비 · 각 챕터를 클릭하면 해당 학습 페이지로 이동합니다.</footer>
+
+<script>
+const chapters = [
+  { priority:1,  ch:8,  file:'08_sql.html',                 title:'SQL 응용',                 desc:'절차형 SQL, JOIN, 서브쿼리, GRANT/REVOKE',          accent:'#0f766e', tags:['프로시저','윈도우함수','DCL'] },
+  { priority:2,  ch:10, file:'10_programming_language.html', title:'프로그래밍 언어 활용',         desc:'C/Java/Python 기초 문법, 객체지향, 라이브러리',       accent:'#2563eb', tags:['제어문','클래스','라이브러리'] },
+  { priority:3,  ch:7,  file:'07_application_test.html',     title:'애플리케이션 테스트 관리',     desc:'테스트케이스, 통합테스트, 결함 생명주기',            accent:'#7c3aed', tags:['블랙박스','화이트박스','결함관리'] },
+  { priority:4,  ch:11, file:'11_basic_technology.html',     title:'응용 SW 기초 기술 활용',       desc:'운영체제, DB, 네트워크(OSI 7계층), TCP/UDP',         accent:'#1d4ed8', tags:['OSI 7계층','CRUD','TCP/IP'] },
+  { priority:5,  ch:1,  file:'01_requirements.html',         title:'요구사항 확인',               desc:'현행 시스템 분석, 요구사항 검증, UML 다이어그램',     accent:'#6d28d9', tags:['도출~검증','UML','유스케이스'] },
+  { priority:6,  ch:2,  file:'02_data_io.html',              title:'데이터 입출력 구현',           desc:'논리/물리 데이터모델, 정규화, 프로시저/트리거',       accent:'#15803d', tags:['ERD','정규화','인덱스'] },
+  { priority:7,  ch:4,  file:'04_server_program.html',       title:'서버프로그램 구현',            desc:'개발환경, 공통모듈, 응집도/결합도, 배치 프로그램',    accent:'#c2410c', tags:['응집도/결합도','형상관리','배치'] },
+  { priority:8,  ch:9,  file:'09_secure_coding.html',        title:'소프트웨어 개발 보안 구축',     desc:'보안 요구사항, 입력값 검증, 시큐어 코딩, 결함관리',   accent:'#b91c1c', tags:['SQLi/XSS','인증','시큐어코딩'] },
+  { priority:9,  ch:5,  file:'05_interface.html',            title:'인터페이스 구현',              desc:'인터페이스 설계서, 데이터 표준, 예외처리, 보안',      accent:'#4338ca', tags:['연동방식','응답코드','검증도구'] },
+  { priority:10, ch:3,  file:'03_integration.html',          title:'통합 구현',                   desc:'연계 데이터, EAI/ESB, XML/JSON, 연계 보안',         accent:'#0369a1', tags:['EAI','ESB','연계보안'] },
+  { priority:11, ch:6,  file:'06_ui_design.html',            title:'화면 설계',                   desc:'UI 요구사항, 와이어프레임/스토리보드, 화면흐름',      accent:'#a21caf', tags:['프로토타입','화면흐름','설계원칙'] },
+  { priority:12, ch:12, file:'12_packaging.html',            title:'제품소프트웨어 패키징',         desc:'빌드/패키징/배포, 릴리즈노트, 형상관리, Git',        accent:'#15803d', tags:['DRM','형상관리','Git'] },
+];
+
+function renderGrid() {
+  const done = JSON.parse(localStorage.getItem('idx_done') || '{}');
+  document.getElementById('grid').innerHTML = chapters.map(c => {
+    const isDone = !!done[c.file];
+    return `<div class="ch-card${isDone ? ' done' : ''}" style="--accent:${c.accent}">
+      <div class="ch-top">
+        <div class="ch-badges">
+          <span class="badge priority">우선순위 ${c.priority}</span>
+          <span class="badge chnum">제${c.ch}장</span>
+        </div>
+        <div class="ch-check${isDone ? ' checked' : ''}" onclick="toggleDone('${c.file}')">${isDone ? '✓' : ''}</div>
+      </div>
+      <div class="ch-title"><a href="${c.file}">${c.title}</a></div>
+      <div class="ch-desc">${c.desc}</div>
+      <div class="ch-tags">${c.tags.map(t => `<span>${t}</span>`).join('')}</div>
+      <a class="ch-open" href="${c.file}">학습 시작 →</a>
+    </div>`;
+  }).join('');
+  updateProgress(done);
+}
+
+function toggleDone(file) {
+  const done = JSON.parse(localStorage.getItem('idx_done') || '{}');
+  done[file] = !done[file];
+  localStorage.setItem('idx_done', JSON.stringify(done));
+  renderGrid();
+}
+
+function updateProgress(done) {
+  const n = Object.values(done).filter(Boolean).length;
+  const pct = Math.round((n / chapters.length) * 100);
+  document.getElementById('pct').textContent = pct + '%';
+  document.getElementById('pfill').style.width = pct + '%';
+  document.getElementById('plabel').textContent = `${n} / ${chapters.length} 완료`;
+}
+
+document.addEventListener('DOMContentLoaded', renderGrid);
+</script>
+</body>
+</html>
