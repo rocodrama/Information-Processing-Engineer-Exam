@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>정보처리기사 실기 대비</title>
+<style>
+:root {
+  --dark: #0f172a;
+  --gray: #64748b;
+  --light: #f8fafc;
+  --border: #e2e8f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: radial-gradient(circle at 20% 15%, #1e293b 0%, #0f172a 45%, #020617 100%);
+  color: var(--light);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+  word-break: keep-all;
+}
+
+.wrap { width: 100%; max-width: 880px; text-align: center; }
+
+.eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #93c5fd;
+  background: rgba(147, 197, 253, 0.1);
+  border: 1px solid rgba(147, 197, 253, 0.25);
+  padding: 0.3rem 0.9rem;
+  border-radius: 20px;
+  margin-bottom: 1.1rem;
+}
+
+h1 { font-size: 2.1rem; font-weight: 800; margin-bottom: 0.6rem; }
+.sub { color: #94a3b8; font-size: 0.95rem; margin-bottom: 2.6rem; }
+
+.choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.choice {
+  position: relative;
+  display: block;
+  text-decoration: none;
+  color: var(--light);
+  background: linear-gradient(160deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 18px;
+  padding: 2.2rem 1.5rem;
+  overflow: hidden;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.choice:hover { transform: translateY(-6px); border-color: var(--accent); background: linear-gradient(160deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03)); }
+
+.choice::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% -20%, var(--accent) 0%, transparent 60%);
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.choice .num { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.7rem; }
+.choice .icon { font-size: 2rem; margin-bottom: 0.9rem; }
+.choice h2 { font-size: 1.35rem; font-weight: 800; margin-bottom: 0.5rem; }
+.choice p { font-size: 0.85rem; color: #cbd5e1; margin-bottom: 1.1rem; }
+
+.choice .tags { display: flex; gap: 0.35rem; flex-wrap: wrap; justify-content: center; margin-bottom: 1.3rem; }
+.choice .tags span {
+  font-size: 0.7rem; color: #cbd5e1;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 0.18rem 0.6rem; border-radius: 20px;
+}
+
+.choice .go {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  font-size: 0.82rem; font-weight: 700; color: var(--accent);
+}
+
+.lv1 { --accent: #38bdf8; }
+.lv2 { --accent: #a78bfa; }
+
+footer { margin-top: 2.4rem; font-size: 0.76rem; color: #64748b; }
+
+@media (max-width: 640px) {
+  h1 { font-size: 1.6rem; }
+  .choices { grid-template-columns: 1fr; }
+  .choice { padding: 1.8rem 1.25rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <span class="eyebrow">정보처리기사 실기</span>
+  <h1>어떤 학습을 시작할까요?</h1>
+  <p class="sub">Level-1 개념 정리와 Level-2 실전 문제풀이 중에서 선택하세요</p>
+
+  <div class="choices">
+    <a class="choice lv1" href="level-1/index.html">
+      <div class="num">LEVEL 1</div>
+      <div class="icon">📚</div>
+      <h2>개념 정리</h2>
+      <p>출제기준 12개 항목 핵심개념 + 키워드</p>
+      <div class="tags"><span>요구사항</span><span>SQL</span><span>보안</span></div>
+      <div class="go">학습 시작 →</div>
+    </a>
+
+    <a class="choice lv2" href="level-2/index.html">
+      <div class="num">LEVEL 2</div>
+      <div class="icon">⚡</div>
+      <h2>실전 문제풀이</h2>
+      <p>코드 추적 · 계산 공식 · 기출문제 (2020~2025)</p>
+      <div class="tags"><span>코드추적</span><span>계산문제</span><span>기출 340+</span></div>
+      <div class="go">학습 시작 →</div>
+    </a>
+  </div>
+
+  <footer>정보처리기사 실기 대비 학습 자료</footer>
+</div>
+
+</body>
+</html>

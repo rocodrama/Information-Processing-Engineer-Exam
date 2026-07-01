@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
@@ -10,7 +10,7 @@
   --accent: #c2410c; --accent2: #ea580c;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.7; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.8; word-break: keep-all; }
 
 /* ── HEADER ── */
 .hero { background: linear-gradient(135deg, #1c1917 0%, #292524 60%, #44403c 100%); color: white; padding: 2.5rem 1.5rem 2rem; }
@@ -82,14 +82,14 @@ tr:hover td { background: #fff7ed; }
 .quiz-card.open .quiz-ans { display: block; }
 .ans-label { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin: 0.8rem 0 0.3rem; }
 .ans-val { font-size: 0.92rem; font-weight: 700; color: var(--dark); font-family: monospace; }
-.ans-explain { font-size: 0.82rem; color: var(--gray); margin-top: 0.4rem; }
+.ans-explain { font-size: 0.86rem; color: var(--gray); margin-top: 0.4rem; }
 .ans-steps { margin-top: 0.5rem; }
 .ans-step { font-size: 0.82rem; color: #374151; padding: 0.15rem 0; }
 .ans-step::before { content: '→ '; color: var(--accent); }
 
 /* ── INFO BOX ── */
 .info { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #1e40af; margin: 1rem 0; }
-.warn { background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #713f12; margin: 1rem 0; }
+.warn { background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.88rem; color: #713f12; margin: 1rem 0; }
 
 /* ── MEMO GRID ── */
 .memo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.7rem; margin: 1rem 0; }
@@ -158,7 +158,7 @@ tr:hover td { background: #fff7ed; }
   .quiz-q { min-height: 52px; padding: 0.9rem 1rem; font-size: 0.83rem; align-items: flex-start; }
   .quiz-ans { padding: 0 1rem 1rem; }
   .ans-val { font-size: 0.88rem; }
-  .ans-explain { font-size: 0.79rem; }
+  .ans-explain { font-size: 0.82rem; }
   .quiz-badge { font-size: 0.64rem; }
 }
 </style>

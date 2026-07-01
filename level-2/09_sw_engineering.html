@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
@@ -10,7 +10,7 @@
   --accent: #7c3aed; --accent2: #a78bfa;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.7; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.8; word-break: keep-all; }
 
 .hero { background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #2e1065 100%); color: white; padding: 2.5rem 1.5rem 2rem; }
 .hero-inner { max-width: 960px; margin: 0 auto; }
@@ -32,17 +32,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .sec-title { font-size: 1.3rem; font-weight: 800; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 0.5rem; }
 .sec-num { background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 20px; }
 
-.info  { background: #faf5ff; border: 1px solid #ddd6fe; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #4c1d95; margin: 1rem 0; }
-.warn  { background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #713f12; margin: 1rem 0; }
-.tip   { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #166534; margin: 1rem 0; }
-.red   { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #991b1b; margin: 1rem 0; }
+.info  { background: #faf5ff; border: 1px solid #ddd6fe; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.88rem; color: #4c1d95; margin: 1rem 0; }
+.warn  { background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.88rem; color: #713f12; margin: 1rem 0; }
+.tip   { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.88rem; color: #166534; margin: 1rem 0; }
+.red   { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.88rem; color: #991b1b; margin: 1rem 0; }
 
 .tbl-wrap { overflow-x: auto; margin: 0.7rem 0; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
 .tbl-wrap::before { content: '← 좌우 스크롤'; display: none; font-size: 0.68rem; color: var(--gray); text-align: right; padding: 0.3rem 0; }
 
 .g-tbl { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
 .g-tbl th { background: #0f172a; color: #c4b5fd; padding: 0.5rem 0.8rem; text-align: left; font-size: 0.77rem; font-weight: 700; }
-.g-tbl td { padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--border); }
+.g-tbl td { padding: 0.5rem 0.85rem; border-bottom: 1px solid var(--border); line-height: 1.7; }
 .g-tbl tr:nth-child(even) td { background: #fafafa; }
 .g-tbl tr:hover td { background: #faf5ff; }
 code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.82rem; }
@@ -123,7 +123,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 .quiz-card.open .quiz-ans { display: block; }
 .ans-label { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin: 0.8rem 0 0.3rem; }
 .ans-val   { font-size: 0.95rem; font-weight: 700; color: var(--dark); }
-.ans-explain { font-size: 0.82rem; color: #374151; margin-top: 0.5rem; line-height: 1.65; }
+.ans-explain { font-size: 0.86rem; color: #374151; margin-top: 0.5rem; line-height: 1.65; }
 
 @media (max-width: 640px) {
   .hero { padding: 1.8rem 1rem 1.5rem; }
@@ -131,7 +131,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
   .container { padding: 1.5rem 0.9rem 3rem; }
   .sec-title { font-size: 1.1rem; margin: 2rem 0 0.85rem; }
   .tbl-wrap::before { display: block; }
-  .g-tbl { font-size: 0.76rem; }
+  .g-tbl { font-size: 0.79rem; }
   .g-tbl th, .g-tbl td { padding: 0.35rem 0.6rem; }
   .pat-grid { grid-template-columns: 1fr; }
   .uml-grid { grid-template-columns: 1fr; }
@@ -144,7 +144,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
   .quiz-q { padding: 0.9rem 1rem; font-size: 0.83rem; }
   .quiz-ans { padding: 0 1rem 1rem; }
   .ans-val { font-size: 0.88rem; }
-  .ans-explain { font-size: 0.79rem; }
+  .ans-explain { font-size: 0.82rem; }
 }
 </style>
 </head>
