@@ -1,0 +1,2330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>04 SQL 심화 50제 — Level-3</title>
+<style>
+:root {
+  --dark: #0f172a; --gray: #64748b; --light: #f8fafc; --border: #e2e8f0;
+  --accent: #0f766e; --accent2: #14b8a6;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.8; word-break: keep-all; }
+
+/* ── HERO ── */
+.hero { background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #134e4a 100%); color: white; padding: 2.5rem 1.5rem 2rem; }
+.hero-inner { max-width: 960px; margin: 0 auto; }
+.hero-back { font-size: 0.78rem; color: #94a3b8; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; margin-bottom: 1rem; }
+.hero-back:hover { color: white; }
+.hero h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.3rem; }
+.hero p { color: #99f6e4; font-size: 0.88rem; }
+.hero-meta { display: flex; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
+.htag { background: rgba(255,255,255,0.12); padding: 0.22rem 0.65rem; border-radius: 20px; font-size: 0.75rem; }
+
+.container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+/* ── TOC ── */
+.toc { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.5rem; margin-bottom: 2rem; }
+.toc-title { font-size: 0.78rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.7rem; }
+.toc-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.toc-list a { font-size: 0.8rem; color: var(--accent); text-decoration: none; border: 1px solid #99f6e4; background: #f0fdfa; padding: 0.2rem 0.6rem; border-radius: 8px; }
+.toc-list a:hover { background: #ccfbf1; }
+
+/* ── SECTION ── */
+.sec-title { font-size: 1.3rem; font-weight: 800; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 20px; }
+
+/* ── ALERT ── */
+.info  { background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #134e4a; margin: 1rem 0; }
+.warn  { background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.88rem; color: #713f12; margin: 1rem 0; }
+.tip   { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.88rem; color: #166534; margin: 1rem 0; }
+.red   { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.88rem; color: #991b1b; margin: 1rem 0; }
+
+/* ── SQL CODE ── */
+.code-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; margin: 0.8rem 0; border-radius: 10px; }
+.code-block { background: #0f172a; border-radius: 10px; padding: 1.1rem 1.3rem; min-width: 480px; }
+.code-block pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.84rem; line-height: 1.7; color: #e2e8f0; }
+.ln  { color: #334155; user-select: none; margin-right: 0.7rem; font-size: 0.76rem; }
+.kw  { color: #67e8f9; font-weight: 700; }   /* SQL keywords */
+.fn  { color: #fbbf24; }                       /* functions */
+.str { color: #86efac; }                       /* strings */
+.num { color: #f9a8d4; }                       /* numbers */
+.cmt { color: #475569; font-style: italic; }   /* comments */
+.tb  { color: #c4b5fd; }                       /* table names */
+.op  { color: #fb923c; }                       /* operators */
+
+/* ── DATA TABLE ── */
+.tbl-wrap { overflow-x: auto; margin: 0.7rem 0; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+.tbl-wrap::before { content: '← 좌우 스크롤'; display: none; font-size: 0.68rem; color: var(--gray); text-align: right; padding: 0.3rem 0; }
+.d-table { border-collapse: collapse; font-size: 0.82rem; min-width: 280px; }
+.d-table th { background: var(--accent); color: white; padding: 0.45rem 0.85rem; text-align: center; font-size: 0.76rem; font-weight: 700; }
+.d-table td { padding: 0.38rem 0.85rem; border-bottom: 1px solid var(--border); text-align: center; }
+.d-table tr:nth-child(even) td { background: #f0fdfa; }
+.d-table tr:hover td { background: #ccfbf1; }
+.d-table .null-v { color: #94a3b8; font-style: italic; font-size: 0.75rem; }
+.d-table .hi { background: #fef3c7 !important; font-weight: 700; }
+.d-table .no { background: #fee2e2 !important; color: #991b1b; text-decoration: line-through; }
+
+/* ── GENERAL TABLE ── */
+.g-tbl { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+.g-tbl th { background: #0f172a; color: #99f6e4; padding: 0.5rem 0.8rem; text-align: left; font-size: 0.77rem; font-weight: 700; }
+.g-tbl td { padding: 0.5rem 0.85rem; border-bottom: 1px solid var(--border); line-height: 1.7; }
+.g-tbl tr:nth-child(even) td { background: #fafafa; }
+.g-tbl tr:hover td { background: #f0fdfa; }
+code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.82rem; }
+
+/* ── CONCEPT CARD ── */
+.concept { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1.1rem; }
+.concept h4 { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.4rem; }
+.concept h4::before { content: '▸'; color: var(--accent); }
+
+/* ── LABEL ── */
+.tbl-label { font-size: 0.76rem; font-weight: 700; color: var(--gray); margin: 0.7rem 0 0.3rem; }
+
+/* ── QUIZ ── */
+.quiz-wrap { display: flex; flex-direction: column; gap: 1.1rem; margin-top: 1rem; }
+.quiz-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.quiz-q {
+  padding: 1rem 1.2rem; font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; min-height: 52px;
+}
+.quiz-q:hover { background: #f0fdfa; }
+.quiz-q:active { background: #ccfbf1; }
+.quiz-badge { font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.quiz-badge.year { background: #99f6e4; color: #134e4a; }
+.quiz-badge.sim  { background: #e0e7ff; color: #4338ca; }
+.quiz-badge.adv  { background: #ede9fe; color: #5b21b6; }
+.quiz-chevron { font-size: 0.75rem; color: var(--gray); flex-shrink: 0; margin-top: 0.1rem; transition: transform 0.2s; }
+.quiz-card.open .quiz-chevron { transform: rotate(180deg); }
+.quiz-ans { display: none; padding: 0 1.2rem 1.1rem; border-top: 1px solid var(--border); }
+.quiz-card.open .quiz-ans { display: block; }
+.reveal-btn { display: inline-flex; align-items: center; gap: 0.3rem; margin-top: 0.9rem; padding: 0.5rem 1.1rem; border-radius: 8px; border: 1.5px solid var(--accent); background: transparent; color: var(--accent); font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.reveal-btn:hover { background: var(--accent); color: white; }
+.sol-block { display: none; margin-top: 0.8rem; }
+.sol-block.open { display: block; }
+.ans-label { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin: 0.8rem 0 0.3rem; }
+.ans-val   { font-size: 0.95rem; font-weight: 700; color: var(--dark); font-family: monospace; }
+.ans-explain { font-size: 0.86rem; color: #374151; margin-top: 0.5rem; line-height: 1.65; }
+.ans-code-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.7rem 0; border-radius: 8px; }
+.ans-code { background: #0f172a; border-radius: 8px; padding: 0.9rem 1.1rem; min-width: 360px; }
+.ans-code pre { margin: 0; font-family: 'Courier New', monospace; font-size: 0.8rem; line-height: 1.65; color: #e2e8f0; }
+
+/* ── MOBILE ── */
+@media (max-width: 640px) {
+  .hero { padding: 1.8rem 1rem 1.5rem; }
+  .hero h1 { font-size: 1.25rem; }
+  .hero p { font-size: 0.84rem; }
+
+  .container { padding: 1.5rem 0.9rem 3rem; }
+  .toc { padding: 0.9rem 1rem; }
+  .sec-title { font-size: 1.1rem; margin: 2rem 0 0.85rem; }
+
+  .code-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.3rem; }
+  .code-block { padding: 0.9rem 1rem; }
+  .code-block pre { font-size: 0.74rem; }
+
+  .tbl-wrap::before { display: block; }
+  .d-table { font-size: 0.74rem; }
+  .d-table th { padding: 0.38rem 0.6rem; font-size: 0.68rem; }
+  .d-table td { padding: 0.3rem 0.6rem; }
+
+  .g-tbl { font-size: 0.79rem; }
+  .g-tbl th, .g-tbl td { padding: 0.35rem 0.6rem; }
+
+  .info, .warn, .tip, .red { font-size: 0.8rem; padding: 0.85rem 1rem; }
+  .concept { padding: 1rem; }
+  .concept h4 { font-size: 0.86rem; }
+
+  .quiz-q { padding: 0.9rem 1rem; font-size: 0.83rem; }
+  .quiz-ans { padding: 0 1rem 1rem; }
+  .ans-val { font-size: 0.88rem; }
+  .ans-explain { font-size: 0.82rem; }
+  .ans-code-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.2rem; }
+  .ans-code pre { font-size: 0.72rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <a class="hero-back" href="index.html">← Level-3 목록</a>
+    <h1>🔥 SQL 심화 50제</h1>
+    <p>윈도우함수 · 상관서브쿼리 · SELF JOIN · CTE/재귀쿼리 · NULL · GROUP BY 심화 · 트랜잭션 · 인덱스 · 집합연산 · 조인 심화</p>
+    <div class="hero-meta">
+      <span class="htag">심화 50문제</span>
+      <span class="htag">기출 변형 + 예상 심화</span>
+      <span class="htag">전 문항 풀 스텝 트레이스</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="toc">
+    <div class="toc-title">목차</div>
+    <div class="toc-list">
+      <a href="#window">01 윈도우 함수</a>
+      <a href="#corr">02 상관 서브쿼리</a>
+      <a href="#selfjoin">03 SELF JOIN</a>
+      <a href="#cte">04 CTE·재귀쿼리</a>
+      <a href="#null">05 NULL 처리</a>
+      <a href="#groupby">06 GROUP BY·HAVING 심화</a>
+      <a href="#txn">07 트랜잭션·격리수준</a>
+      <a href="#index">08 인덱스·실행계획</a>
+      <a href="#setop">09 집합 연산</a>
+      <a href="#joinadv">10 조인 심화</a>
+    </div>
+  </div>
+
+  <div class="info">ℹ️ 별도 표기가 없는 한 표준 SQL(ANSI) 및 MySQL 계열 문법을 기준으로 합니다. 특정 DBMS 전용 문법(예: <code>WITH RECURSIVE</code>, <code>INTERSECT</code>/<code>EXCEPT</code>, <code>FULL OUTER JOIN</code> 등)은 해당 문제에 별도로 표기했습니다. 모든 예제 테이블은 문제마다 독립적입니다(다른 문제와 값이 달라도 정상).</div>
+
+  <!-- ① 윈도우 함수 -->
+  <div class="sec-title" id="window"><span class="sec-num">01</span> 윈도우 함수</div>
+
+  <div class="quiz-wrap">
+
+    <!-- W1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 SQL의 실행 결과를 순서대로 쓰시오. (ROW_NUMBER 기본)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">STUDENT</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>SID</th><th>NAME</th><th>SCORE</th></tr>
+          <tr><td>101</td><td>철수</td><td>78</td></tr>
+          <tr><td>102</td><td>영희</td><td>92</td></tr>
+          <tr><td>103</td><td>민수</td><td>85</td></tr>
+          <tr><td>104</td><td>지영</td><td>69</td></tr>
+          <tr><td>105</td><td>현우</td><td>88</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> NAME, SCORE,
+       <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> SCORE <span class="kw">DESC</span>) <span class="kw">AS</span> RN
+<span class="kw">FROM</span> <span class="tb">STUDENT</span>
+<span class="kw">ORDER BY</span> RN;</pre></div></div>
+        <div class="tbl-label">① SCORE 내림차순 정렬 후 순번(RN) 부여</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>NAME</th><th>SCORE</th><th>RN</th></tr>
+          <tr><td class="hi">영희</td><td>92</td><td>1</td></tr>
+          <tr><td class="hi">현우</td><td>88</td><td>2</td></tr>
+          <tr><td>민수</td><td>85</td><td>3</td></tr>
+          <tr><td>철수</td><td>78</td><td>4</td></tr>
+          <tr><td>지영</td><td>69</td><td>5</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">영희,92,1 / 현우,88,2 / 민수,85,3 / 철수,78,4 / 지영,69,5</div>
+        <div class="ans-explain">
+          <code>ROW_NUMBER()</code>는 <code>OVER()</code> 안의 <code>ORDER BY</code> 기준으로 정렬한 뒤 <strong>중복 없이 1부터 순번</strong>을 매긴다. 동점이 있어도 무조건 서로 다른 번호가 부여된다는 점이 RANK/DENSE_RANK와 다르다. 바깥쪽 <code>ORDER BY RN</code>이 없으면 출력 행 순서가 보장되지 않으므로 실전에서는 반드시 명시한다.
+        </div>
+      </div>
+    </div>
+
+    <!-- W2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (PARTITION BY + RANK, 동점 처리)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">SALES</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>REGION</th><th>NAME</th><th>AMOUNT</th></tr>
+          <tr><td>서울</td><td>김철수</td><td>500</td></tr>
+          <tr><td>서울</td><td>이영희</td><td>700</td></tr>
+          <tr><td>서울</td><td>박민수</td><td>700</td></tr>
+          <tr><td>부산</td><td>최현우</td><td>300</td></tr>
+          <tr><td>부산</td><td>정지영</td><td>450</td></tr>
+          <tr><td>부산</td><td>한소희</td><td>450</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> REGION, NAME, AMOUNT,
+       <span class="fn">RANK</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> REGION <span class="kw">ORDER BY</span> AMOUNT <span class="kw">DESC</span>) <span class="kw">AS</span> RNK
+<span class="kw">FROM</span> <span class="tb">SALES</span>
+<span class="kw">ORDER BY</span> REGION, RNK, NAME;</pre></div></div>
+        <div class="tbl-label">① REGION별로 분할(PARTITION) 후 AMOUNT 내림차순 RANK 부여</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>REGION</th><th>NAME</th><th>AMOUNT</th><th>RNK</th></tr>
+          <tr><td>서울</td><td class="hi">박민수</td><td>700</td><td>1</td></tr>
+          <tr><td>서울</td><td class="hi">이영희</td><td>700</td><td>1</td></tr>
+          <tr><td>서울</td><td>김철수</td><td>500</td><td>3</td></tr>
+          <tr><td>부산</td><td class="hi">정지영</td><td>450</td><td>1</td></tr>
+          <tr><td>부산</td><td class="hi">한소희</td><td>450</td><td>1</td></tr>
+          <tr><td>부산</td><td>최현우</td><td>300</td><td>3</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">서울: 박민수 700 1위, 이영희 700 1위, 김철수 500 3위<br>부산: 정지영 450 1위, 한소희 450 1위, 최현우 300 3위</div>
+        <div class="ans-explain">
+          <code>RANK()</code>는 동점에 같은 순위를 준 뒤 <strong>다음 순위를 동점자 수만큼 건너뛴다</strong>. 서울에서 700원이 2명(박민수·이영희) 공동 1위이므로 김민수(500)는 2위가 아니라 <strong>3위</strong>가 된다. 동점자 사이의 표시 순서는 SQL 표준상 보장되지 않아 <code>ORDER BY ... NAME</code>으로 보조 정렬했다.
+        </div>
+      </div>
+    </div>
+
+    <!-- W3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 RNK, DRNK 컬럼 값을 각각 쓰시오. (RANK vs DENSE_RANK)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">PRODUCT</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>PID</th><th>NAME</th><th>PRICE</th></tr>
+          <tr><td>P1</td><td>A</td><td>1000</td></tr>
+          <tr><td>P2</td><td>B</td><td>1500</td></tr>
+          <tr><td>P3</td><td>C</td><td>1500</td></tr>
+          <tr><td>P4</td><td>D</td><td>1500</td></tr>
+          <tr><td>P5</td><td>E</td><td>2000</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> NAME, PRICE,
+       <span class="fn">RANK</span>()       <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> PRICE <span class="kw">DESC</span>) <span class="kw">AS</span> RNK,
+       <span class="fn">DENSE_RANK</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> PRICE <span class="kw">DESC</span>) <span class="kw">AS</span> DRNK
+<span class="kw">FROM</span> <span class="tb">PRODUCT</span>
+<span class="kw">ORDER BY</span> PRICE <span class="kw">DESC</span>, NAME;</pre></div></div>
+        <div class="tbl-label">① PRICE 내림차순 정렬 후 RANK / DENSE_RANK 비교</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>NAME</th><th>PRICE</th><th>RNK</th><th>DRNK</th></tr>
+          <tr><td>E</td><td>2000</td><td>1</td><td class="hi">1</td></tr>
+          <tr><td>B</td><td>1500</td><td>2</td><td class="hi">2</td></tr>
+          <tr><td>C</td><td>1500</td><td>2</td><td class="hi">2</td></tr>
+          <tr><td>D</td><td>1500</td><td>2</td><td class="hi">2</td></tr>
+          <tr><td>A</td><td>1000</td><td class="hi">5</td><td class="hi">3</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">RNK: 1,2,2,2,5&nbsp;&nbsp;/&nbsp;&nbsp;DRNK: 1,2,2,2,3</div>
+        <div class="ans-explain">
+          두 함수 모두 1500원 3개를 공동 2위로 매기는 것은 같다. 차이는 그 다음: <code>RANK</code>는 <strong>앞의 동점 개수만큼 건너뛰어</strong> A(1000)가 5위(1+3=4행 다음이므로 5)가 되지만, <code>DENSE_RANK</code>는 <strong>건너뛰지 않고 연속된 정수</strong>로 매겨 A는 3위가 된다.
+        </div>
+      </div>
+    </div>
+
+    <!-- W4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 RUNNING_TOTAL 컬럼 값을 고객별로 쓰시오. (누적합 윈도우 함수)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">ORDERS</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>OID</th><th>CUSTOMER</th><th>ODATE</th><th>AMOUNT</th></tr>
+          <tr><td>O1</td><td>김철수</td><td>2024-01-05</td><td>100</td></tr>
+          <tr><td>O2</td><td>김철수</td><td>2024-01-10</td><td>200</td></tr>
+          <tr><td>O3</td><td>김철수</td><td>2024-01-15</td><td>150</td></tr>
+          <tr><td>O4</td><td>이영희</td><td>2024-01-07</td><td>300</td></tr>
+          <tr><td>O5</td><td>이영희</td><td>2024-01-20</td><td>100</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> CUSTOMER, ODATE, AMOUNT,
+       <span class="fn">SUM</span>(AMOUNT) <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> CUSTOMER <span class="kw">ORDER BY</span> ODATE) <span class="kw">AS</span> RUNNING_TOTAL
+<span class="kw">FROM</span> <span class="tb">ORDERS</span>
+<span class="kw">ORDER BY</span> CUSTOMER, ODATE;</pre></div></div>
+        <div class="tbl-label">① 고객별 분할 + 날짜순 정렬 후 누적합 계산</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>CUSTOMER</th><th>ODATE</th><th>AMOUNT</th><th>RUNNING_TOTAL</th></tr>
+          <tr><td>김철수</td><td>01-05</td><td>100</td><td>100</td></tr>
+          <tr><td>김철수</td><td>01-10</td><td>200</td><td class="hi">300</td></tr>
+          <tr><td>김철수</td><td>01-15</td><td>150</td><td class="hi">450</td></tr>
+          <tr><td>이영희</td><td>01-07</td><td>300</td><td>300</td></tr>
+          <tr><td>이영희</td><td>01-20</td><td>100</td><td class="hi">400</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">김철수: 100 → 300 → 450<br>이영희: 300 → 400</div>
+        <div class="ans-explain">
+          <code>ORDER BY</code>가 있는 <code>SUM() OVER()</code>의 기본 프레임은 <strong>파티션 시작부터 현재 행까지(RANGE UNBOUNDED PRECEDING ~ CURRENT ROW)</strong>이다. 각 고객(파티션) 안에서 날짜순으로 정렬한 뒤 이전 행들의 AMOUNT를 계속 더해간다. 파티션이 바뀌면(김철수→이영희) 누적합은 다시 0부터 시작한다.
+        </div>
+      </div>
+    </div>
+
+    <!-- W5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 최종 결과 행 수와 결과를 쓰시오. (윈도우 함수 결과를 WHERE에 못 쓰는 이유 + 서브쿼리 필터)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">EMP2</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>NAME</th><th>DEPT</th><th>SALARY</th></tr>
+          <tr><td>김</td><td>개발</td><td>4000</td></tr>
+          <tr><td>이</td><td>개발</td><td>4500</td></tr>
+          <tr><td>박</td><td>개발</td><td>3800</td></tr>
+          <tr><td>최</td><td>영업</td><td>5000</td></tr>
+          <tr><td>정</td><td>영업</td><td>4200</td></tr>
+          <tr><td>한</td><td>영업</td><td>4200</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> <span class="op">*</span>
+<span class="kw">FROM</span> (
+    <span class="kw">SELECT</span> NAME, DEPT, SALARY,
+           <span class="fn">RANK</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> DEPT <span class="kw">ORDER BY</span> SALARY <span class="kw">DESC</span>) <span class="kw">AS</span> RNK
+    <span class="kw">FROM</span> <span class="tb">EMP2</span>
+) T
+<span class="kw">WHERE</span> RNK <span class="op">&lt;=</span> <span class="num">2</span>
+<span class="kw">ORDER BY</span> DEPT, RNK, NAME;</pre></div></div>
+        <div class="tbl-label">① 내부 쿼리: 부서별 RANK 계산</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>NAME</th><th>DEPT</th><th>SALARY</th><th>RNK</th></tr>
+          <tr><td>이</td><td>개발</td><td>4500</td><td>1</td></tr>
+          <tr><td>김</td><td>개발</td><td>4000</td><td>2</td></tr>
+          <tr><td>박</td><td>개발</td><td>3800</td><td>3</td></tr>
+          <tr><td>최</td><td>영업</td><td>5000</td><td>1</td></tr>
+          <tr><td>정</td><td>영업</td><td>4200</td><td>2</td></tr>
+          <tr><td>한</td><td>영업</td><td>4200</td><td>2</td></tr>
+        </table></div>
+        <div class="tbl-label">② 바깥 쿼리: WHERE RNK &lt;= 2 필터</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>NAME</th><th>DEPT</th><th>SALARY</th><th>RNK</th></tr>
+          <tr><td class="hi">이</td><td>개발</td><td>4500</td><td>1</td></tr>
+          <tr><td class="hi">김</td><td>개발</td><td>4000</td><td>2</td></tr>
+          <tr><td class="no">박</td><td>개발</td><td>3800</td><td>3 ✗</td></tr>
+          <tr><td class="hi">최</td><td>영업</td><td>5000</td><td>1</td></tr>
+          <tr><td class="hi">정</td><td>영업</td><td>4200</td><td>2</td></tr>
+          <tr><td class="hi">한</td><td>영업</td><td>4200</td><td>2</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">총 5행 — 개발: 이(1), 김(2) / 영업: 최(1), 정(2), 한(2)</div>
+        <div class="ans-explain">
+          윈도우 함수는 <strong>SELECT 목록에서 계산되는 시점이 WHERE 이후</strong>이므로 <code>WHERE RNK &lt;= 2</code>처럼 같은 SELECT 안에서 바로 필터링할 수 없다(오류 발생). 그래서 서브쿼리(또는 CTE)로 한 번 감싼 뒤 바깥 쿼리에서 필터링해야 한다. 또한 "부서별 상위 2명"을 의도했지만 <code>RANK</code>는 동점을 같은 순위로 처리하므로 영업팀은 4200원 동점자 2명이 모두 2위가 되어 <strong>실제로는 3명</strong>이 뽑히는 점에 주의한다.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+
+  <!-- ② 상관 서브쿼리 -->
+  <div class="sec-title" id="corr"><span class="sec-num">02</span> 상관 서브쿼리 (Correlated Subquery)</div>
+
+  <div class="quiz-wrap">
+
+    <!-- C1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (EXISTS 상관 서브쿼리)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div>
+            <div class="tbl-label">CUSTOMERS</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>CID</th><th>NAME</th></tr>
+              <tr><td>C1</td><td>김철수</td></tr>
+              <tr><td>C2</td><td>이영희</td></tr>
+              <tr><td>C3</td><td>박민수</td></tr>
+              <tr><td>C4</td><td>최현우</td></tr>
+            </table></div>
+          </div>
+          <div>
+            <div class="tbl-label">ORDERS</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>OID</th><th>CID</th><th>AMOUNT</th></tr>
+              <tr><td>O1</td><td>C1</td><td>100</td></tr>
+              <tr><td>O2</td><td>C1</td><td>200</td></tr>
+              <tr><td>O3</td><td>C2</td><td>150</td></tr>
+              <tr><td>O4</td><td>C4</td><td>300</td></tr>
+            </table></div>
+          </div>
+        </div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> NAME
+<span class="kw">FROM</span> <span class="tb">CUSTOMERS</span> c
+<span class="kw">WHERE</span> <span class="kw">EXISTS</span> (
+    <span class="kw">SELECT</span> <span class="num">1</span> <span class="kw">FROM</span> <span class="tb">ORDERS</span> o <span class="kw">WHERE</span> o.CID <span class="op">=</span> c.CID
+);</pre></div></div>
+        <div class="tbl-label">① CUSTOMERS의 각 행마다 서브쿼리를 실행 (c.CID를 서브쿼리에 대입)</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>CID</th><th>NAME</th><th>ORDERS에 CID 일치 행 존재?</th></tr>
+          <tr><td>C1</td><td class="hi">김철수</td><td>O1,O2 존재 → TRUE</td></tr>
+          <tr><td>C2</td><td class="hi">이영희</td><td>O3 존재 → TRUE</td></tr>
+          <tr><td>C3</td><td class="no">박민수</td><td>없음 → FALSE</td></tr>
+          <tr><td>C4</td><td class="hi">최현우</td><td>O4 존재 → TRUE</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">김철수, 이영희, 최현우 (3행)</div>
+        <div class="ans-explain">
+          상관 서브쿼리는 <strong>바깥 쿼리의 행마다 한 번씩</strong> 실행되며, 서브쿼리 안의 <code>c.CID</code>처럼 외부 테이블 컬럼을 참조한다. <code>EXISTS</code>는 서브쿼리 결과가 <strong>한 행이라도 있으면 TRUE</strong>(실제 값은 보지 않음)이므로, 주문이 하나라도 있는 고객만 남는다. 주문이 없는 박민수(C3)는 제외된다.
+        </div>
+      </div>
+    </div>
+
+    <!-- C2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (NOT EXISTS 상관 서브쿼리)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">CUSTOMERS / ORDERS (위 문제와 동일)</div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> NAME
+<span class="kw">FROM</span> <span class="tb">CUSTOMERS</span> c
+<span class="kw">WHERE NOT EXISTS</span> (
+    <span class="kw">SELECT</span> <span class="num">1</span> <span class="kw">FROM</span> <span class="tb">ORDERS</span> o <span class="kw">WHERE</span> o.CID <span class="op">=</span> c.CID
+);</pre></div></div>
+        <div class="tbl-label">① CUSTOMERS의 각 행마다 주문 존재 여부의 반대를 확인</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>CID</th><th>NAME</th><th>NOT EXISTS 결과</th></tr>
+          <tr><td>C1</td><td class="no">김철수</td><td>주문 있음 → FALSE</td></tr>
+          <tr><td>C2</td><td class="no">이영희</td><td>주문 있음 → FALSE</td></tr>
+          <tr><td>C3</td><td class="hi">박민수</td><td>주문 없음 → TRUE</td></tr>
+          <tr><td>C4</td><td class="no">최현우</td><td>주문 있음 → FALSE</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">박민수 (1행)</div>
+        <div class="ans-explain">
+          <code>NOT EXISTS</code>는 상관 서브쿼리 결과가 <strong>단 한 행도 없을 때</strong> TRUE가 된다. 한 번도 주문하지 않은 "휴면 고객"을 찾는 전형적인 패턴이며, <code>NOT IN</code>과 달리 서브쿼리 결과에 NULL이 섞여도 안전하게 동작한다는 실무적 장점이 있다.
+        </div>
+      </div>
+    </div>
+
+    <!-- C3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (같은 그룹 평균과 비교하는 상관 서브쿼리)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">PRODUCT</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>PID</th><th>NAME</th><th>CATEGORY</th><th>PRICE</th></tr>
+          <tr><td>P1</td><td>keyboard</td><td>전자</td><td>30000</td></tr>
+          <tr><td>P2</td><td>mouse</td><td>전자</td><td>15000</td></tr>
+          <tr><td>P3</td><td>monitor</td><td>전자</td><td>200000</td></tr>
+          <tr><td>P4</td><td>desk</td><td>가구</td><td>80000</td></tr>
+          <tr><td>P5</td><td>chair</td><td>가구</td><td>50000</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> NAME, CATEGORY, PRICE
+<span class="kw">FROM</span> <span class="tb">PRODUCT</span> p1
+<span class="kw">WHERE</span> PRICE <span class="op">&gt;</span> (
+    <span class="kw">SELECT</span> <span class="fn">AVG</span>(PRICE) <span class="kw">FROM</span> <span class="tb">PRODUCT</span> p2 <span class="kw">WHERE</span> p2.CATEGORY <span class="op">=</span> p1.CATEGORY
+)
+<span class="kw">ORDER BY</span> CATEGORY, NAME;</pre></div></div>
+        <div class="tbl-label">① 카테고리별 평균가 계산 (상관 서브쿼리가 행마다 재계산)</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>CATEGORY</th><th>평균가</th><th>계산식</th></tr>
+          <tr><td>전자</td><td>81,666.7</td><td>(30000+15000+200000)/3</td></tr>
+          <tr><td>가구</td><td>65,000</td><td>(80000+50000)/2</td></tr>
+        </table></div>
+        <div class="tbl-label">② PRICE &gt; 자기 카테고리 평균 필터</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>NAME</th><th>CATEGORY</th><th>PRICE</th><th>비교</th></tr>
+          <tr><td class="no">keyboard</td><td>전자</td><td>30000</td><td>&lt; 81666.7 ✗</td></tr>
+          <tr><td class="no">mouse</td><td>전자</td><td>15000</td><td>&lt; 81666.7 ✗</td></tr>
+          <tr><td class="hi">monitor</td><td>전자</td><td>200000</td><td>&gt; 81666.7 ✓</td></tr>
+          <tr><td class="hi">desk</td><td>가구</td><td>80000</td><td>&gt; 65000 ✓</td></tr>
+          <tr><td class="no">chair</td><td>가구</td><td>50000</td><td>&lt; 65000 ✗</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">desk, 가구, 80000<br>monitor, 전자, 200000</div>
+        <div class="ans-explain">
+          서브쿼리의 <code>WHERE p2.CATEGORY = p1.CATEGORY</code>가 바깥 행의 카테고리를 참조하므로, 행마다 "자기 카테고리의 평균"을 다시 계산한다. 전체 평균이 아니라 <strong>그룹별 평균</strong>과 비교한다는 점이 이 문제의 핵심이다.
+        </div>
+      </div>
+    </div>
+
+    <!-- C4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (NOT EXISTS로 "부서 내 최고 급여자" 찾기)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">EMP3</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>EID</th><th>NAME</th><th>DEPT</th><th>SALARY</th></tr>
+          <tr><td>1</td><td>김</td><td>개발</td><td>4000</td></tr>
+          <tr><td>2</td><td>이</td><td>개발</td><td>4500</td></tr>
+          <tr><td>3</td><td>박</td><td>개발</td><td>3800</td></tr>
+          <tr><td>4</td><td>최</td><td>영업</td><td>5000</td></tr>
+          <tr><td>5</td><td>정</td><td>영업</td><td>4200</td></tr>
+          <tr><td>6</td><td>한</td><td>인사</td><td>3000</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> NAME, DEPT, SALARY
+<span class="kw">FROM</span> <span class="tb">EMP3</span> e1
+<span class="kw">WHERE NOT EXISTS</span> (
+    <span class="kw">SELECT</span> <span class="num">1</span> <span class="kw">FROM</span> <span class="tb">EMP3</span> e2
+    <span class="kw">WHERE</span> e2.DEPT <span class="op">=</span> e1.DEPT <span class="kw">AND</span> e2.SALARY <span class="op">&gt;</span> e1.SALARY
+)
+<span class="kw">ORDER BY</span> DEPT;</pre></div></div>
+        <div class="tbl-label">① 각 행마다 "같은 부서에서 나보다 급여 높은 사람"이 있는지 확인</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>NAME</th><th>DEPT</th><th>SALARY</th><th>더 높은 급여자 존재?</th><th>NOT EXISTS</th></tr>
+          <tr><td>김</td><td>개발</td><td>4000</td><td>이(4500) 있음</td><td class="no">FALSE</td></tr>
+          <tr><td>이</td><td>개발</td><td>4500</td><td>없음</td><td class="hi">TRUE</td></tr>
+          <tr><td>박</td><td>개발</td><td>3800</td><td>이(4500) 있음</td><td class="no">FALSE</td></tr>
+          <tr><td>최</td><td>영업</td><td>5000</td><td>없음</td><td class="hi">TRUE</td></tr>
+          <tr><td>정</td><td>영업</td><td>4200</td><td>최(5000) 있음</td><td class="no">FALSE</td></tr>
+          <tr><td>한</td><td>인사</td><td>3000</td><td>없음(부서 인원 1명)</td><td class="hi">TRUE</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">이, 개발, 4500<br>최, 영업, 5000<br>한, 인사, 3000</div>
+        <div class="ans-explain">
+          "나보다 급여가 높은 같은 부서 동료가 <strong>한 명도 없다(NOT EXISTS)</strong>"는 곧 "내가 부서 내 최고 급여자"라는 뜻이다. <code>MAX()</code>+<code>GROUP BY</code>로도 같은 결과를 얻을 수 있지만, 상관 서브쿼리 방식은 조인 없이 같은 테이블을 자기참조하는 대표적인 패턴이다. 인사팀처럼 부서원이 1명뿐이면 항상 TRUE가 된다.
+        </div>
+      </div>
+    </div>
+
+    <!-- C5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (상관 서브쿼리로 고객별 "2번째로 큰 주문 금액" 구하기)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">ORDERS2</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>OID</th><th>CID</th><th>AMOUNT</th></tr>
+          <tr><td>O1</td><td>C1</td><td>300</td></tr>
+          <tr><td>O2</td><td>C1</td><td>500</td></tr>
+          <tr><td>O3</td><td>C1</td><td>500</td></tr>
+          <tr><td>O4</td><td>C1</td><td>200</td></tr>
+          <tr><td>O5</td><td>C2</td><td>400</td></tr>
+          <tr><td>O6</td><td>C2</td><td>400</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT DISTINCT</span> o1.CID, o1.AMOUNT
+<span class="kw">FROM</span> <span class="tb">ORDERS2</span> o1
+<span class="kw">WHERE</span> <span class="num">1</span> <span class="op">=</span> (
+    <span class="kw">SELECT COUNT</span>(<span class="kw">DISTINCT</span> o2.AMOUNT)
+    <span class="kw">FROM</span> <span class="tb">ORDERS2</span> o2
+    <span class="kw">WHERE</span> o2.CID <span class="op">=</span> o1.CID <span class="kw">AND</span> o2.AMOUNT <span class="op">&gt;</span> o1.AMOUNT
+)
+<span class="kw">ORDER BY</span> o1.CID;</pre></div></div>
+        <div class="tbl-label">① C1의 서로 다른(DISTINCT) 금액: 500, 300, 200 — 각 값보다 큰 값의 개수</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>CID</th><th>AMOUNT</th><th>이 금액보다 큰 서로 다른 금액 개수</th><th>일치(=1)?</th></tr>
+          <tr><td>C1</td><td>500</td><td>0개 (더 큰 값 없음)</td><td class="no">✗</td></tr>
+          <tr><td>C1</td><td>300</td><td>1개 (500)</td><td class="hi">✓</td></tr>
+          <tr><td>C1</td><td>200</td><td>2개 (500, 300)</td><td class="no">✗</td></tr>
+          <tr><td>C2</td><td>400</td><td>0개 (서로 다른 값이 400 하나뿐)</td><td class="no">✗</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">C1, 300 (1행) — C2는 결과 없음</div>
+        <div class="ans-explain">
+          "자신보다 큰 서로 다른 금액이 정확히 1개"라는 조건은 곧 <strong>"2번째로 큰 값"</strong>이라는 뜻이 되는 상관 서브쿼리 트릭이다(LIMIT/TOP 없이 N번째 값을 구하는 고전적 기법). C1은 최댓값 500 다음으로 큰 서로 다른 값이 300이므로 (C1, 300)이 출력된다. C2는 서로 다른 금액이 400 하나뿐이라 "2번째 값" 자체가 존재하지 않아 결과에서 빠진다. <code>SELECT DISTINCT</code>가 없으면 O2, O3(둘 다 500)처럼 같은 조건을 만족하는 행이 중복 출력될 수 있다.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+
+  <!-- ③ SELF JOIN -->
+  <div class="sec-title" id="selfjoin"><span class="sec-num">03</span> SELF JOIN</div>
+
+  <div class="quiz-wrap">
+
+    <!-- S1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 SQL의 실행 결과 행 수와 내용을 쓰시오. (SELF JOIN으로 상사 이름 조회)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">EMP4</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>EID</th><th>NAME</th><th>MANAGER_ID</th><th>SALARY</th></tr>
+          <tr><td>1</td><td>김대표</td><td class="null-v">NULL</td><td>10000</td></tr>
+          <tr><td>2</td><td>이부장</td><td>1</td><td>7000</td></tr>
+          <tr><td>3</td><td>박과장</td><td>2</td><td>5000</td></tr>
+          <tr><td>4</td><td>최과장</td><td>2</td><td>5200</td></tr>
+          <tr><td>5</td><td>정대리</td><td>3</td><td>3500</td></tr>
+          <tr><td>6</td><td>한대리</td><td>4</td><td>6000</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> e.NAME <span class="kw">AS</span> EMP_NAME, m.NAME <span class="kw">AS</span> MGR_NAME
+<span class="kw">FROM</span> <span class="tb">EMP4</span> e <span class="kw">LEFT JOIN</span> <span class="tb">EMP4</span> m <span class="kw">ON</span> e.MANAGER_ID <span class="op">=</span> m.EID
+<span class="kw">ORDER BY</span> e.EID;</pre></div></div>
+        <div class="tbl-label">① 같은 테이블 EMP4를 e(사원), m(상사) 두 별칭으로 LEFT JOIN</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>EMP_NAME</th><th>MGR_NAME</th></tr>
+          <tr><td>김대표</td><td class="null-v">NULL</td></tr>
+          <tr><td>이부장</td><td>김대표</td></tr>
+          <tr><td>박과장</td><td>이부장</td></tr>
+          <tr><td>최과장</td><td>이부장</td></tr>
+          <tr><td>정대리</td><td>박과장</td></tr>
+          <tr><td>한대리</td><td>최과장</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">6행 — 김대표/NULL, 이부장/김대표, 박과장/이부장, 최과장/이부장, 정대리/박과장, 한대리/최과장</div>
+        <div class="ans-explain">
+          SELF JOIN은 같은 테이블을 서로 다른 별칭(e, m)으로 두 번 참조해 <code>e.MANAGER_ID = m.EID</code>로 자기 자신과 연결한다. 최상위 관리자 김대표는 MANAGER_ID가 NULL이라 <code>INNER JOIN</code>을 쓰면 통째로 빠지므로, 반드시 <strong>LEFT JOIN</strong>을 써야 6행이 모두 유지되고 김대표의 MGR_NAME만 NULL로 표시된다.
+        </div>
+      </div>
+    </div>
+
+    <!-- S2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (SELF JOIN + 조건 비교: 상사보다 급여가 높은 사원)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">EMP4 (위 문제와 동일 데이터)</div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> e.NAME, e.SALARY, m.NAME <span class="kw">AS</span> MGR_NAME, m.SALARY <span class="kw">AS</span> MGR_SALARY
+<span class="kw">FROM</span> <span class="tb">EMP4</span> e <span class="kw">JOIN</span> <span class="tb">EMP4</span> m <span class="kw">ON</span> e.MANAGER_ID <span class="op">=</span> m.EID
+<span class="kw">WHERE</span> e.SALARY <span class="op">&gt;</span> m.SALARY;</pre></div></div>
+        <div class="tbl-label">① INNER JOIN으로 사원-상사 짝 생성 (김대표는 상사가 없어 자동 제외)</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>사원</th><th>급여</th><th>상사</th><th>상사급여</th><th>비교</th></tr>
+          <tr><td>이부장</td><td>7000</td><td>김대표</td><td>10000</td><td class="no">✗</td></tr>
+          <tr><td>박과장</td><td>5000</td><td>이부장</td><td>7000</td><td class="no">✗</td></tr>
+          <tr><td>최과장</td><td>5200</td><td>이부장</td><td>7000</td><td class="no">✗</td></tr>
+          <tr><td>정대리</td><td>3500</td><td>박과장</td><td>5000</td><td class="no">✗</td></tr>
+          <tr><td>한대리</td><td>6000</td><td>최과장</td><td>5200</td><td class="hi">✓</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">한대리, 6000, 최과장, 5200 (1행)</div>
+        <div class="ans-explain">
+          <code>JOIN ... ON e.MANAGER_ID = m.EID</code>로 사원-상사 쌍을 만든 뒤 <code>WHERE e.SALARY &gt; m.SALARY</code>로 필터링한다. INNER JOIN이므로 상사가 없는 김대표는 애초에 조인 대상에서 빠진다. 결과는 상사(최과장, 5200)보다 급여가 많은 한대리(6000) 한 명뿐이다.
+        </div>
+      </div>
+    </div>
+
+    <!-- S3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (SELF JOIN으로 같은 상사를 둔 동료 짝 찾기)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">EMP4 (동일 데이터)</div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> e1.NAME <span class="kw">AS</span> EMP1, e2.NAME <span class="kw">AS</span> EMP2, e1.MANAGER_ID
+<span class="kw">FROM</span> <span class="tb">EMP4</span> e1 <span class="kw">JOIN</span> <span class="tb">EMP4</span> e2
+     <span class="kw">ON</span> e1.MANAGER_ID <span class="op">=</span> e2.MANAGER_ID <span class="kw">AND</span> e1.EID <span class="op">&lt;</span> e2.EID
+<span class="kw">WHERE</span> e1.MANAGER_ID <span class="kw">IS NOT NULL</span>;</pre></div></div>
+        <div class="tbl-label">① MANAGER_ID가 같은 두 행을 짝지음 (e1.EID &lt; e2.EID로 자기 자신·중복쌍·역순쌍 제거)</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>MANAGER_ID</th><th>같은 상사를 둔 사원들</th><th>짝 개수</th></tr>
+          <tr><td>1 (김대표)</td><td>이부장 1명뿐</td><td>0</td></tr>
+          <tr><td>2 (이부장)</td><td>박과장, 최과장</td><td class="hi">1</td></tr>
+          <tr><td>3 (박과장)</td><td>정대리 1명뿐</td><td>0</td></tr>
+          <tr><td>4 (최과장)</td><td>한대리 1명뿐</td><td>0</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">박과장, 최과장, MANAGER_ID=2 (1행)</div>
+        <div class="ans-explain">
+          같은 <code>MANAGER_ID</code>를 가진 행끼리 자기 테이블과 조인하면 "동료(같은 상사를 둔 사원)"를 찾을 수 있다. 이때 조건 없이 조인하면 자기 자신과도 짝(김A-김A)이 되거나 (A,B)/(B,A)가 중복 출력되므로, <code>e1.EID &lt; e2.EID</code>로 <strong>한 방향으로만</strong> 짝을 만든다. 이부장 밑의 박과장·최과장만 동료가 2명 이상이라 짝이 생긴다.
+        </div>
+      </div>
+    </div>
+
+    <!-- S4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (SELF LEFT JOIN + GROUP BY로 부하 직원 수 세기, COUNT(*) vs COUNT(컬럼))</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">EMP4 (동일 데이터)</div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> m.NAME <span class="kw">AS</span> MANAGER_NAME, <span class="fn">COUNT</span>(e.EID) <span class="kw">AS</span> SUBORDINATE_CNT
+<span class="kw">FROM</span> <span class="tb">EMP4</span> m <span class="kw">LEFT JOIN</span> <span class="tb">EMP4</span> e <span class="kw">ON</span> e.MANAGER_ID <span class="op">=</span> m.EID
+<span class="kw">GROUP BY</span> m.EID, m.NAME
+<span class="kw">ORDER BY</span> m.EID;</pre></div></div>
+        <div class="tbl-label">① LEFT JOIN 결과 (직속 부하가 없으면 e 쪽이 전부 NULL인 행 1개 생성)</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>m.NAME</th><th>e.NAME</th></tr>
+          <tr><td>김대표</td><td>이부장</td></tr>
+          <tr><td>이부장</td><td>박과장</td></tr>
+          <tr><td>이부장</td><td>최과장</td></tr>
+          <tr><td>박과장</td><td>정대리</td></tr>
+          <tr><td>최과장</td><td>한대리</td></tr>
+          <tr><td>정대리</td><td class="null-v">NULL</td></tr>
+          <tr><td>한대리</td><td class="null-v">NULL</td></tr>
+        </table></div>
+        <div class="tbl-label">② GROUP BY 후 COUNT(e.EID) — NULL은 세지 않음</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>MANAGER_NAME</th><th>SUBORDINATE_CNT</th></tr>
+          <tr><td>김대표</td><td>1</td></tr>
+          <tr><td>이부장</td><td>2</td></tr>
+          <tr><td>박과장</td><td>1</td></tr>
+          <tr><td>최과장</td><td>1</td></tr>
+          <tr><td>정대리</td><td class="hi">0</td></tr>
+          <tr><td>한대리</td><td class="hi">0</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">김대표 1, 이부장 2, 박과장 1, 최과장 1, 정대리 0, 한대리 0</div>
+        <div class="ans-explain">
+          <code>LEFT JOIN</code>을 쓴 이유는 부하가 <strong>0명인 관리자(정대리·한대리)도 결과에 남기기 위해서</strong>다. 만약 <code>COUNT(*)</code>를 썼다면 부하가 없어 생긴 NULL 행도 1건으로 세어져 정대리·한대리가 0이 아니라 1로 잘못 집계된다. <code>COUNT(e.EID)</code>처럼 <strong>컬럼 기준 COUNT는 NULL을 세지 않으므로</strong> 정확히 0이 나온다.
+        </div>
+      </div>
+    </div>
+
+    <!-- S5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (2단계 SELF JOIN으로 조부 상사(2단계 위 상사) 찾기)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">EMP4 (동일 데이터)</div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> e.NAME <span class="kw">AS</span> EMP_NAME, m.NAME <span class="kw">AS</span> MANAGER_NAME, g.NAME <span class="kw">AS</span> GRANDMANAGER_NAME
+<span class="kw">FROM</span> <span class="tb">EMP4</span> e
+<span class="kw">LEFT JOIN</span> <span class="tb">EMP4</span> m <span class="kw">ON</span> e.MANAGER_ID <span class="op">=</span> m.EID
+<span class="kw">LEFT JOIN</span> <span class="tb">EMP4</span> g <span class="kw">ON</span> m.MANAGER_ID <span class="op">=</span> g.EID
+<span class="kw">ORDER BY</span> e.EID;</pre></div></div>
+        <div class="tbl-label">① EMP4를 e·m·g 세 별칭으로 두 번 SELF JOIN (1단계 위 → 2단계 위)</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>EMP_NAME</th><th>MANAGER_NAME</th><th>GRANDMANAGER_NAME</th></tr>
+          <tr><td>김대표</td><td class="null-v">NULL</td><td class="null-v">NULL</td></tr>
+          <tr><td>이부장</td><td>김대표</td><td class="null-v">NULL</td></tr>
+          <tr><td>박과장</td><td>이부장</td><td>김대표</td></tr>
+          <tr><td>최과장</td><td>이부장</td><td>김대표</td></tr>
+          <tr><td>정대리</td><td>박과장</td><td>이부장</td></tr>
+          <tr><td>한대리</td><td>최과장</td><td>이부장</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">김대표/NULL/NULL, 이부장/김대표/NULL, 박과장/이부장/김대표, 최과장/이부장/김대표, 정대리/박과장/이부장, 한대리/최과장/이부장</div>
+        <div class="ans-explain">
+          같은 테이블을 <strong>세 번 참조</strong>해 e→m(직속 상사)→g(상사의 상사)를 단계적으로 연결한다. 김대표는 상사가 없어 m부터 NULL이 되고, 그 NULL은 두 번째 JOIN 조건(<code>m.MANAGER_ID = g.EID</code>)의 왼쪽 값이 되어 이부장의 GRANDMANAGER_NAME도 NULL로 전파된다. LEFT JOIN을 연쇄로 쓸 때는 이렇게 <strong>NULL이 다음 단계까지 이어지는지</strong>를 단계별로 추적해야 한다.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+
+  <!-- ④ CTE / 재귀 쿼리 -->
+  <div class="sec-title" id="cte"><span class="sec-num">04</span> CTE / 재귀 쿼리</div>
+
+  <div class="quiz-wrap">
+
+    <!-- T1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (기본 CTE — WITH 절)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">EMP5</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>EID</th><th>NAME</th><th>DEPT</th><th>SALARY</th></tr>
+          <tr><td>1</td><td>김</td><td>개발</td><td>4000</td></tr>
+          <tr><td>2</td><td>이</td><td>개발</td><td>4800</td></tr>
+          <tr><td>3</td><td>박</td><td>영업</td><td>3900</td></tr>
+          <tr><td>4</td><td>최</td><td>영업</td><td>4600</td></tr>
+          <tr><td>5</td><td>정</td><td>인사</td><td>3000</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">WITH</span> DEPT_AVG <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> DEPT, <span class="fn">AVG</span>(SALARY) <span class="kw">AS</span> AVG_SAL
+    <span class="kw">FROM</span> <span class="tb">EMP5</span>
+    <span class="kw">GROUP BY</span> DEPT
+)
+<span class="kw">SELECT</span> e.NAME, e.DEPT, e.SALARY, d.AVG_SAL
+<span class="kw">FROM</span> <span class="tb">EMP5</span> e <span class="kw">JOIN</span> DEPT_AVG d <span class="kw">ON</span> e.DEPT <span class="op">=</span> d.DEPT
+<span class="kw">WHERE</span> e.SALARY <span class="op">&gt;</span> d.AVG_SAL
+<span class="kw">ORDER BY</span> e.DEPT, e.NAME;</pre></div></div>
+        <div class="tbl-label">① CTE(DEPT_AVG) 먼저 계산 — 부서별 평균</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>DEPT</th><th>AVG_SAL</th></tr>
+          <tr><td>개발</td><td>4400</td></tr>
+          <tr><td>영업</td><td>4250</td></tr>
+          <tr><td>인사</td><td>3000</td></tr>
+        </table></div>
+        <div class="tbl-label">② EMP5와 DEPT_AVG를 JOIN 후 WHERE SALARY &gt; AVG_SAL 필터</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>NAME</th><th>DEPT</th><th>SALARY</th><th>AVG_SAL</th><th>비교</th></tr>
+          <tr><td class="no">김</td><td>개발</td><td>4000</td><td>4400</td><td>✗</td></tr>
+          <tr><td class="hi">이</td><td>개발</td><td>4800</td><td>4400</td><td>✓</td></tr>
+          <tr><td class="no">박</td><td>영업</td><td>3900</td><td>4250</td><td>✗</td></tr>
+          <tr><td class="hi">최</td><td>영업</td><td>4600</td><td>4250</td><td>✓</td></tr>
+          <tr><td class="no">정</td><td>인사</td><td>3000</td><td>3000</td><td>✗ (같음, 초과 아님)</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">이, 개발, 4800, 4400<br>최, 영업, 4600, 4250</div>
+        <div class="ans-explain">
+          <code>WITH DEPT_AVG AS (...)</code>는 서브쿼리를 미리 이름 붙여 정의해두는 CTE(공용 테이블 표현식)로, 본 쿼리에서 마치 테이블처럼 재사용한다. 인사팀 정(3000)은 자기 부서 평균과 정확히 같아 <code>&gt;</code> 조건을 만족하지 못해 제외된다.
+        </div>
+      </div>
+    </div>
+
+    <!-- T2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (CTE를 두 번 참조)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">SALE</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>PID</th><th>QTY</th><th>PRICE</th></tr>
+          <tr><td>P1</td><td>10</td><td>1000</td></tr>
+          <tr><td>P1</td><td>5</td><td>1000</td></tr>
+          <tr><td>P2</td><td>8</td><td>1500</td></tr>
+          <tr><td>P3</td><td>3</td><td>2000</td></tr>
+          <tr><td>P3</td><td>7</td><td>2000</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">WITH</span> PRODUCT_TOTAL <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> PID, <span class="fn">SUM</span>(QTY <span class="op">*</span> PRICE) <span class="kw">AS</span> TOTAL
+    <span class="kw">FROM</span> <span class="tb">SALE</span>
+    <span class="kw">GROUP BY</span> PID
+)
+<span class="kw">SELECT</span> PID, TOTAL
+<span class="kw">FROM</span> PRODUCT_TOTAL
+<span class="kw">WHERE</span> TOTAL <span class="op">&gt;</span> (<span class="kw">SELECT</span> <span class="fn">AVG</span>(TOTAL) <span class="kw">FROM</span> PRODUCT_TOTAL)
+<span class="kw">ORDER BY</span> PID;</pre></div></div>
+        <div class="tbl-label">① CTE 계산: 상품별 매출 합계 (QTY×PRICE)</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>PID</th><th>TOTAL</th></tr>
+          <tr><td>P1</td><td>15000</td></tr>
+          <tr><td>P2</td><td>12000</td></tr>
+          <tr><td>P3</td><td>20000</td></tr>
+        </table></div>
+        <div class="tbl-label">② 평균(15666.7)보다 큰 TOTAL만 필터</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>PID</th><th>TOTAL</th><th>비교</th></tr>
+          <tr><td class="no">P1</td><td>15000</td><td>&lt; 15666.7 ✗</td></tr>
+          <tr><td class="no">P2</td><td>12000</td><td>&lt; 15666.7 ✗</td></tr>
+          <tr><td class="hi">P3</td><td>20000</td><td>&gt; 15666.7 ✓</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">P3, 20000 (1행)</div>
+        <div class="ans-explain">
+          같은 CTE(<code>PRODUCT_TOTAL</code>)를 메인 SELECT와 서브쿼리(AVG 계산)에서 <strong>두 번 재사용</strong>했다. CTE 덕분에 <code>SUM(QTY*PRICE)</code> 집계식을 두 번 반복해서 쓰지 않아도 되어 가독성이 좋아진다. 평균 15666.7보다 큰 것은 P3(20000) 하나뿐이다.
+        </div>
+      </div>
+    </div>
+
+    <!-- T3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (WITH RECURSIVE로 조직도 전체 조회 + 레벨 계산)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">EMP6</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>EID</th><th>NAME</th><th>MANAGER_ID</th></tr>
+          <tr><td>1</td><td>김대표</td><td class="null-v">NULL</td></tr>
+          <tr><td>2</td><td>이부장</td><td>1</td></tr>
+          <tr><td>3</td><td>박과장</td><td>2</td></tr>
+          <tr><td>4</td><td>최과장</td><td>2</td></tr>
+          <tr><td>5</td><td>정대리</td><td>3</td></tr>
+          <tr><td>6</td><td>한대리</td><td>4</td></tr>
+          <tr><td>7</td><td>윤사원</td><td>5</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">WITH RECURSIVE</span> ORG <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> EID, NAME, MANAGER_ID, <span class="num">1</span> <span class="kw">AS</span> LVL
+    <span class="kw">FROM</span> <span class="tb">EMP6</span>
+    <span class="kw">WHERE</span> EID <span class="op">=</span> <span class="num">1</span>
+    <span class="kw">UNION ALL</span>
+    <span class="kw">SELECT</span> e.EID, e.NAME, e.MANAGER_ID, o.LVL <span class="op">+</span> <span class="num">1</span>
+    <span class="kw">FROM</span> <span class="tb">EMP6</span> e <span class="kw">JOIN</span> ORG o <span class="kw">ON</span> e.MANAGER_ID <span class="op">=</span> o.EID
+)
+<span class="kw">SELECT</span> EID, NAME, LVL <span class="kw">FROM</span> ORG <span class="kw">ORDER BY</span> LVL, EID;</pre></div></div>
+        <div class="tbl-label">① 앵커(anchor): EID=1 김대표, LVL=1</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>EID</th><th>NAME</th><th>LVL</th></tr>
+          <tr><td>1</td><td>김대표</td><td>1</td></tr>
+        </table></div>
+        <div class="tbl-label">② 재귀 반복: MANAGER_ID가 이전 단계 EID와 같은 행을 계속 추가</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>반복</th><th>추가되는 행 (EID, NAME, LVL)</th></tr>
+          <tr><td>1회차</td><td>(2, 이부장, 2) — MANAGER_ID=1</td></tr>
+          <tr><td>2회차</td><td>(3, 박과장, 3), (4, 최과장, 3) — MANAGER_ID=2</td></tr>
+          <tr><td>3회차</td><td>(5, 정대리, 4), (6, 한대리, 4) — MANAGER_ID=3,4</td></tr>
+          <tr><td>4회차</td><td>(7, 윤사원, 5) — MANAGER_ID=5</td></tr>
+          <tr><td>5회차</td><td>없음 → 재귀 종료</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">김대표(1) → 이부장(2) → 박과장·최과장(3) → 정대리·한대리(4) → 윤사원(5), 총 7행</div>
+        <div class="ans-explain">
+          <code>WITH RECURSIVE</code>는 <strong>① 앵커 멤버</strong>(초기 시작점)와 <strong>② 재귀 멤버</strong>(이전 결과를 참조해 다음 단계를 만드는 부분)를 <code>UNION ALL</code>로 연결한다. 재귀 멤버가 더 이상 새 행을 만들지 못하면 자동으로 종료된다. 트리 구조(조직도)를 한 번의 쿼리로 끝까지 순회할 수 있는 대표적인 패턴이다.
+        </div>
+      </div>
+    </div>
+
+    <!-- T4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 실행 결과(PATH 컬럼)를 쓰시오. (재귀 CTE로 전체 조직 경로 문자열 만들기)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">EMP6 (위 문제와 동일 데이터)</div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">WITH RECURSIVE</span> ORG_PATH <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> EID, NAME, MANAGER_ID, <span class="kw">CAST</span>(NAME <span class="kw">AS VARCHAR</span>(<span class="num">100</span>)) <span class="kw">AS</span> PATH
+    <span class="kw">FROM</span> <span class="tb">EMP6</span>
+    <span class="kw">WHERE</span> MANAGER_ID <span class="kw">IS NULL</span>
+    <span class="kw">UNION ALL</span>
+    <span class="kw">SELECT</span> e.EID, e.NAME, e.MANAGER_ID, <span class="fn">CONCAT</span>(p.PATH, <span class="str">' &gt; '</span>, e.NAME)
+    <span class="kw">FROM</span> <span class="tb">EMP6</span> e <span class="kw">JOIN</span> ORG_PATH p <span class="kw">ON</span> e.MANAGER_ID <span class="op">=</span> p.EID
+)
+<span class="kw">SELECT</span> NAME, PATH <span class="kw">FROM</span> ORG_PATH <span class="kw">ORDER BY</span> EID;</pre></div></div>
+        <div class="tbl-label">① 앵커: MANAGER_ID가 NULL인 최상위 노드부터 시작, 이후 자식 노드마다 부모 PATH 뒤에 이름을 이어붙임</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>EID</th><th>NAME</th><th>PATH</th></tr>
+          <tr><td>1</td><td>김대표</td><td>김대표</td></tr>
+          <tr><td>2</td><td>이부장</td><td>김대표 &gt; 이부장</td></tr>
+          <tr><td>3</td><td>박과장</td><td>김대표 &gt; 이부장 &gt; 박과장</td></tr>
+          <tr><td>4</td><td>최과장</td><td>김대표 &gt; 이부장 &gt; 최과장</td></tr>
+          <tr><td>5</td><td>정대리</td><td>김대표 &gt; 이부장 &gt; 박과장 &gt; 정대리</td></tr>
+          <tr><td>6</td><td>한대리</td><td>김대표 &gt; 이부장 &gt; 최과장 &gt; 한대리</td></tr>
+          <tr><td>7</td><td>윤사원</td><td>김대표 &gt; 이부장 &gt; 박과장 &gt; 정대리 &gt; 윤사원</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">위 표의 PATH 값과 동일 (윤사원의 PATH가 가장 길어 5단계)</div>
+        <div class="ans-explain">
+          재귀 멤버의 <code>CONCAT(p.PATH, ' &gt; ', e.NAME)</code>이 반복 실행될 때마다 부모의 경로 문자열에 자신의 이름을 덧붙인다. 이런 방식으로 전체 조직 계층을 <strong>한 줄짜리 경로 문자열</strong>로 표현할 수 있으며, 트리의 깊이가 깊을수록 PATH 문자열도 길어진다.
+        </div>
+      </div>
+    </div>
+
+    <!-- T5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (재귀 CTE로 전체 하위 인원 수(전이적 부하 수) 집계)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">EMP6 (위 문제와 동일 데이터)</div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">WITH RECURSIVE</span> SUBS <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> MANAGER_ID <span class="kw">AS</span> ANCESTOR, EID <span class="kw">AS</span> DESCENDANT
+    <span class="kw">FROM</span> <span class="tb">EMP6</span>
+    <span class="kw">WHERE</span> MANAGER_ID <span class="kw">IS NOT NULL</span>
+    <span class="kw">UNION ALL</span>
+    <span class="kw">SELECT</span> s.ANCESTOR, e.EID
+    <span class="kw">FROM</span> <span class="tb">EMP6</span> e <span class="kw">JOIN</span> SUBS s <span class="kw">ON</span> e.MANAGER_ID <span class="op">=</span> s.DESCENDANT
+)
+<span class="kw">SELECT</span> a.NAME <span class="kw">AS</span> MANAGER_NAME, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> TOTAL_SUBORDINATES
+<span class="kw">FROM</span> SUBS s <span class="kw">JOIN</span> <span class="tb">EMP6</span> a <span class="kw">ON</span> s.ANCESTOR <span class="op">=</span> a.EID
+<span class="kw">GROUP BY</span> a.EID, a.NAME
+<span class="kw">ORDER BY</span> a.EID;</pre></div></div>
+        <div class="tbl-label">① 앵커: 직속 (관리자,부하) 쌍 6개</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>ANCESTOR</th><th>DESCENDANT</th></tr>
+          <tr><td>1(김대표)</td><td>2(이부장)</td></tr>
+          <tr><td>2(이부장)</td><td>3(박과장)</td></tr>
+          <tr><td>2(이부장)</td><td>4(최과장)</td></tr>
+          <tr><td>3(박과장)</td><td>5(정대리)</td></tr>
+          <tr><td>4(최과장)</td><td>6(한대리)</td></tr>
+          <tr><td>5(정대리)</td><td>7(윤사원)</td></tr>
+        </table></div>
+        <div class="tbl-label">② 재귀 반복: DESCENDANT를 다시 상사로 하는 행을 찾아 (원래 ANCESTOR, 새 부하) 추가</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>반복</th><th>새로 추가되는 (ANCESTOR, DESCENDANT) 쌍</th></tr>
+          <tr><td>1회차</td><td>(1,3), (1,4), (2,5), (2,6), (3,7)</td></tr>
+          <tr><td>2회차</td><td>(1,5), (1,6), (2,7)</td></tr>
+          <tr><td>3회차</td><td>(1,7)</td></tr>
+          <tr><td>4회차</td><td>없음 → 종료</td></tr>
+        </table></div>
+        <div class="tbl-label">③ 최종 SUBS 15개 쌍을 ANCESTOR 기준 GROUP BY + COUNT</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>MANAGER_NAME</th><th>TOTAL_SUBORDINATES</th></tr>
+          <tr><td>김대표</td><td>6</td></tr>
+          <tr><td>이부장</td><td>5</td></tr>
+          <tr><td>박과장</td><td>2</td></tr>
+          <tr><td>최과장</td><td>1</td></tr>
+          <tr><td>정대리</td><td>1</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">김대표 6, 이부장 5, 박과장 2, 최과장 1, 정대리 1 (한대리·윤사원은 부하가 없어 결과에 없음)</div>
+        <div class="ans-explain">
+          이 재귀 CTE는 직속 관계뿐 아니라 <strong>모든 단계의 전이적(transitive) 상하관계</strong>를 (ANCESTOR, DESCENDANT) 쌍으로 전부 나열한다. 예를 들어 김대표는 자신을 최상위로 둔 6명(이부장~윤사원) 전원이 넓은 의미의 "부하"이므로 6이 나온다. 부하가 전혀 없는 한대리·윤사원은 ANCESTOR로 등장하지 않으므로 INNER JOIN 특성상 결과 목록에서 아예 빠진다.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+
+  <!-- ⑤ NULL 처리 -->
+  <div class="sec-title" id="null"><span class="sec-num">05</span> NULL 처리</div>
+
+  <div class="quiz-wrap">
+
+    <!-- N1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (COALESCE로 NULL 대체)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">EMP7</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>EID</th><th>NAME</th><th>PHONE</th></tr>
+          <tr><td>1</td><td>김철수</td><td>010-1111-2222</td></tr>
+          <tr><td>2</td><td>이영희</td><td class="null-v">NULL</td></tr>
+          <tr><td>3</td><td>박민수</td><td>010-3333-4444</td></tr>
+          <tr><td>4</td><td>최지영</td><td class="null-v">NULL</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> NAME, <span class="fn">COALESCE</span>(PHONE, <span class="str">'미등록'</span>) <span class="kw">AS</span> PHONE
+<span class="kw">FROM</span> <span class="tb">EMP7</span>
+<span class="kw">ORDER BY</span> EID;</pre></div></div>
+        <div class="tbl-label">① 각 행의 PHONE이 NULL이면 '미등록'으로 치환</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>NAME</th><th>PHONE</th></tr>
+          <tr><td>김철수</td><td>010-1111-2222</td></tr>
+          <tr><td>이영희</td><td class="hi">미등록</td></tr>
+          <tr><td>박민수</td><td>010-3333-4444</td></tr>
+          <tr><td>최지영</td><td class="hi">미등록</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">김철수/010-1111-2222, 이영희/미등록, 박민수/010-3333-4444, 최지영/미등록</div>
+        <div class="ans-explain">
+          <code>COALESCE(값, 대체값)</code>는 첫 번째 인자가 NULL이면 두 번째 인자를 반환한다. 화면에 NULL을 그대로 노출하지 않고 "미등록" 같은 기본 문구로 바꿔 보여줄 때 실무에서 가장 흔히 쓰인다.
+        </div>
+      </div>
+    </div>
+
+    <!-- N2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 SQL 4개 값(CNT_ALL, CNT_SCORE, AVG_SCORE, SUM_SCORE)을 쓰시오. (집계함수의 NULL 처리)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">SCORE2</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>SID</th><th>NAME</th><th>SCORE</th></tr>
+          <tr><td>1</td><td>A</td><td>80</td></tr>
+          <tr><td>2</td><td>B</td><td class="null-v">NULL</td></tr>
+          <tr><td>3</td><td>C</td><td>90</td></tr>
+          <tr><td>4</td><td>D</td><td class="null-v">NULL</td></tr>
+          <tr><td>5</td><td>E</td><td>70</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> CNT_ALL,
+       <span class="fn">COUNT</span>(SCORE) <span class="kw">AS</span> CNT_SCORE,
+       <span class="fn">AVG</span>(SCORE) <span class="kw">AS</span> AVG_SCORE,
+       <span class="fn">SUM</span>(SCORE) <span class="kw">AS</span> SUM_SCORE
+<span class="kw">FROM</span> <span class="tb">SCORE2</span>;</pre></div></div>
+        <div class="tbl-label">① 집계함수 계산 과정</div>
+        <div class="tbl-wrap"><table class="g-tbl">
+          <tr><th>함수</th><th>대상</th><th>결과</th></tr>
+          <tr><td><code>COUNT(*)</code></td><td>NULL 포함 전체 5행</td><td>5</td></tr>
+          <tr><td><code>COUNT(SCORE)</code></td><td>NULL 2개 제외한 3행(80,90,70)</td><td>3</td></tr>
+          <tr><td><code>AVG(SCORE)</code></td><td>(80+90+70)/3 (NULL은 분모·분자에서 모두 제외)</td><td>80</td></tr>
+          <tr><td><code>SUM(SCORE)</code></td><td>80+90+70 (NULL 무시)</td><td>240</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">CNT_ALL=5, CNT_SCORE=3, AVG_SCORE=80, SUM_SCORE=240</div>
+        <div class="ans-explain">
+          <code>COUNT(*)</code>만 NULL을 포함해 행 자체를 세고, <code>COUNT(컬럼)</code>·<code>SUM</code>·<code>AVG</code>·<code>MAX</code>·<code>MIN</code>은 모두 <strong>NULL을 계산에서 완전히 제외</strong>한다. 특히 <code>AVG</code>의 분모는 전체 행 수(5)가 아니라 NULL을 제외한 값 개수(3)이므로 "80/5"가 아니라 "240/3=80"이 정답이다.
+        </div>
+      </div>
+    </div>
+
+    <!-- N3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (3값 논리 함정: &lt;&gt; 연산자와 NULL)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">EMP8</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>EID</th><th>NAME</th><th>BONUS</th></tr>
+          <tr><td>1</td><td>A</td><td>100</td></tr>
+          <tr><td>2</td><td>B</td><td class="null-v">NULL</td></tr>
+          <tr><td>3</td><td>C</td><td>200</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> NAME <span class="kw">FROM</span> <span class="tb">EMP8</span> <span class="kw">WHERE</span> BONUS <span class="op">&lt;&gt;</span> <span class="num">100</span>;</pre></div></div>
+        <div class="tbl-label">① 각 행의 BONUS &lt;&gt; 100 판정 (3값 논리: TRUE/FALSE/UNKNOWN)</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>NAME</th><th>BONUS</th><th>BONUS &lt;&gt; 100</th><th>WHERE 통과?</th></tr>
+          <tr><td class="no">A</td><td>100</td><td>FALSE</td><td>✗</td></tr>
+          <tr><td class="no">B</td><td class="null-v">NULL</td><td>UNKNOWN</td><td>✗ (UNKNOWN도 탈락)</td></tr>
+          <tr><td class="hi">C</td><td>200</td><td>TRUE</td><td>✓</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">C (1행) — B(NULL)는 "100이 아닌 값"처럼 보이지만 결과에 포함되지 않는다</div>
+        <div class="ans-explain">
+          SQL의 <code>WHERE</code>는 조건이 <strong>TRUE인 행만</strong> 통과시키며, <code>NULL</code>과의 모든 비교는 TRUE도 FALSE도 아닌 <strong>UNKNOWN</strong>이 되어 자동 탈락한다. "BONUS가 100이 아닌 사원"이라는 의도라면 B도 포함되어야 할 것 같지만, NULL은 "값이 없음"이지 "100이 아닌 값"이 아니므로 비교 자체가 성립하지 않는다. B까지 포함하려면 <code>WHERE BONUS &lt;&gt; 100 OR BONUS IS NULL</code>처럼 명시적으로 조건을 추가해야 한다.
+        </div>
+      </div>
+    </div>
+
+    <!-- N4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (GROUP BY에서 NULL은 하나의 그룹으로 묶임)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">EMP9</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>EID</th><th>NAME</th><th>DEPT</th></tr>
+          <tr><td>1</td><td>A</td><td>D1</td></tr>
+          <tr><td>2</td><td>B</td><td>D1</td></tr>
+          <tr><td>3</td><td>C</td><td class="null-v">NULL</td></tr>
+          <tr><td>4</td><td>D</td><td class="null-v">NULL</td></tr>
+          <tr><td>5</td><td>E</td><td>D2</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> DEPT, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> CNT
+<span class="kw">FROM</span> <span class="tb">EMP9</span>
+<span class="kw">GROUP BY</span> DEPT
+<span class="kw">ORDER BY</span> DEPT;</pre></div></div>
+        <div class="tbl-label">① GROUP BY DEPT — NULL끼리도 같은 그룹으로 묶인다 (WHERE의 등호 비교와 다름!)</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>DEPT</th><th>속한 사원</th><th>CNT</th></tr>
+          <tr><td>D1</td><td>A, B</td><td>2</td></tr>
+          <tr><td>D2</td><td>E</td><td>1</td></tr>
+          <tr><td class="hi null-v">NULL</td><td>C, D</td><td>2</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">NULL,2 &nbsp; / &nbsp; D1,2 &nbsp; / &nbsp; D2,1 &nbsp;(MySQL 기준 오름차순 정렬 시 NULL이 가장 먼저 옴)</div>
+        <div class="ans-explain">
+          <code>GROUP BY</code>는 <code>WHERE</code>의 <code>=</code> 비교와 달리 <strong>NULL을 서로 같은 값으로 취급</strong>해 하나의 그룹으로 묶는다(표준 SQL 규칙). 그래서 DEPT가 NULL인 C, D가 하나의 그룹(CNT=2)이 된다. 다만 <code>ORDER BY</code> 시 NULL의 위치는 DBMS마다 달라 MySQL은 오름차순에서 NULL을 가장 앞에, Oracle은 기본적으로 가장 뒤에 배치한다는 점은 별도로 알아두어야 한다.
+        </div>
+      </div>
+    </div>
+
+    <!-- N5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (산술 연산의 NULL 전파 vs COALESCE 보정 vs CASE WHEN)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">EMP10</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>EID</th><th>NAME</th><th>SALARY</th><th>BONUS</th></tr>
+          <tr><td>1</td><td>A</td><td>3000</td><td>500</td></tr>
+          <tr><td>2</td><td>B</td><td>3200</td><td class="null-v">NULL</td></tr>
+          <tr><td>3</td><td>C</td><td>2800</td><td>300</td></tr>
+          <tr><td>4</td><td>D</td><td>3500</td><td class="null-v">NULL</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> NAME, SALARY, BONUS,
+       SALARY <span class="op">+</span> BONUS <span class="kw">AS</span> RAW_TOTAL,
+       SALARY <span class="op">+</span> <span class="fn">COALESCE</span>(BONUS, <span class="num">0</span>) <span class="kw">AS</span> FIXED_TOTAL,
+       <span class="kw">CASE WHEN</span> BONUS <span class="kw">IS NULL THEN</span> <span class="str">'보너스없음'</span> <span class="kw">ELSE</span> <span class="str">'보너스있음'</span> <span class="kw">END AS</span> STATUS
+<span class="kw">FROM</span> <span class="tb">EMP10</span>
+<span class="kw">ORDER BY</span> EID;</pre></div></div>
+        <div class="tbl-label">① 행별 계산 — SALARY+BONUS는 BONUS가 NULL이면 결과 전체가 NULL로 전파됨</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>NAME</th><th>SALARY</th><th>BONUS</th><th>RAW_TOTAL</th><th>FIXED_TOTAL</th><th>STATUS</th></tr>
+          <tr><td>A</td><td>3000</td><td>500</td><td>3500</td><td>3500</td><td>보너스있음</td></tr>
+          <tr><td>B</td><td>3200</td><td class="null-v">NULL</td><td class="null-v hi">NULL</td><td>3200</td><td>보너스없음</td></tr>
+          <tr><td>C</td><td>2800</td><td>300</td><td>3100</td><td>3100</td><td>보너스있음</td></tr>
+          <tr><td>D</td><td>3500</td><td class="null-v">NULL</td><td class="null-v hi">NULL</td><td>3500</td><td>보너스없음</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">A: 3500/3500/보너스있음 · B: NULL/3200/보너스없음 · C: 3100/3100/보너스있음 · D: NULL/3500/보너스없음</div>
+        <div class="ans-explain">
+          <strong>NULL이 섞인 산술 연산의 결과는 항상 NULL</strong>이다 (B, D의 RAW_TOTAL). 이를 막으려면 <code>COALESCE(BONUS, 0)</code>처럼 NULL을 0으로 바꾼 뒤 더해야 정상적인 합계(FIXED_TOTAL)가 나온다. 한편 <code>BONUS IS NULL</code>은 값 비교가 아니라 "NULL 여부 자체를 확인"하는 전용 연산자이므로 3값 논리의 영향을 받지 않고 정확히 TRUE/FALSE로 판정된다.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+
+  <!-- ⑥ GROUP BY / HAVING 심화 -->
+  <div class="sec-title" id="groupby"><span class="sec-num">06</span> GROUP BY / HAVING 심화</div>
+
+  <div class="quiz-wrap">
+
+    <!-- G1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (다중 컬럼 GROUP BY)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">SALES2</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>REGION</th><th>CATEGORY</th><th>AMOUNT</th></tr>
+          <tr><td>서울</td><td>전자</td><td>100</td></tr>
+          <tr><td>서울</td><td>전자</td><td>150</td></tr>
+          <tr><td>서울</td><td>의류</td><td>80</td></tr>
+          <tr><td>부산</td><td>전자</td><td>200</td></tr>
+          <tr><td>부산</td><td>의류</td><td>90</td></tr>
+          <tr><td>부산</td><td>의류</td><td>60</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> REGION, CATEGORY, <span class="fn">SUM</span>(AMOUNT) <span class="kw">AS</span> TOTAL
+<span class="kw">FROM</span> <span class="tb">SALES2</span>
+<span class="kw">GROUP BY</span> REGION, CATEGORY
+<span class="kw">ORDER BY</span> REGION, CATEGORY;</pre></div></div>
+        <div class="tbl-label">① (REGION, CATEGORY) 조합별로 그룹핑 후 합계</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>REGION</th><th>CATEGORY</th><th>TOTAL</th></tr>
+          <tr><td>부산</td><td>의류</td><td>150</td></tr>
+          <tr><td>부산</td><td>전자</td><td>200</td></tr>
+          <tr><td>서울</td><td>의류</td><td>80</td></tr>
+          <tr><td>서울</td><td>전자</td><td>250</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">부산/의류/150, 부산/전자/200, 서울/의류/80, 서울/전자/250 (4행)</div>
+        <div class="ans-explain">
+          <code>GROUP BY REGION, CATEGORY</code>처럼 <strong>두 컬럼의 조합</strong>이 같은 행끼리만 하나의 그룹으로 묶인다. 지역이 같아도 카테고리가 다르면 별개 그룹이 된다. 서울·전자는 100+150=250으로 합산되고, 부산·의류는 90+60=150으로 합산된다.
+        </div>
+      </div>
+    </div>
+
+    <!-- G2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (HAVING에 두 조건 AND 결합)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">ORDER3</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>CID</th><th>PRODUCT</th><th>QTY</th></tr>
+          <tr><td>C1</td><td>P1</td><td>5</td></tr>
+          <tr><td>C1</td><td>P2</td><td>3</td></tr>
+          <tr><td>C2</td><td>P1</td><td>2</td></tr>
+          <tr><td>C2</td><td>P3</td><td>10</td></tr>
+          <tr><td>C3</td><td>P1</td><td>1</td></tr>
+          <tr><td>C3</td><td>P2</td><td>1</td></tr>
+          <tr><td>C3</td><td>P3</td><td>1</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> CID, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> ITEM_CNT, <span class="fn">SUM</span>(QTY) <span class="kw">AS</span> TOTAL_QTY
+<span class="kw">FROM</span> <span class="tb">ORDER3</span>
+<span class="kw">GROUP BY</span> CID
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="op">&gt;=</span> <span class="num">2</span> <span class="kw">AND</span> <span class="fn">SUM</span>(QTY) <span class="op">&gt;=</span> <span class="num">5</span>
+<span class="kw">ORDER BY</span> CID;</pre></div></div>
+        <div class="tbl-label">① GROUP BY CID 결과 (전체)</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>CID</th><th>ITEM_CNT</th><th>TOTAL_QTY</th></tr>
+          <tr><td>C1</td><td>2</td><td>8</td></tr>
+          <tr><td>C2</td><td>2</td><td>12</td></tr>
+          <tr><td>C3</td><td>3</td><td>3</td></tr>
+        </table></div>
+        <div class="tbl-label">② HAVING COUNT(*)&gt;=2 AND SUM(QTY)&gt;=5 필터</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>CID</th><th>ITEM_CNT</th><th>TOTAL_QTY</th><th>판정</th></tr>
+          <tr><td class="hi">C1</td><td>2</td><td>8</td><td>2&gt;=2 ✓, 8&gt;=5 ✓</td></tr>
+          <tr><td class="hi">C2</td><td>2</td><td>12</td><td>2&gt;=2 ✓, 12&gt;=5 ✓</td></tr>
+          <tr><td class="no">C3</td><td>3</td><td>3</td><td>3&gt;=2 ✓, 3&gt;=5 ✗</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">C1, 2, 8<br>C2, 2, 12</div>
+        <div class="ans-explain">
+          C3는 주문 건수(3건) 조건은 만족하지만 총 수량(3)이 5 미만이라 <strong>AND로 연결된 두 조건 중 하나라도 거짓이면 전체가 탈락</strong>한다. HAVING은 GROUP BY로 만들어진 그룹 단위 결과에 대해서만 필터링하므로 집계함수를 조건에 바로 쓸 수 있다.
+        </div>
+      </div>
+    </div>
+
+    <!-- G3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (HAVING 절에 서브쿼리 — 그룹 평균 인원수와 비교)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">EMP11</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>EID</th><th>NAME</th><th>DEPT</th><th>SALARY</th></tr>
+          <tr><td>1</td><td>A</td><td>D1</td><td>3000</td></tr>
+          <tr><td>2</td><td>B</td><td>D1</td><td>3500</td></tr>
+          <tr><td>3</td><td>C</td><td>D2</td><td>5000</td></tr>
+          <tr><td>4</td><td>D</td><td>D2</td><td>4800</td></tr>
+          <tr><td>5</td><td>E</td><td>D2</td><td>4600</td></tr>
+          <tr><td>6</td><td>F</td><td>D3</td><td>2000</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> DEPT, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> CNT
+<span class="kw">FROM</span> <span class="tb">EMP11</span>
+<span class="kw">GROUP BY</span> DEPT
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="op">&gt;</span> (
+    <span class="kw">SELECT</span> <span class="fn">AVG</span>(cnt) <span class="kw">FROM</span> (
+        <span class="kw">SELECT</span> DEPT, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> cnt <span class="kw">FROM</span> <span class="tb">EMP11</span> <span class="kw">GROUP BY</span> DEPT
+    ) t
+)
+<span class="kw">ORDER BY</span> DEPT;</pre></div></div>
+        <div class="tbl-label">① 내부 서브쿼리: 부서별 인원수 및 그 평균</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>DEPT</th><th>인원수(cnt)</th></tr>
+          <tr><td>D1</td><td>2</td></tr>
+          <tr><td>D2</td><td>3</td></tr>
+          <tr><td>D3</td><td>1</td></tr>
+        </table></div>
+        <div class="tip">평균 인원수 = (2+3+1)/3 = <strong>2</strong></div>
+        <div class="tbl-label">② 바깥 쿼리: 부서별 GROUP BY 후 HAVING COUNT(*) &gt; 2 필터</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>DEPT</th><th>CNT</th><th>판정</th></tr>
+          <tr><td class="no">D1</td><td>2</td><td>2 &gt; 2 ✗</td></tr>
+          <tr><td class="hi">D2</td><td>3</td><td>3 &gt; 2 ✓</td></tr>
+          <tr><td class="no">D3</td><td>1</td><td>1 &gt; 2 ✗</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">D2, 3 (1행)</div>
+        <div class="ans-explain">
+          HAVING 절 안에도 서브쿼리를 쓸 수 있다. 이 문제는 부서별 인원수를 구한 파생 테이블(t)의 <strong>평균 인원수(2명)보다 인원이 많은 부서</strong>를 찾는다. D1(2명)은 평균과 같을 뿐 초과하지 않으므로 제외되고, D2(3명)만 평균을 넘어 결과에 남는다.
+        </div>
+      </div>
+    </div>
+
+    <!-- G4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (CASE 표현식으로 그룹핑 + HAVING)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">SALARY_LOG</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>EID</th><th>NAME</th><th>SALARY</th></tr>
+          <tr><td>1</td><td>A</td><td>2800</td></tr>
+          <tr><td>2</td><td>B</td><td>3200</td></tr>
+          <tr><td>3</td><td>C</td><td>4100</td></tr>
+          <tr><td>4</td><td>D</td><td>4900</td></tr>
+          <tr><td>5</td><td>E</td><td>5300</td></tr>
+          <tr><td>6</td><td>F</td><td>6200</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span>
+    <span class="kw">CASE WHEN</span> SALARY <span class="op">&lt;</span> <span class="num">3000</span> <span class="kw">THEN</span> <span class="str">'3000미만'</span>
+         <span class="kw">WHEN</span> SALARY <span class="op">&lt;</span> <span class="num">5000</span> <span class="kw">THEN</span> <span class="str">'3000~5000'</span>
+         <span class="kw">ELSE</span> <span class="str">'5000이상'</span> <span class="kw">END AS</span> BAND,
+    <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> CNT
+<span class="kw">FROM</span> <span class="tb">SALARY_LOG</span>
+<span class="kw">GROUP BY</span>
+    <span class="kw">CASE WHEN</span> SALARY <span class="op">&lt;</span> <span class="num">3000</span> <span class="kw">THEN</span> <span class="str">'3000미만'</span>
+         <span class="kw">WHEN</span> SALARY <span class="op">&lt;</span> <span class="num">5000</span> <span class="kw">THEN</span> <span class="str">'3000~5000'</span>
+         <span class="kw">ELSE</span> <span class="str">'5000이상'</span> <span class="kw">END</span>
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="op">&gt;=</span> <span class="num">2</span>
+<span class="kw">ORDER BY</span> BAND;</pre></div></div>
+        <div class="tbl-label">① 각 행을 CASE로 구간 분류</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>NAME</th><th>SALARY</th><th>BAND</th></tr>
+          <tr><td>A</td><td>2800</td><td>3000미만</td></tr>
+          <tr><td>B</td><td>3200</td><td>3000~5000</td></tr>
+          <tr><td>C</td><td>4100</td><td>3000~5000</td></tr>
+          <tr><td>D</td><td>4900</td><td>3000~5000</td></tr>
+          <tr><td>E</td><td>5300</td><td>5000이상</td></tr>
+          <tr><td>F</td><td>6200</td><td>5000이상</td></tr>
+        </table></div>
+        <div class="tbl-label">② BAND별 GROUP BY 후 HAVING COUNT(*)&gt;=2 필터</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>BAND</th><th>CNT</th><th>판정</th></tr>
+          <tr><td class="no">3000미만</td><td>1</td><td>✗</td></tr>
+          <tr><td class="hi">3000~5000</td><td>3</td><td>✓</td></tr>
+          <tr><td class="hi">5000이상</td><td>2</td><td>✓</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">3000~5000, 3<br>5000이상, 2</div>
+        <div class="ans-explain">
+          <code>GROUP BY</code>에는 컬럼뿐 아니라 <strong>CASE 표현식 같은 계산식</strong>도 그대로 올 수 있으며, 이 경우 표현식의 결과값이 같은 행끼리 묶인다. SELECT와 GROUP BY에 동일한 CASE 식을 반복 작성해야 하는 번거로움은 이후 CTE나 서브쿼리로 BAND를 미리 계산해두면 줄일 수 있다.
+        </div>
+      </div>
+    </div>
+
+    <!-- G5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (COUNT(DISTINCT ...)와 다중 HAVING 조건)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">PURCHASE</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>CID</th><th>PID</th><th>QTY</th></tr>
+          <tr><td>C1</td><td>P1</td><td>5</td></tr>
+          <tr><td>C2</td><td>P1</td><td>3</td></tr>
+          <tr><td>C1</td><td>P2</td><td>10</td></tr>
+          <tr><td>C3</td><td>P2</td><td>2</td></tr>
+          <tr><td>C1</td><td>P3</td><td>1</td></tr>
+          <tr><td>C2</td><td>P3</td><td>1</td></tr>
+          <tr><td>C3</td><td>P3</td><td>1</td></tr>
+          <tr><td>C4</td><td>P4</td><td>20</td></tr>
+        </table></div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> PID, <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> CID) <span class="kw">AS</span> CUST_CNT, <span class="fn">SUM</span>(QTY) <span class="kw">AS</span> TOTAL_QTY
+<span class="kw">FROM</span> <span class="tb">PURCHASE</span>
+<span class="kw">GROUP BY</span> PID
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> CID) <span class="op">&gt;=</span> <span class="num">2</span> <span class="kw">AND</span> <span class="fn">SUM</span>(QTY) <span class="op">&gt;=</span> <span class="num">8</span>
+<span class="kw">ORDER BY</span> PID;</pre></div></div>
+        <div class="tbl-label">① PID별 GROUP BY 결과 (전체)</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>PID</th><th>CUST_CNT(구매고객수)</th><th>TOTAL_QTY</th></tr>
+          <tr><td>P1</td><td>2 (C1,C2)</td><td>8</td></tr>
+          <tr><td>P2</td><td>2 (C1,C3)</td><td>12</td></tr>
+          <tr><td>P3</td><td>3 (C1,C2,C3)</td><td>3</td></tr>
+          <tr><td>P4</td><td>1 (C4)</td><td>20</td></tr>
+        </table></div>
+        <div class="tbl-label">② HAVING CUST_CNT&gt;=2 AND TOTAL_QTY&gt;=8 필터</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>PID</th><th>CUST_CNT</th><th>TOTAL_QTY</th><th>판정</th></tr>
+          <tr><td class="hi">P1</td><td>2</td><td>8</td><td>2&gt;=2 ✓, 8&gt;=8 ✓</td></tr>
+          <tr><td class="hi">P2</td><td>2</td><td>12</td><td>2&gt;=2 ✓, 12&gt;=8 ✓</td></tr>
+          <tr><td class="no">P3</td><td>3</td><td>3</td><td>3&gt;=2 ✓, 3&gt;=8 ✗</td></tr>
+          <tr><td class="no">P4</td><td>1</td><td>20</td><td>1&gt;=2 ✗</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">P1, 2, 8<br>P2, 2, 12</div>
+        <div class="ans-explain">
+          <code>COUNT(DISTINCT CID)</code>는 같은 고객이 같은 상품을 여러 번 사도 1명으로만 센다. P3는 고객 3명이 사갔지만 개별 수량이 적어 총 수량 조건(8 이상)을 만족하지 못하고, P4는 총 수량은 많지만(20) 구매 고객이 1명뿐이라 "여러 고객이 산" 조건을 만족하지 못해 둘 다 탈락한다.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+
+  <!-- ⑦ 트랜잭션 & 격리 수준 -->
+  <div class="sec-title" id="txn"><span class="sec-num">07</span> 트랜잭션 & 격리 수준</div>
+
+  <div class="quiz-wrap">
+
+    <!-- X1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 트랜잭션 진행 순서를 보고 어떤 이상 현상이 발생하는지 쓰시오. (Dirty Read)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">SALARY(EID=1) 초기값: AMOUNT=4000</div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="cmt">-- T1</span>                                    <span class="cmt">-- T2</span>
+<span class="kw">BEGIN</span>;
+<span class="kw">UPDATE</span> <span class="tb">SALARY</span> <span class="kw">SET</span> AMOUNT<span class="op">=</span><span class="num">5000</span>
+  <span class="kw">WHERE</span> EID<span class="op">=</span><span class="num">1</span>;  <span class="cmt">-- 미확정(커밋 전)</span>
+                                            <span class="kw">SELECT</span> AMOUNT <span class="kw">FROM</span> <span class="tb">SALARY</span>
+                                              <span class="kw">WHERE</span> EID<span class="op">=</span><span class="num">1</span>;  <span class="cmt">-- 5000 조회!</span>
+<span class="kw">ROLLBACK</span>;  <span class="cmt">-- 다시 4000으로</span></pre></div></div>
+        <div class="tbl-label">① 시점별 AMOUNT 값 추적</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>시점</th><th>실제 저장된 값</th><th>T2가 읽은 값</th></tr>
+          <tr><td>T1 UPDATE 직후 (커밋 전)</td><td>5000 (미확정)</td><td>—</td></tr>
+          <tr><td>T2 SELECT 시점</td><td>5000 (미확정)</td><td class="hi">5000</td></tr>
+          <tr><td>T1 ROLLBACK 이후</td><td>4000 (원복)</td><td>—</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">Dirty Read (더티 리드)</div>
+        <div class="ans-explain">
+          T2는 T1이 <strong>아직 커밋하지 않은(확정되지 않은)</strong> 값 5000을 읽었다. 이후 T1이 ROLLBACK하면서 실제로는 그런 값이 존재한 적이 없는 셈이 되므로, T2가 읽은 5000은 "쓰레기 값"이 된다. 이를 <strong>Dirty Read</strong>라 하며, 격리수준이 READ UNCOMMITTED일 때만 발생한다.
+        </div>
+      </div>
+    </div>
+
+    <!-- X2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 트랜잭션 진행 순서를 보고 어떤 이상 현상이 발생하는지 쓰시오. (Non-repeatable Read)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">SALARY(EID=1) 초기값: AMOUNT=4000</div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="cmt">-- T1</span>                                    <span class="cmt">-- T2</span>
+<span class="kw">BEGIN</span>;
+<span class="kw">SELECT</span> AMOUNT <span class="kw">FROM</span> <span class="tb">SALARY</span>
+  <span class="kw">WHERE</span> EID<span class="op">=</span><span class="num">1</span>;  <span class="cmt">-- 4000 조회</span>
+                                            <span class="kw">UPDATE</span> <span class="tb">SALARY</span> <span class="kw">SET</span> AMOUNT<span class="op">=</span><span class="num">4500</span>
+                                              <span class="kw">WHERE</span> EID<span class="op">=</span><span class="num">1</span>;
+                                            <span class="kw">COMMIT</span>;
+<span class="kw">SELECT</span> AMOUNT <span class="kw">FROM</span> <span class="tb">SALARY</span>
+  <span class="kw">WHERE</span> EID<span class="op">=</span><span class="num">1</span>;  <span class="cmt">-- 4500 조회!</span>
+<span class="kw">COMMIT</span>;</pre></div></div>
+        <div class="tbl-label">① T1이 같은 행을 두 번 조회한 값 비교</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>T1의 조회 시점</th><th>읽은 값</th></tr>
+          <tr><td>1차 SELECT</td><td>4000</td></tr>
+          <tr><td>2차 SELECT (같은 트랜잭션 내)</td><td class="hi">4500</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">Non-repeatable Read (반복 불가능 읽기)</div>
+        <div class="ans-explain">
+          T1은 <strong>같은 트랜잭션 안에서 같은 행을 두 번 읽었는데 값이 달라졌다</strong>. T2가 그 사이에 값을 변경하고 커밋했기 때문이다. READ COMMITTED 수준에서는 이 현상이 발생할 수 있고, REPEATABLE READ 이상으로 격리수준을 높이면 방지된다.
+        </div>
+      </div>
+    </div>
+
+    <!-- X3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 트랜잭션 진행 순서를 보고 어떤 이상 현상이 발생하는지 쓰시오. (Phantom Read)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">EMP(DEPT='D1') 초기: 3명 존재</div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="cmt">-- T1</span>                                       <span class="cmt">-- T2</span>
+<span class="kw">BEGIN</span>;
+<span class="kw">SELECT COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> <span class="tb">EMP</span>
+  <span class="kw">WHERE</span> DEPT<span class="op">=</span><span class="str">'D1'</span>;  <span class="cmt">-- 3</span>
+                                               <span class="kw">INSERT INTO</span> <span class="tb">EMP</span> <span class="kw">VALUES</span> (<span class="op">...</span>,<span class="str">'D1'</span>,<span class="op">...</span>);
+                                               <span class="kw">COMMIT</span>;
+<span class="kw">SELECT COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> <span class="tb">EMP</span>
+  <span class="kw">WHERE</span> DEPT<span class="op">=</span><span class="str">'D1'</span>;  <span class="cmt">-- 4 (유령 행 등장!)</span>
+<span class="kw">COMMIT</span>;</pre></div></div>
+        <div class="tbl-label">① T1의 동일 조건 COUNT(*) 비교</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>T1의 조회 시점</th><th>COUNT(*) 결과</th></tr>
+          <tr><td>1차 조회</td><td>3</td></tr>
+          <tr><td>2차 조회 (같은 조건, 같은 트랜잭션)</td><td class="hi">4</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">Phantom Read (팬텀 리드)</div>
+        <div class="ans-explain">
+          같은 조건으로 다시 조회했더니 <strong>없던 행이 새로 나타났다</strong>(T2가 삽입 후 커밋). Non-repeatable Read가 "기존 행의 값 변경"이라면, Phantom Read는 "행 자체의 개수/집합이 달라지는" 문제다. REPEATABLE READ에서도 발생할 수 있으며, <strong>SERIALIZABLE</strong> 수준에서 완전히 방지된다.
+        </div>
+      </div>
+    </div>
+
+    <!-- X4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;아래 표의 빈칸(㉠~㉤)에 O(발생 가능) 또는 X(방지됨)를 채우시오. (격리수준 4단계 비교)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-wrap"><table class="g-tbl">
+          <tr><th>격리 수준</th><th>Dirty Read</th><th>Non-repeatable Read</th><th>Phantom Read</th></tr>
+          <tr><td>READ UNCOMMITTED</td><td>㉠</td><td>O</td><td>O</td></tr>
+          <tr><td>READ COMMITTED</td><td>X</td><td>㉡</td><td>O</td></tr>
+          <tr><td>REPEATABLE READ</td><td>X</td><td>X</td><td>㉢</td></tr>
+          <tr><td>SERIALIZABLE</td><td>X</td><td>X</td><td>㉣</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">㉠ O &nbsp; ㉡ O &nbsp; ㉢ O &nbsp; ㉣ X</div>
+        <div class="ans-explain">
+          격리 수준은 <strong>READ UNCOMMITTED &lt; READ COMMITTED &lt; REPEATABLE READ &lt; SERIALIZABLE</strong> 순으로 엄격해지며, 높아질수록 동시성(성능)은 떨어지고 데이터 일관성은 높아진다. READ UNCOMMITTED는 3가지 이상 현상이 모두 발생할 수 있는 가장 느슨한 수준이고, SERIALIZABLE만이 Phantom Read까지 완전히 차단한다. 실무에서는 대부분 READ COMMITTED 또는 REPEATABLE READ(MySQL InnoDB 기본값)를 사용한다.
+        </div>
+      </div>
+    </div>
+
+    <!-- X5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 트랜잭션 로그를 순서대로 실행했을 때 ACCOUNT('A')의 최종 BALANCE 값을 쓰시오. (SAVEPOINT/ROLLBACK TO)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">ACCOUNT 초기값: ACC_ID='A', BALANCE=10000</div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">BEGIN</span>;
+<span class="kw">UPDATE</span> <span class="tb">ACCOUNT</span> <span class="kw">SET</span> BALANCE <span class="op">=</span> BALANCE <span class="op">-</span> <span class="num">3000</span> <span class="kw">WHERE</span> ACC_ID<span class="op">=</span><span class="str">'A'</span>;
+<span class="kw">SAVEPOINT</span> SP1;
+<span class="kw">UPDATE</span> <span class="tb">ACCOUNT</span> <span class="kw">SET</span> BALANCE <span class="op">=</span> BALANCE <span class="op">-</span> <span class="num">2000</span> <span class="kw">WHERE</span> ACC_ID<span class="op">=</span><span class="str">'A'</span>;
+<span class="kw">ROLLBACK TO</span> SP1;
+<span class="kw">UPDATE</span> <span class="tb">ACCOUNT</span> <span class="kw">SET</span> BALANCE <span class="op">=</span> BALANCE <span class="op">+</span> <span class="num">1000</span> <span class="kw">WHERE</span> ACC_ID<span class="op">=</span><span class="str">'A'</span>;
+<span class="kw">COMMIT</span>;</pre></div></div>
+        <div class="tbl-label">① 각 단계 실행 직후 BALANCE 값 추적</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>단계</th><th>실행문</th><th>BALANCE</th></tr>
+          <tr><td>0</td><td>초기값</td><td>10000</td></tr>
+          <tr><td>1</td><td>BALANCE - 3000</td><td>7000</td></tr>
+          <tr><td>2</td><td>SAVEPOINT SP1 (현재 상태 7000을 지점으로 기억)</td><td>7000</td></tr>
+          <tr><td>3</td><td>BALANCE - 2000</td><td>5000</td></tr>
+          <tr><td>4</td><td>ROLLBACK TO SP1 (SP1 시점인 7000으로 복귀)</td><td class="hi">7000</td></tr>
+          <tr><td>5</td><td>BALANCE + 1000</td><td>8000</td></tr>
+          <tr><td>6</td><td>COMMIT (8000 확정)</td><td class="hi">8000</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">8000</div>
+        <div class="ans-explain">
+          <code>SAVEPOINT</code>는 트랜잭션 전체를 취소하지 않고 <strong>특정 지점까지만 되돌릴 수 있는 중간 저장점</strong>이다. <code>ROLLBACK TO SP1</code>은 SP1 이후의 변경(-2000)만 취소하고, SP1 이전의 변경(-3000)은 그대로 유지한 채 7000으로 복귀시킨다. 이후 +1000을 적용해 8000이 되고 COMMIT으로 확정된다.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+
+  <!-- ⑧ 인덱스 & 실행계획 -->
+  <div class="sec-title" id="index"><span class="sec-num">08</span> 인덱스 & 실행계획 개념</div>
+
+  <div class="quiz-wrap">
+
+    <!-- I1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;인덱스 생성이 유리한 컬럼과 불리한 컬럼의 특징을 비교하여 설명하시오.</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-wrap"><table class="g-tbl">
+          <tr><th>구분</th><th>인덱스 유리</th><th>인덱스 불리</th></tr>
+          <tr><td>카디널리티(값의 다양성)</td><td>높음 (주민번호, 이메일 등 거의 유일한 값)</td><td>낮음 (성별, 여부(Y/N)처럼 값 종류가 2~3개)</td></tr>
+          <tr><td>테이블 크기</td><td>대용량 테이블</td><td>소규모 테이블 (풀스캔이 더 빠름)</td></tr>
+          <tr><td>조회/변경 비율</td><td>SELECT(조회) 위주</td><td>INSERT/UPDATE/DELETE가 잦음 (인덱스 유지비용 큼)</td></tr>
+          <tr><td>WHERE·JOIN·ORDER BY 사용 빈도</td><td>자주 검색·정렬·조인 조건으로 쓰이는 컬럼</td><td>거의 조회 조건으로 쓰이지 않는 컬럼</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">카디널리티가 높고, 대용량이며, 조회 위주로 자주 검색·조인·정렬에 쓰이는 컬럼에 인덱스가 유리하다.</div>
+        <div class="ans-explain">
+          인덱스는 <strong>"조회는 빠르게, 대신 쓰기(INSERT/UPDATE/DELETE)는 느리게"</strong> 만드는 트레이드오프다. 값의 종류가 몇 개 안 되는 컬럼(성별 등)은 인덱스를 걸어도 결과 행이 테이블의 상당수를 차지해 옵티마이저가 오히려 풀스캔을 선택하는 경우가 많다.
+        </div>
+      </div>
+    </div>
+
+    <!-- I2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;옵티마이저가 인덱스를 두고도 테이블 풀스캔(Full Scan)을 선택하는 경우를 설명하시오.</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-wrap"><table class="g-tbl">
+          <tr><th>스캔 방식</th><th>동작</th><th>유리한 상황</th></tr>
+          <tr><td>인덱스 스캔(Index Scan)</td><td>인덱스 구조(B-Tree)를 타고 필요한 행만 찾아감</td><td>조회 결과가 전체의 일부(예: 5% 이하)일 때</td></tr>
+          <tr><td>풀 스캔(Full Table Scan)</td><td>테이블 전체를 처음부터 끝까지 순차적으로 읽음</td><td>조회 결과가 전체의 상당 비율(선택도가 낮음)일 때, 테이블이 작을 때</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">조회 조건을 만족하는 행의 비율(선택도)이 높을 때, 또는 테이블 자체가 작을 때 옵티마이저는 인덱스 스캔 대신 풀스캔을 선택한다.</div>
+        <div class="ans-explain">
+          인덱스 스캔은 "인덱스에서 위치를 찾은 뒤 실제 데이터 블록을 다시 읽는" 추가 비용(랜덤 I/O)이 든다. 조건에 맞는 행이 <strong>테이블의 대부분을 차지</strong>한다면, 이 추가 비용이 누적되어 오히려 처음부터 순서대로 쭉 읽는 풀스캔(순차 I/O)보다 비효율적이다. 그래서 옵티마이저는 통계 정보를 바탕으로 예상 비용이 더 낮은 방식을 자동으로 선택한다.
+        </div>
+      </div>
+    </div>
+
+    <!-- I3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 중 인덱스를 생성했을 때 오히려 성능이 저하될 수 있는 상황을 모두 고르고 이유를 쓰시오.</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-wrap"><table class="g-tbl">
+          <tr><th>보기</th><th>상황</th></tr>
+          <tr><td>①</td><td>회원 100만 명 테이블의 EMAIL(거의 유일한 값) 컬럼에 인덱스 생성</td></tr>
+          <tr><td>②</td><td>초당 수백 건씩 INSERT가 발생하는 로그 테이블의 모든 컬럼에 인덱스 생성</td></tr>
+          <tr><td>③</td><td>행이 10건뿐인 코드 테이블에 인덱스 생성</td></tr>
+          <tr><td>④</td><td>성별(M/F) 컬럼 하나에만 인덱스 생성</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">②, ③, ④</div>
+        <div class="ans-explain">
+          ①은 카디널리티가 높아 인덱스에 적합하다. ②는 <strong>INSERT마다 모든 인덱스를 함께 갱신</strong>해야 하므로 쓰기 성능이 크게 저하된다. ③은 데이터가 너무 적어 인덱스를 타나 풀스캔을 하나 차이가 없고 오히려 인덱스 관리 비용만 추가된다. ④는 카디널리티가 2뿐이라 인덱스를 걸어도 옵티마이저가 대부분 풀스캔을 선택해 인덱스 저장 공간만 낭비하게 된다.
+        </div>
+      </div>
+    </div>
+
+    <!-- I4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 가상의 실행계획(EXPLAIN 결과 요약)을 보고 두 쿼리의 성능 차이를 설명하시오.</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-wrap"><table class="g-tbl">
+          <tr><th>쿼리</th><th>type</th><th>key</th><th>rows(예상 검색 행 수)</th></tr>
+          <tr><td>① <code>WHERE EMP_NO = 12345</code></td><td>const/ref</td><td>PK_EMP</td><td>1</td></tr>
+          <tr><td>② <code>WHERE YEAR(HIRE_DATE) = 2020</code></td><td>ALL</td><td class="null-v">NULL</td><td>1,000,000 (전체)</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">①은 인덱스를 이용해 1건만 찾는 매우 빠른 조회이고, ②는 인덱스를 전혀 사용하지 못해 전체 테이블(100만 건)을 풀스캔한다.</div>
+        <div class="ans-explain">
+          실행계획에서 <code>type=ALL</code>, <code>key=NULL</code>은 <strong>풀 테이블 스캔</strong>이 발생했다는 뜻이다. ②는 인덱스가 걸린 HIRE_DATE 컬럼을 <code>YEAR(HIRE_DATE)</code>처럼 <strong>함수로 감싸는 순간 인덱스를 타지 못하게 된다</strong>(함수를 적용한 결과값은 인덱스에 미리 정렬되어 있지 않기 때문). 이런 경우 <code>WHERE HIRE_DATE &gt;= '2020-01-01' AND HIRE_DATE &lt; '2021-01-01'</code>처럼 컬럼 원본 값 그대로 범위 조건을 걸어야 인덱스를 활용할 수 있다.
+        </div>
+      </div>
+    </div>
+
+    <!-- I5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;복합 인덱스 (DEPT, SALARY)가 걸려 있을 때, 다음 3개 쿼리 중 이 인덱스를 활용할 수 있는 것을 모두 고르시오.</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="cmt">-- 복합 인덱스: CREATE INDEX idx1 ON EMP(DEPT, SALARY);</span>
+
+<span class="cmt">-- ①</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tb">EMP</span> <span class="kw">WHERE</span> DEPT <span class="op">=</span> <span class="str">'D1'</span>;
+
+<span class="cmt">-- ②</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tb">EMP</span> <span class="kw">WHERE</span> SALARY <span class="op">&gt;=</span> <span class="num">4000</span>;
+
+<span class="cmt">-- ③</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tb">EMP</span> <span class="kw">WHERE</span> DEPT <span class="op">=</span> <span class="str">'D1'</span> <span class="kw">AND</span> SALARY <span class="op">&gt;=</span> <span class="num">4000</span>;</pre></div></div>
+        <div class="tbl-wrap"><table class="g-tbl">
+          <tr><th>쿼리</th><th>선두 컬럼(DEPT) 조건 포함?</th><th>인덱스 활용</th></tr>
+          <tr><td>①</td><td>있음 (DEPT만)</td><td class="hi">가능 (DEPT까지만 활용)</td></tr>
+          <tr><td>②</td><td>없음 (SALARY만)</td><td class="hi">불가능 (풀스캔)</td></tr>
+          <tr><td>③</td><td>있음 (DEPT + SALARY)</td><td class="hi">가능 (DEPT, SALARY 모두 활용)</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">①, ③ 활용 가능 / ② 활용 불가능</div>
+        <div class="ans-explain">
+          복합 인덱스는 <strong>선두 컬럼(왼쪽 컬럼)부터 순서대로 일치해야만</strong> 효율적으로 탐색할 수 있다(마치 전화번호부가 "성 → 이름" 순으로 정렬된 것과 같아서, 이름만으로는 빠르게 찾을 수 없는 것과 같은 원리). ①은 DEPT 조건만 있어도 인덱스의 앞부분을 그대로 활용할 수 있고, ③은 DEPT와 SALARY 둘 다 조건에 있어 인덱스를 가장 효율적으로 활용한다. 반면 ②는 선두 컬럼 DEPT 조건이 아예 없으므로 인덱스를 사용하지 못하고 풀스캔으로 처리된다.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+
+  <!-- ⑨ 집합 연산 -->
+  <div class="sec-title" id="setop"><span class="sec-num">09</span> 집합 연산</div>
+
+  <div class="quiz-wrap">
+
+    <!-- U1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 두 SQL의 결과 행 수를 각각 쓰시오. (UNION vs UNION ALL)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div>
+            <div class="tbl-label">TABLE_A</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>ID</th><th>NAME</th></tr>
+              <tr><td>1</td><td>김</td></tr>
+              <tr><td>2</td><td>이</td></tr>
+              <tr><td>3</td><td>박</td></tr>
+            </table></div>
+          </div>
+          <div>
+            <div class="tbl-label">TABLE_B</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>ID</th><th>NAME</th></tr>
+              <tr><td>2</td><td>이</td></tr>
+              <tr><td>3</td><td>박</td></tr>
+              <tr><td>4</td><td>최</td></tr>
+            </table></div>
+          </div>
+        </div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="cmt">-- ①</span>
+<span class="kw">SELECT</span> ID, NAME <span class="kw">FROM</span> <span class="tb">TABLE_A</span> <span class="kw">UNION</span>     <span class="kw">SELECT</span> ID, NAME <span class="kw">FROM</span> <span class="tb">TABLE_B</span>;
+<span class="cmt">-- ②</span>
+<span class="kw">SELECT</span> ID, NAME <span class="kw">FROM</span> <span class="tb">TABLE_A</span> <span class="kw">UNION ALL</span> <span class="kw">SELECT</span> ID, NAME <span class="kw">FROM</span> <span class="tb">TABLE_B</span>;</pre></div></div>
+        <div class="tbl-label">① UNION — 두 결과를 합친 뒤 완전히 동일한 행 중복 제거</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>ID</th><th>NAME</th><th>출처</th></tr>
+          <tr><td>1</td><td>김</td><td>A만</td></tr>
+          <tr><td>2</td><td>이</td><td class="hi">A,B 중복 → 1개로</td></tr>
+          <tr><td>3</td><td>박</td><td class="hi">A,B 중복 → 1개로</td></tr>
+          <tr><td>4</td><td>최</td><td>B만</td></tr>
+        </table></div>
+        <div class="tbl-label">② UNION ALL — 중복 제거 없이 그대로 이어붙임</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>ID</th><th>NAME</th></tr>
+          <tr><td>1</td><td>김</td></tr><tr><td>2</td><td>이</td></tr><tr><td>3</td><td>박</td></tr>
+          <tr><td>2</td><td>이</td></tr><tr><td>3</td><td>박</td></tr><tr><td>4</td><td>최</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">① UNION: 4행 &nbsp;&nbsp; ② UNION ALL: 6행</div>
+        <div class="ans-explain">
+          <code>UNION</code>은 두 결과집합을 합친 뒤 <strong>완전히 동일한 행을 하나로 합쳐(중복 제거)</strong> 정렬 유사 작업까지 수행하므로 비용이 더 크다. <code>UNION ALL</code>은 중복 검사 없이 단순히 이어붙이기만 해서 더 빠르고, "중복이 있을 리 없다"는 것이 확실한 경우 실무에서 UNION ALL을 우선 고려한다.
+        </div>
+      </div>
+    </div>
+
+    <!-- U2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 SQL(INTERSECT)의 실행 결과를 쓰시오. <small style="font-weight:400;color:var(--gray);">(표준 SQL 문법, MySQL 8.0.31+ 지원)</small></div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">TABLE_A / TABLE_B (위 문제와 동일 데이터)</div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> ID, NAME <span class="kw">FROM</span> <span class="tb">TABLE_A</span>
+<span class="kw">INTERSECT</span>
+<span class="kw">SELECT</span> ID, NAME <span class="kw">FROM</span> <span class="tb">TABLE_B</span>;</pre></div></div>
+        <div class="tbl-label">① 두 결과 집합의 교집합(양쪽 모두에 존재하는 행)만 남김</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>ID</th><th>NAME</th><th>A에 있음?</th><th>B에 있음?</th></tr>
+          <tr><td class="no">1</td><td>김</td><td>✓</td><td>✗</td></tr>
+          <tr><td class="hi">2</td><td>이</td><td>✓</td><td>✓</td></tr>
+          <tr><td class="hi">3</td><td>박</td><td>✓</td><td>✓</td></tr>
+          <tr><td class="no">4</td><td>최</td><td>✗</td><td>✓</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">(2, 이), (3, 박) — 2행</div>
+        <div class="ans-explain">
+          <code>INTERSECT</code>는 관계대수의 교집합(∩)에 대응하며, <strong>양쪽 SELECT 결과에 모두 존재하는 행만</strong> 반환한다. UNION 계열과 마찬가지로 두 SELECT의 컬럼 개수와 자료형이 호환되어야 한다.
+        </div>
+      </div>
+    </div>
+
+    <!-- U3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 두 SQL(EXCEPT)의 결과가 서로 다른 이유와 각각의 결과를 쓰시오. (순서 비교환성)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="tbl-label">TABLE_A / TABLE_B (위 문제와 동일 데이터)</div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="cmt">-- ①</span>
+<span class="kw">SELECT</span> ID, NAME <span class="kw">FROM</span> <span class="tb">TABLE_A</span> <span class="kw">EXCEPT</span> <span class="kw">SELECT</span> ID, NAME <span class="kw">FROM</span> <span class="tb">TABLE_B</span>;
+<span class="cmt">-- ②</span>
+<span class="kw">SELECT</span> ID, NAME <span class="kw">FROM</span> <span class="tb">TABLE_B</span> <span class="kw">EXCEPT</span> <span class="kw">SELECT</span> ID, NAME <span class="kw">FROM</span> <span class="tb">TABLE_A</span>;
+<span class="cmt">-- (Oracle 방언: EXCEPT 대신 MINUS)</span></pre></div></div>
+        <div class="tbl-label">① A EXCEPT B — A에는 있지만 B에는 없는 행</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>ID</th><th>NAME</th></tr>
+          <tr><td class="hi">1</td><td>김</td></tr>
+        </table></div>
+        <div class="tbl-label">② B EXCEPT A — B에는 있지만 A에는 없는 행</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>ID</th><th>NAME</th></tr>
+          <tr><td class="hi">4</td><td>최</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">① (1, 김) — 1행 &nbsp;&nbsp; ② (4, 최) — 1행</div>
+        <div class="ans-explain">
+          <code>UNION</code>·<code>INTERSECT</code>는 A,B의 순서를 바꿔도 결과가 같은 <strong>교환법칙이 성립</strong>하지만, <code>EXCEPT</code>(Oracle은 <code>MINUS</code>)는 "왼쪽에서 오른쪽을 뺀다"는 <strong>순서가 있는 연산</strong>이라 교환법칙이 성립하지 않는다. A-B는 A만의 고유 행(1,김)을, B-A는 B만의 고유 행(4,최)을 돌려주므로 두 결과가 다르다.
+        </div>
+      </div>
+    </div>
+
+    <!-- U4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 3개 테이블에 대한 UNION ALL 쿼리의 실행 결과(순서 포함)를 쓰시오.</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.8rem;">
+          <div>
+            <div class="tbl-label">TABLE_A</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>ID</th><th>NAME</th></tr>
+              <tr><td>1</td><td>김</td></tr><tr><td>2</td><td>이</td></tr><tr><td>3</td><td>박</td></tr>
+            </table></div>
+          </div>
+          <div>
+            <div class="tbl-label">TABLE_B</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>ID</th><th>NAME</th></tr>
+              <tr><td>2</td><td>이</td></tr><tr><td>3</td><td>박</td></tr><tr><td>4</td><td>최</td></tr>
+            </table></div>
+          </div>
+          <div>
+            <div class="tbl-label">TABLE_C</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>ID</th><th>NAME</th></tr>
+              <tr><td>3</td><td>박</td></tr><tr><td>5</td><td>정</td></tr>
+            </table></div>
+          </div>
+        </div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> ID, NAME <span class="kw">FROM</span> <span class="tb">TABLE_A</span>
+<span class="kw">UNION ALL</span> <span class="kw">SELECT</span> ID, NAME <span class="kw">FROM</span> <span class="tb">TABLE_B</span>
+<span class="kw">UNION ALL</span> <span class="kw">SELECT</span> ID, NAME <span class="kw">FROM</span> <span class="tb">TABLE_C</span>
+<span class="kw">ORDER BY</span> ID;</pre></div></div>
+        <div class="tbl-label">① 3개 SELECT 결과를 중복 제거 없이 모두 이어붙임 (3+3+2=8행)</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>출처</th><th>ID</th><th>NAME</th></tr>
+          <tr><td>A</td><td>1</td><td>김</td></tr>
+          <tr><td>A</td><td>2</td><td>이</td></tr>
+          <tr><td>A</td><td>3</td><td>박</td></tr>
+          <tr><td>B</td><td>2</td><td>이</td></tr>
+          <tr><td>B</td><td>3</td><td>박</td></tr>
+          <tr><td>B</td><td>4</td><td>최</td></tr>
+          <tr><td>C</td><td>3</td><td>박</td></tr>
+          <tr><td>C</td><td>5</td><td>정</td></tr>
+        </table></div>
+        <div class="tbl-label">② ORDER BY ID로 정렬 (중복은 여전히 유지된 채 정렬만 됨)</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>ID</th><th>NAME</th></tr>
+          <tr><td>1</td><td>김</td></tr>
+          <tr><td>2</td><td>이</td></tr>
+          <tr><td>2</td><td>이</td></tr>
+          <tr><td>3</td><td>박</td></tr>
+          <tr><td>3</td><td>박</td></tr>
+          <tr><td>3</td><td>박</td></tr>
+          <tr><td>4</td><td>최</td></tr>
+          <tr><td>5</td><td>정</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">1김, 2이, 2이, 3박, 3박, 3박, 4최, 5정 (총 8행)</div>
+        <div class="ans-explain">
+          <code>UNION ALL</code>을 연쇄로 사용하면 세 테이블의 행이 <strong>중복 제거 없이 전부(3+3+2=8행)</strong> 결과에 포함된다. 맨 끝의 <code>ORDER BY</code>는 최종 결과집합 전체에 대해 한 번만 적용되며, 정렬만 할 뿐 중복 제거는 하지 않으므로 ID=3(박)이 3번 반복되어 나타난다.
+        </div>
+      </div>
+    </div>
+
+    <!-- U5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 두 SQL의 실행 결과를 각각 쓰시오. (INTERSECT/EXCEPT로 연도별 재구매·이탈 고객 분석)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div>
+            <div class="tbl-label">ORDER_2023 (2023년 주문 고객)</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>CID</th></tr><tr><td>C1</td></tr><tr><td>C2</td></tr><tr><td>C3</td></tr>
+            </table></div>
+          </div>
+          <div>
+            <div class="tbl-label">ORDER_2024 (2024년 주문 고객)</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>CID</th></tr><tr><td>C2</td></tr><tr><td>C3</td></tr><tr><td>C4</td></tr>
+            </table></div>
+          </div>
+        </div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="cmt">-- ① 2023년에도, 2024년에도 주문한 "유지 고객"</span>
+<span class="kw">SELECT</span> CID <span class="kw">FROM</span> <span class="tb">ORDER_2023</span> <span class="kw">INTERSECT</span> <span class="kw">SELECT</span> CID <span class="kw">FROM</span> <span class="tb">ORDER_2024</span>;
+
+<span class="cmt">-- ② 2023년엔 주문했지만 2024년엔 끊긴 "이탈 고객"</span>
+<span class="kw">SELECT</span> CID <span class="kw">FROM</span> <span class="tb">ORDER_2023</span> <span class="kw">EXCEPT</span> <span class="kw">SELECT</span> CID <span class="kw">FROM</span> <span class="tb">ORDER_2024</span>;</pre></div></div>
+        <div class="tbl-label">① INTERSECT — 두 연도 모두에 존재하는 CID</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>CID</th><th>2023</th><th>2024</th></tr>
+          <tr><td class="no">C1</td><td>✓</td><td>✗</td></tr>
+          <tr><td class="hi">C2</td><td>✓</td><td>✓</td></tr>
+          <tr><td class="hi">C3</td><td>✓</td><td>✓</td></tr>
+          <tr><td class="no">C4</td><td>✗</td><td>✓</td></tr>
+        </table></div>
+        <div class="tbl-label">② EXCEPT — 2023엔 있지만 2024엔 없는 CID</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>CID</th></tr>
+          <tr><td class="hi">C1</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">① 유지 고객: C2, C3 (2행) &nbsp;&nbsp; ② 이탈 고객: C1 (1행)</div>
+        <div class="ans-explain">
+          두 연도의 주문 고객 목록을 각각 SELECT로 뽑은 뒤 <code>INTERSECT</code>로 겹치는 고객(재구매/유지 고객), <code>EXCEPT</code>로 한쪽에만 있는 고객(이탈 또는 신규 고객)을 구분하는 것은 실무 CRM/리텐션 분석에서 자주 쓰이는 패턴이다. C4는 2024년에 새로 유입된 "신규 고객"으로, <code>ORDER_2024 EXCEPT ORDER_2023</code>을 실행하면 별도로 확인할 수 있다.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+
+  <!-- ⑩ 조인 심화 -->
+  <div class="sec-title" id="joinadv"><span class="sec-num">10</span> 조인 심화</div>
+
+  <div class="quiz-wrap">
+
+    <!-- J1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 3개 테이블 INNER JOIN의 실행 결과를 쓰시오.</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.8rem;">
+          <div>
+            <div class="tbl-label">CUSTOMER</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>CID</th><th>CNAME</th></tr>
+              <tr><td>C1</td><td>김철수</td></tr><tr><td>C2</td><td>이영희</td></tr>
+            </table></div>
+          </div>
+          <div>
+            <div class="tbl-label">ORDERS4</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>OID</th><th>CID</th><th>PID</th></tr>
+              <tr><td>O1</td><td>C1</td><td>P1</td></tr>
+              <tr><td>O2</td><td>C1</td><td>P2</td></tr>
+              <tr><td>O3</td><td>C2</td><td>P1</td></tr>
+            </table></div>
+          </div>
+          <div>
+            <div class="tbl-label">PRODUCT2</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>PID</th><th>PNAME</th></tr>
+              <tr><td>P1</td><td>키보드</td></tr><tr><td>P2</td><td>마우스</td></tr><tr><td>P3</td><td>모니터</td></tr>
+            </table></div>
+          </div>
+        </div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> c.CNAME, o.OID, p.PNAME
+<span class="kw">FROM</span> <span class="tb">CUSTOMER</span> c
+<span class="kw">JOIN</span> <span class="tb">ORDERS4</span> o <span class="kw">ON</span> c.CID <span class="op">=</span> o.CID
+<span class="kw">JOIN</span> <span class="tb">PRODUCT2</span> p <span class="kw">ON</span> o.PID <span class="op">=</span> p.PID
+<span class="kw">ORDER BY</span> o.OID;</pre></div></div>
+        <div class="tbl-label">① CUSTOMER ⋈ ORDERS4 (CID 기준)</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>CNAME</th><th>OID</th><th>PID</th></tr>
+          <tr><td>김철수</td><td>O1</td><td>P1</td></tr>
+          <tr><td>김철수</td><td>O2</td><td>P2</td></tr>
+          <tr><td>이영희</td><td>O3</td><td>P1</td></tr>
+        </table></div>
+        <div class="tbl-label">② 위 결과 ⋈ PRODUCT2 (PID 기준) — P3(모니터)는 주문 이력이 없어 자동 제외</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>CNAME</th><th>OID</th><th>PNAME</th></tr>
+          <tr><td>김철수</td><td>O1</td><td>키보드</td></tr>
+          <tr><td>김철수</td><td>O2</td><td>마우스</td></tr>
+          <tr><td>이영희</td><td>O3</td><td>키보드</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">김철수,O1,키보드 / 김철수,O2,마우스 / 이영희,O3,키보드 (3행)</div>
+        <div class="ans-explain">
+          3개 테이블 INNER JOIN은 <strong>왼쪽부터 순서대로 두 테이블씩</strong> 조인해나간다고 생각하면 추적이 쉽다. CUSTOMER-ORDERS4를 먼저 조인해 3행을 만들고, 그 결과를 다시 PRODUCT2와 조인한다. INNER JOIN이므로 어느 한쪽에도 매칭되지 않는 행(주문이 없는 모니터 P3)은 최종 결과에 나타나지 않는다.
+        </div>
+      </div>
+    </div>
+
+    <!-- J2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp;다음 3개 테이블 LEFT JOIN의 실행 결과 행 수를 쓰시오. (1:1 매칭이라 행 수 증가 없음)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.8rem;">
+          <div>
+            <div class="tbl-label">DEPT2</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>DID</th><th>DNAME</th></tr>
+              <tr><td>D1</td><td>개발</td></tr><tr><td>D2</td><td>영업</td></tr><tr><td>D3</td><td>기획</td></tr>
+            </table></div>
+          </div>
+          <div>
+            <div class="tbl-label">EMP12</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>EID</th><th>NAME</th><th>DID</th></tr>
+              <tr><td>E1</td><td>A</td><td>D1</td></tr><tr><td>E2</td><td>B</td><td>D1</td></tr><tr><td>E3</td><td>C</td><td>D2</td></tr>
+            </table></div>
+          </div>
+          <div>
+            <div class="tbl-label">PROJECT2</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>DID</th><th>PNAME</th></tr>
+              <tr><td>D1</td><td>사이트개편</td></tr><tr><td>D2</td><td>리뉴얼</td></tr>
+            </table></div>
+          </div>
+        </div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> d.DNAME, e.NAME, p.PNAME
+<span class="kw">FROM</span> <span class="tb">DEPT2</span> d
+<span class="kw">LEFT JOIN</span> <span class="tb">EMP12</span> e <span class="kw">ON</span> d.DID <span class="op">=</span> e.DID
+<span class="kw">LEFT JOIN</span> <span class="tb">PROJECT2</span> p <span class="kw">ON</span> d.DID <span class="op">=</span> p.DID
+<span class="kw">ORDER BY</span> d.DID, e.NAME;</pre></div></div>
+        <div class="tbl-label">① DEPT2 LEFT JOIN EMP12 (D3는 사원이 없어 NULL로 유지)</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>DNAME</th><th>NAME</th></tr>
+          <tr><td>개발</td><td>A</td></tr>
+          <tr><td>개발</td><td>B</td></tr>
+          <tr><td>영업</td><td>C</td></tr>
+          <tr><td>기획</td><td class="null-v">NULL</td></tr>
+        </table></div>
+        <div class="tbl-label">② 위 결과 LEFT JOIN PROJECT2 (DID당 프로젝트 최대 1개라 행 수 증가 없음)</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>DNAME</th><th>NAME</th><th>PNAME</th></tr>
+          <tr><td>개발</td><td>A</td><td>사이트개편</td></tr>
+          <tr><td>개발</td><td>B</td><td>사이트개편</td></tr>
+          <tr><td>영업</td><td>C</td><td>리뉴얼</td></tr>
+          <tr><td>기획</td><td class="null-v">NULL</td><td class="null-v">NULL</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">4행 — (개발,A,사이트개편), (개발,B,사이트개편), (영업,C,리뉴얼), (기획,NULL,NULL)</div>
+        <div class="ans-explain">
+          두 번째 LEFT JOIN 대상인 PROJECT2가 DID당 <strong>최대 1행</strong>만 가지므로 앞 단계의 4행이 그대로 유지된다. 사원이 없는 기획팀(D3)은 첫 LEFT JOIN에서 NULL 행 1개로 유지되고, 두 번째 LEFT JOIN에서도 PROJECT2에 D3가 없어 PNAME까지 NULL이 된다.
+        </div>
+      </div>
+    </div>
+
+    <!-- J3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 3개 테이블 LEFT JOIN의 실행 결과 행 수를 쓰시오. (다대다 팬아웃(fan-out) 주의)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.8rem;">
+          <div>
+            <div class="tbl-label">DEPT2</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>DID</th><th>DNAME</th></tr>
+              <tr><td>D1</td><td>개발</td></tr><tr><td>D2</td><td>영업</td></tr><tr><td>D3</td><td>기획</td></tr>
+            </table></div>
+          </div>
+          <div>
+            <div class="tbl-label">EMP12 (위 문제와 동일)</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>EID</th><th>NAME</th><th>DID</th></tr>
+              <tr><td>E1</td><td>A</td><td>D1</td></tr><tr><td>E2</td><td>B</td><td>D1</td></tr><tr><td>E3</td><td>C</td><td>D2</td></tr>
+            </table></div>
+          </div>
+          <div>
+            <div class="tbl-label">PROJECT (부서당 여러 건)</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>PID</th><th>DID</th><th>PNAME</th></tr>
+              <tr><td>PJ1</td><td>D1</td><td>사이트개편</td></tr>
+              <tr><td>PJ2</td><td>D1</td><td>앱개발</td></tr>
+              <tr><td>PJ3</td><td>D2</td><td>리뉴얼</td></tr>
+            </table></div>
+          </div>
+        </div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> d.DNAME, e.NAME, p.PNAME
+<span class="kw">FROM</span> <span class="tb">DEPT2</span> d
+<span class="kw">LEFT JOIN</span> <span class="tb">EMP12</span> e <span class="kw">ON</span> d.DID <span class="op">=</span> e.DID
+<span class="kw">LEFT JOIN</span> <span class="tb">PROJECT</span> p <span class="kw">ON</span> d.DID <span class="op">=</span> p.DID
+<span class="kw">ORDER BY</span> d.DID, e.NAME, p.PNAME;</pre></div></div>
+        <div class="tbl-label">① DEPT2 LEFT JOIN EMP12 → 4행 (개발 2명, 영업 1명, 기획 0명→NULL)</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>DNAME</th><th>NAME</th></tr>
+          <tr><td>개발</td><td>A</td></tr><tr><td>개발</td><td>B</td></tr><tr><td>영업</td><td>C</td></tr><tr><td>기획</td><td class="null-v">NULL</td></tr>
+        </table></div>
+        <div class="tbl-label">② 위 4행 각각을 PROJECT와 다시 LEFT JOIN — D1은 프로젝트 2건이라 각 사원 행이 2개로 "펼쳐짐(fan-out)"</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>DNAME</th><th>NAME</th><th>PNAME</th></tr>
+          <tr><td>개발</td><td class="hi">A</td><td>사이트개편</td></tr>
+          <tr><td>개발</td><td class="hi">A</td><td>앱개발</td></tr>
+          <tr><td>개발</td><td class="hi">B</td><td>사이트개편</td></tr>
+          <tr><td>개발</td><td class="hi">B</td><td>앱개발</td></tr>
+          <tr><td>영업</td><td>C</td><td>리뉴얼</td></tr>
+          <tr><td>기획</td><td class="null-v">NULL</td><td class="null-v">NULL</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">6행 (개발팀만 2명×2건=4행으로 늘어나고, 영업 1행, 기획 1행)</div>
+        <div class="ans-explain">
+          한 부모(DEPT2)에 "여러 사원"과 "여러 프로젝트"라는 <strong>두 개의 1:N 자식 테이블을 동시에 조인</strong>하면, 두 자식 테이블의 매칭 건수가 <strong>곱해져서(fan-out)</strong> 행이 폭증한다. 개발팀은 사원 2명 × 프로젝트 2건 = 4행이 되어, 실제로 "A가 앱개발도 참여했다"는 잘못된 조합까지 만들어질 위험이 있다. 이런 경우 두 자식 테이블을 직접 함께 조인하지 말고, 서브쿼리/집계 후 조인하거나 두 번의 별도 쿼리로 나누는 것이 안전하다.
+        </div>
+      </div>
+    </div>
+
+    <!-- J4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 FULL OUTER JOIN의 실행 결과를 쓰시오. <small style="font-weight:400;color:var(--gray);">(표준 SQL 문법 — MySQL은 미지원, LEFT JOIN UNION RIGHT JOIN으로 대체 가능)</small></div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div>
+            <div class="tbl-label">TEAM_A (프로젝트 A 참여자)</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>MID</th></tr><tr><td>M1</td></tr><tr><td>M2</td></tr><tr><td>M3</td></tr><tr><td>M4</td></tr>
+            </table></div>
+          </div>
+          <div>
+            <div class="tbl-label">TEAM_B (프로젝트 B 참여자)</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>MID</th></tr><tr><td>M3</td></tr><tr><td>M4</td></tr><tr><td>M5</td></tr><tr><td>M6</td></tr>
+            </table></div>
+          </div>
+        </div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> a.MID <span class="kw">AS</span> A_MID, b.MID <span class="kw">AS</span> B_MID
+<span class="kw">FROM</span> <span class="tb">TEAM_A</span> a
+<span class="kw">FULL OUTER JOIN</span> <span class="tb">TEAM_B</span> b <span class="kw">ON</span> a.MID <span class="op">=</span> b.MID
+<span class="kw">ORDER BY</span> <span class="fn">COALESCE</span>(a.MID, b.MID);</pre></div></div>
+        <div class="tbl-label">① 매칭되는 M3, M4는 한 행으로, 나머지는 각각 한쪽만 채워진 행으로 보존</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>A_MID</th><th>B_MID</th><th>비고</th></tr>
+          <tr><td>M1</td><td class="null-v">NULL</td><td>A에만 존재</td></tr>
+          <tr><td>M2</td><td class="null-v">NULL</td><td>A에만 존재</td></tr>
+          <tr><td class="hi">M3</td><td class="hi">M3</td><td>양쪽 모두 존재(매칭)</td></tr>
+          <tr><td class="hi">M4</td><td class="hi">M4</td><td>양쪽 모두 존재(매칭)</td></tr>
+          <tr><td class="null-v">NULL</td><td>M5</td><td>B에만 존재</td></tr>
+          <tr><td class="null-v">NULL</td><td>M6</td><td>B에만 존재</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">총 6행 — (M1,NULL) (M2,NULL) (M3,M3) (M4,M4) (NULL,M5) (NULL,M6)</div>
+        <div class="ans-explain">
+          <code>FULL OUTER JOIN</code>은 <strong>LEFT JOIN 결과 ∪ RIGHT JOIN 결과</strong>와 같다 — 양쪽 테이블의 모든 행을 보존하면서, 매칭되는 M3·M4는 한 행으로 합치고 매칭되지 않는 M1·M2(A만), M5·M6(B만)는 반대쪽 컬럼을 NULL로 채운 채 각각 별도 행으로 남긴다. 전체 행 수는 "합집합의 크기"인 6(=4+4-2, 2는 겹치는 M3,M4)이다.
+        </div>
+      </div>
+    </div>
+
+    <!-- J5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 SQL의 실행 결과를 쓰시오. (LEFT JOIN 뒤에 INNER JOIN을 연결하면 벌어지는 일)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.8rem;">
+          <div>
+            <div class="tbl-label">CUSTOMER2</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>CID</th><th>CNAME</th></tr>
+              <tr><td>C1</td><td>김</td></tr><tr><td>C2</td><td>이</td></tr><tr><td>C3</td><td>박</td></tr>
+            </table></div>
+          </div>
+          <div>
+            <div class="tbl-label">ORDERS5</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>OID</th><th>CID</th><th>STATUS</th></tr>
+              <tr><td>O1</td><td>C1</td><td>완료</td></tr><tr><td>O2</td><td>C2</td><td>취소</td></tr>
+            </table></div>
+          </div>
+          <div>
+            <div class="tbl-label">PAYMENT (완료 주문만 결제 기록 존재)</div>
+            <div class="tbl-wrap"><table class="d-table">
+              <tr><th>OID</th><th>AMOUNT</th></tr>
+              <tr><td>O1</td><td>10000</td></tr>
+            </table></div>
+          </div>
+        </div>
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="kw">SELECT</span> c.CNAME, o.STATUS, pay.AMOUNT
+<span class="kw">FROM</span> <span class="tb">CUSTOMER2</span> c
+<span class="kw">LEFT JOIN</span> <span class="tb">ORDERS5</span> o  <span class="kw">ON</span> c.CID <span class="op">=</span> o.CID
+<span class="kw">JOIN</span>      <span class="tb">PAYMENT</span> pay <span class="kw">ON</span> o.OID <span class="op">=</span> pay.OID
+<span class="kw">ORDER BY</span> c.CID;</pre></div></div>
+        <div class="tbl-label">① CUSTOMER2 LEFT JOIN ORDERS5 — 박(C3)은 주문이 없어 NULL로 유지, 3행</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>CNAME</th><th>OID</th><th>STATUS</th></tr>
+          <tr><td>김</td><td>O1</td><td>완료</td></tr>
+          <tr><td>이</td><td>O2</td><td>취소</td></tr>
+          <tr><td>박</td><td class="null-v">NULL</td><td class="null-v">NULL</td></tr>
+        </table></div>
+        <div class="tbl-label">② 위 결과를 PAYMENT와 (INNER) JOIN — OID가 PAYMENT에 없거나 NULL이면 통째로 제거</div>
+        <div class="tbl-wrap"><table class="d-table">
+          <tr><th>CNAME</th><th>OID</th><th>PAYMENT 매칭?</th><th>결과</th></tr>
+          <tr><td class="hi">김</td><td>O1</td><td>O1 → 10000 존재</td><td>유지</td></tr>
+          <tr><td class="no">이</td><td>O2</td><td>O2 없음</td><td>제거</td></tr>
+          <tr><td class="no">박</td><td class="null-v">NULL</td><td>NULL = OID는 항상 UNKNOWN</td><td>제거</td></tr>
+        </table></div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">김, 완료, 10000 — 단 1행</div>
+        <div class="ans-explain">
+          맨 앞의 <code>LEFT JOIN</code>은 "주문 없는 고객도 보존"하려는 의도였지만, 바로 뒤에 이어진 일반 <code>JOIN</code>(=INNER JOIN)이 <strong>결제 기록이 없는 행을 전부 걸러내며 그 의도를 무력화</strong>시킨다. 취소된 주문(이, O2)은 결제 자체가 없어 탈락하고, 주문이 아예 없는 박(NULL)은 <code>o.OID = pay.OID</code>가 <code>NULL = pay.OID</code>가 되어 항상 UNKNOWN 처리되어 역시 탈락한다. 결과적으로 "모든 고객을 보여주고 싶었지만" 실제로는 결제까지 완료한 고객만 남는 대표적인 <strong>LEFT JOIN 무력화 함정</strong>이다. 의도대로 만들려면 두 번째 조인도 <code>LEFT JOIN</code>으로 바꿔야 한다.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+
+
+</div><!-- /container -->
+
+<footer style="text-align:center; padding:1.5rem; color:var(--gray); font-size:0.78rem; border-top:1px solid var(--border);">
+  Level-3 · 04 SQL 심화 50제 · <a href="index.html" style="color:var(--accent); text-decoration:none;">← 목록으로</a>
+</footer>
+
+<script>
+function toggle(el) {
+  const card = el.closest('.quiz-card');
+  const wasOpen = card.classList.contains('open');
+  card.classList.toggle('open');
+  if (wasOpen) {
+    const sol = card.querySelector('.sol-block');
+    const btn = card.querySelector('.reveal-btn');
+    if (sol) sol.classList.remove('open');
+    if (btn) btn.textContent = '정답 보기 ▼';
+  }
+}
+
+function initReveal() {
+  document.querySelectorAll('.quiz-ans').forEach(ans => {
+    if (ans.querySelector('.reveal-btn')) return;
+    const codeWrap = ans.querySelector(':scope > .ans-code-wrap');
+    const solBlock = document.createElement('div');
+    solBlock.className = 'sol-block';
+    const toMove = [];
+    let node = codeWrap ? codeWrap.nextSibling : ans.firstChild;
+    while (node) { toMove.push(node); node = node.nextSibling; }
+    toMove.forEach(n => solBlock.appendChild(n));
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'reveal-btn';
+    btn.textContent = '정답 보기 ▼';
+    btn.onclick = function (e) {
+      e.stopPropagation();
+      const open = solBlock.classList.toggle('open');
+      btn.textContent = open ? '정답 숨기기 ▲' : '정답 보기 ▼';
+    };
+    ans.appendChild(btn);
+    ans.appendChild(solBlock);
+  });
+}
+document.addEventListener('DOMContentLoaded', initReveal);
+</script>
+</body>
+</html>

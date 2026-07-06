@@ -45,7 +45,7 @@ h1 { font-size: 2.1rem; font-weight: 800; margin-bottom: 0.6rem; }
 
 .choices {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.25rem;
 }
 
@@ -91,6 +91,7 @@ h1 { font-size: 2.1rem; font-weight: 800; margin-bottom: 0.6rem; }
 
 .lv1 { --accent: #38bdf8; }
 .lv2 { --accent: #a78bfa; }
+.lv3 { --accent: #fb7185; }
 
 footer { margin-top: 2.4rem; font-size: 0.76rem; color: #64748b; }
 
@@ -106,7 +107,7 @@ footer { margin-top: 2.4rem; font-size: 0.76rem; color: #64748b; }
 <div class="wrap">
   <span class="eyebrow">정보처리기사 실기</span>
   <h1>어떤 학습을 시작할까요?</h1>
-  <p class="sub">Level-1 개념 정리와 Level-2 실전 문제풀이 중에서 선택하세요</p>
+  <p class="sub">Level-1 개념 정리, Level-2 실전 문제풀이, Level-3 심화 문제 중에서 선택하세요</p>
 
   <div class="choices">
     <a class="choice lv1" href="level-1/index.html">
@@ -124,6 +125,15 @@ footer { margin-top: 2.4rem; font-size: 0.76rem; color: #64748b; }
       <h2>실전 문제풀이</h2>
       <p>코드 추적 · 계산 공식 · 기출문제 (2020~2025)</p>
       <div class="tags"><span>코드추적</span><span>계산문제</span><span>기출 340+</span></div>
+      <div class="go">학습 시작 →</div>
+    </a>
+
+    <a class="choice lv3" href="level-3/index.html">
+      <div class="num">LEVEL 3</div>
+      <div class="icon">🔥</div>
+      <h2>심화 문제</h2>
+      <p>C·Java·Python·SQL 언어당 50문제 풀 트레이스</p>
+      <div class="tags"><span>얕은/깊은복사</span><span>포인터심화</span><span>윈도우함수</span></div>
       <div class="go">학습 시작 →</div>
     </a>
   </div>

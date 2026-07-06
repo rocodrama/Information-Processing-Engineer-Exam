@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>정보처리기사 실기 Level-3 심화</title>
+<style>
+:root {
+  --dark: #0f172a;
+  --gray: #64748b;
+  --light: #f8fafc;
+  --border: #e2e8f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.6; word-break: keep-all; }
+
+.hero { background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 55%, #831843 100%); color: white; padding: 3rem 1.5rem 2.5rem; text-align: center; }
+.hero h1 { font-size: 1.9rem; font-weight: 800; margin-bottom: 0.5rem; }
+.hero p { color: #f5d0fe; font-size: 0.92rem; }
+.hero .meta { margin-top: 0.6rem; display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+.tag { background: rgba(255,255,255,0.15); padding: 0.25rem 0.7rem; border-radius: 20px; font-size: 0.78rem; }
+
+.progress-bar { max-width: 720px; margin: -1.4rem auto 0; background: white; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); padding: 1rem 1.25rem; display: flex; align-items: center; gap: 1rem; position: relative; z-index: 5; }
+.progress-bar .pct { font-size: 1.4rem; font-weight: 800; color: var(--dark); white-space: nowrap; }
+.progress-track { flex: 1; height: 10px; background: var(--border); border-radius: 6px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #7c3aed, #db2777); border-radius: 6px; transition: width 0.3s; width: 0%; }
+.progress-label { font-size: 0.78rem; color: var(--gray); white-space: nowrap; }
+
+.container { max-width: 1080px; margin: 0 auto; padding: 2.5rem 1.5rem 3rem; }
+
+.lv-link { text-align: center; margin-bottom: 2rem; display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+.lv-link a { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; color: var(--gray); text-decoration: none; border: 1px solid var(--border); padding: 0.4rem 1rem; border-radius: 20px; transition: all 0.15s; }
+.lv-link a:hover { border-color: #7c3aed; color: #7c3aed; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.1rem; }
+
+.ch-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.15rem 1.25rem; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.06); transition: transform 0.15s, box-shadow 0.15s; border-left: 5px solid var(--accent); }
+.ch-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+.ch-card.done { opacity: 0.55; }
+
+.ch-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.5rem; }
+.ch-badges { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+.badge { font-size: 0.7rem; font-weight: 700; padding: 0.18rem 0.5rem; border-radius: 20px; white-space: nowrap; }
+.badge.freq { background: var(--accent); color: white; }
+.badge.num { background: #f1f5f9; color: var(--gray); }
+
+.ch-check { width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: white; background: white; transition: all 0.15s; }
+.ch-check.checked { background: var(--accent); border-color: var(--accent); }
+
+.ch-title { font-size: 1.02rem; font-weight: 700; margin-bottom: 0.35rem; }
+.ch-title a { color: var(--dark); text-decoration: none; }
+.ch-title a:hover { color: var(--accent); }
+.ch-desc { font-size: 0.81rem; color: var(--gray); margin-bottom: 0.75rem; }
+.ch-tags { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+.ch-tags span { background: #f8fafc; border: 1px solid var(--border); color: var(--gray); font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 12px; }
+
+.ch-open { display: inline-block; margin-top: 0.8rem; font-size: 0.78rem; font-weight: 700; color: var(--accent); text-decoration: none; }
+.ch-open:hover { text-decoration: underline; }
+
+footer { text-align: center; padding: 1.5rem; color: var(--gray); font-size: 0.78rem; }
+
+@media (max-width: 640px) {
+  .hero { padding: 2rem 1rem 1.8rem; }
+  .hero h1 { font-size: 1.35rem; }
+  .hero p { font-size: 0.84rem; }
+  .tag { font-size: 0.72rem; padding: 0.2rem 0.55rem; }
+
+  .progress-bar { flex-wrap: wrap; margin: -1rem 0.75rem 0; padding: 0.85rem 1rem; gap: 0.6rem; }
+  .progress-bar .pct { font-size: 1.2rem; }
+  .progress-label { width: 100%; text-align: right; }
+
+  .container { padding: 1.8rem 0.85rem 3rem; }
+
+  .ch-card { padding: 1rem 1rem; }
+  .ch-title { font-size: 0.96rem; }
+  .ch-desc { font-size: 0.78rem; }
+  .badge { font-size: 0.67rem; }
+
+  .lv-link a { font-size: 0.78rem; padding: 0.35rem 0.85rem; }
+
+  .ch-check { width: 26px; height: 26px; }
+  .ch-open { padding: 0.4rem 0; display: block; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🔥 정보처리기사 실기 Level-3 심화</h1>
+  <p>기출 변형 + 예상 심화문제 · 언어별 50문제 풀 트레이스</p>
+  <div class="meta">
+    <span class="tag">C·Java·Python·SQL</span>
+    <span class="tag">언어당 50문제</span>
+    <span class="tag">전체 200문제</span>
+  </div>
+</div>
+
+<div class="progress-bar">
+  <div class="pct" id="pct">0%</div>
+  <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+  <div class="progress-label" id="plabel">0 / 4 완료</div>
+</div>
+
+<div class="container">
+  <div class="lv-link">
+    <a href="../index.html">← 처음으로</a>
+    <a href="../level-1/index.html">Level-1 개념 정리</a>
+    <a href="../level-2/index.html">Level-2 실전</a>
+  </div>
+  <div id="grid"></div>
+</div>
+
+<footer>정보처리기사 실기 Level-3 심화 · 기출 변형 및 예상 심화문제</footer>
+
+<script>
+const chapters = [
+  { num:'01', file:'01_c_advanced.html',      title:'C 심화 50제',      freq:'★★★★★', desc:'포인터의 포인터·동적메모리·함수포인터·구조체 심화', accent:'#1d4ed8', tags:['이중포인터','malloc/free','함수포인터','비트연산'] },
+  { num:'02', file:'02_java_advanced.html',   title:'Java 심화 50제',   freq:'★★★★★', desc:'제네릭·컬렉션·Stream·static 초기화 순서 심화', accent:'#2563eb', tags:['제네릭','Stream API','equals/hashCode','내부클래스'] },
+  { num:'03', file:'03_python_advanced.html', title:'Python 심화 50제', freq:'★★★★★', desc:'얕은복사/깊은복사·클로저·데코레이터·제너레이터 심화', accent:'#0284c7', tags:['얕은/깊은복사','클로저','데코레이터','제너레이터'] },
+  { num:'04', file:'04_sql_advanced.html',    title:'SQL 심화 50제',    freq:'★★★★☆', desc:'윈도우함수·상관서브쿼리·CTE·트랜잭션 격리수준 심화', accent:'#0f766e', tags:['윈도우함수','상관서브쿼리','CTE','격리수준'] },
+];
+
+function renderGrid() {
+  const done = JSON.parse(localStorage.getItem('lv3_done') || '{}');
+  document.getElementById('grid').innerHTML = `<div class="grid">` + chapters.map(c => {
+    const isDone = !!done[c.file];
+    return `<div class="ch-card${isDone ? ' done' : ''}" style="--accent:${c.accent}">
+      <div class="ch-top">
+        <div class="ch-badges">
+          <span class="badge freq">${c.freq}</span>
+          <span class="badge num">${c.num}</span>
+        </div>
+        <div class="ch-check${isDone ? ' checked' : ''}" onclick="toggleDone('${c.file}')">${isDone ? '✓' : ''}</div>
+      </div>
+      <div class="ch-title"><a href="${c.file}">${c.title}</a></div>
+      <div class="ch-desc">${c.desc}</div>
+      <div class="ch-tags">${c.tags.map(t => `<span>${t}</span>`).join('')}</div>
+      <a class="ch-open" href="${c.file}">학습 시작 →</a>
+    </div>`;
+  }).join('') + `</div>`;
+  updateProgress(done);
+}
+
+function toggleDone(file) {
+  const done = JSON.parse(localStorage.getItem('lv3_done') || '{}');
+  done[file] = !done[file];
+  localStorage.setItem('lv3_done', JSON.stringify(done));
+  renderGrid();
+}
+
+function updateProgress(done) {
+  const n = Object.values(done).filter(Boolean).length;
+  const pct = Math.round((n / chapters.length) * 100);
+  document.getElementById('pct').textContent = pct + '%';
+  document.getElementById('pfill').style.width = pct + '%';
+  document.getElementById('plabel').textContent = `${n} / ${chapters.length} 완료`;
+}
+
+document.addEventListener('DOMContentLoaded', renderGrid);
+</script>
+</body>
+</html>

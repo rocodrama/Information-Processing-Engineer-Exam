@@ -1,0 +1,2043 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>01 C 심화 50제 — Level-3</title>
+<style>
+:root {
+  --dark: #0f172a; --gray: #64748b; --light: #f8fafc; --border: #e2e8f0;
+  --accent: #1d4ed8; --accent2: #3b82f6;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); line-height: 1.8; word-break: keep-all; }
+
+/* ── HERO ── */
+.hero { background: linear-gradient(135deg, #030712 0%, #0f172a 60%, #1e3a5f 100%); color: white; padding: 2.5rem 1.5rem 2rem; }
+.hero-inner { max-width: 900px; margin: 0 auto; }
+.hero-back { font-size: 0.78rem; color: #94a3b8; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; margin-bottom: 1rem; }
+.hero-back:hover { color: white; }
+.hero h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.3rem; }
+.hero p { color: #93c5fd; font-size: 0.88rem; }
+.hero-meta { display: flex; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
+.htag { background: rgba(255,255,255,0.12); padding: 0.22rem 0.65rem; border-radius: 20px; font-size: 0.75rem; }
+
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+/* ── TOC ── */
+.toc { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.5rem; margin-bottom: 2rem; }
+.toc-title { font-size: 0.78rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.7rem; }
+.toc-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.toc-list a { font-size: 0.8rem; color: var(--accent); text-decoration: none; border: 1px solid #bfdbfe; background: #eff6ff; padding: 0.2rem 0.6rem; border-radius: 8px; }
+.toc-list a:hover { background: #dbeafe; }
+
+/* ── SECTION TITLE ── */
+.sec-title { font-size: 1.3rem; font-weight: 800; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 0.5rem; }
+.sec-num { background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 20px; }
+
+/* ── INFO BOXES ── */
+.info  { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.84rem; color: #1e40af; margin: 1rem 0; }
+.warn  { background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.88rem; color: #713f12; margin: 1rem 0; }
+.tip   { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 1rem 1.2rem; font-size: 0.88rem; color: #166534; margin: 1rem 0; }
+
+/* ── CODE BLOCK ── */
+.code-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; margin: 0.8rem 0; border-radius: 10px; }
+.code-block { background: #0f172a; border-radius: 10px; padding: 1.1rem 1.3rem; min-width: 480px; }
+.code-block pre { margin: 0; font-family: 'Courier New', Consolas, monospace; font-size: 0.84rem; line-height: 1.65; color: #e2e8f0; }
+.ln  { color: #334155; user-select: none; margin-right: 0.8rem; font-size: 0.76rem; }
+.kw  { color: #93c5fd; }   /* keywords */
+.tp  { color: #67e8f9; }   /* types */
+.fn  { color: #fbbf24; }   /* function names */
+.str { color: #86efac; }   /* strings / includes */
+.num { color: #f9a8d4; }   /* numbers */
+.cmt { color: #475569; font-style: italic; }   /* comments */
+.hl  { background: rgba(251,191,36,0.12); display: inline-block; width: 100%; }
+
+/* ── TRACE TABLE ── */
+.trace-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; margin: 1rem 0; }
+.trace-wrap::before { content: '← 좌우 스크롤'; display: none; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.3rem; }
+.trace-table { border-collapse: collapse; font-size: 0.82rem; font-family: 'Courier New', monospace; white-space: nowrap; }
+.trace-table th { background: #0f172a; color: #93c5fd; padding: 0.45rem 0.9rem; text-align: center; font-size: 0.74rem; font-weight: 700; }
+.trace-table td { padding: 0.4rem 0.9rem; border-bottom: 1px solid var(--border); text-align: center; color: var(--dark); }
+.trace-table tr:hover td { background: #eff6ff; }
+.changed { background: #fef3c7 !important; color: #92400e; font-weight: 700; }
+.output  { background: #dcfce7 !important; color: #15803d; font-weight: 700; }
+.active  { background: #dbeafe !important; }
+
+/* ── CONCEPT CARD ── */
+.concept { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1rem; }
+.concept h4 { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.4rem; }
+.concept h4::before { content: '▸'; color: var(--accent); }
+
+/* ── CALL STACK ── */
+.call-stack { display: flex; flex-direction: column; gap: 2px; max-width: 300px; margin: 1rem 0; }
+.call-frame { background: white; border: 1px solid var(--border); border-radius: 6px; padding: 0.45rem 0.9rem; font-family: monospace; font-size: 0.82rem; display: flex; justify-content: space-between; align-items: center; }
+.call-frame.base { border-color: #22c55e; background: #f0fdf4; }
+.call-frame.ret { border-color: var(--accent2); }
+.call-arrow { font-size: 0.72rem; color: var(--gray); }
+
+/* ── BIT TABLE ── */
+.bit-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; max-width: 260px; margin: 0.4rem 0; }
+.bit-cell { background: #f1f5f9; border: 1px solid var(--border); text-align: center; padding: 0.3rem 0; font-size: 0.78rem; font-family: monospace; border-radius: 4px; font-weight: 700; }
+.bit-cell.on  { background: #1d4ed8; color: white; border-color: #1d4ed8; }
+.bit-cell.off { background: #e2e8f0; color: var(--gray); }
+.bit-op-label { font-size: 0.72rem; color: var(--gray); margin: 0.2rem 0 0.05rem; font-weight: 700; }
+
+/* ── TABLE ── */
+.tbl-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+th { background: #0f172a; color: #93c5fd; padding: 0.5rem 0.8rem; text-align: left; font-size: 0.77rem; font-weight: 700; }
+td { padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--border); }
+tr:nth-child(even) td { background: #fafafa; }
+tr:hover td { background: #eff6ff; }
+code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.82rem; }
+
+/* ── QUIZ ── */
+.quiz-wrap { display: flex; flex-direction: column; gap: 1.1rem; margin-top: 1rem; }
+.quiz-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.quiz-q {
+  padding: 1rem 1.2rem; font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; min-height: 52px;
+}
+.quiz-q:hover { background: #fafafa; }
+.quiz-q:active { background: #f0f9ff; }
+.quiz-badge { font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.quiz-badge.year { background: #bfdbfe; color: #1e40af; }
+.quiz-badge.sim  { background: #e0e7ff; color: #4338ca; }
+.quiz-badge.adv  { background: #ede9fe; color: #5b21b6; }
+.quiz-chevron { font-size: 0.75rem; color: var(--gray); flex-shrink: 0; margin-top: 0.1rem; transition: transform 0.2s; }
+.quiz-card.open .quiz-chevron { transform: rotate(180deg); }
+.quiz-ans { display: none; padding: 0 1.2rem 1.1rem; border-top: 1px solid var(--border); }
+.quiz-card.open .quiz-ans { display: block; }
+.reveal-btn { display: inline-flex; align-items: center; gap: 0.3rem; margin-top: 0.9rem; padding: 0.5rem 1.1rem; border-radius: 8px; border: 1.5px solid var(--accent); background: transparent; color: var(--accent); font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.reveal-btn:hover { background: var(--accent); color: white; }
+.sol-block { display: none; margin-top: 0.8rem; }
+.sol-block.open { display: block; }
+.ans-label { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin: 0.8rem 0 0.3rem; }
+.ans-val   { font-size: 1rem; font-weight: 700; color: var(--dark); font-family: monospace; }
+.ans-explain { font-size: 0.86rem; color: #374151; margin-top: 0.5rem; line-height: 1.65; }
+.ans-code-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.7rem 0; border-radius: 8px; }
+.ans-code { background: #0f172a; border-radius: 8px; padding: 0.9rem 1.1rem; min-width: 340px; }
+.ans-code pre { margin: 0; font-family: 'Courier New', monospace; font-size: 0.8rem; line-height: 1.6; color: #e2e8f0; }
+
+/* ── MOBILE ── */
+@media (max-width: 640px) {
+  .hero { padding: 1.8rem 1rem 1.5rem; }
+  .hero h1 { font-size: 1.25rem; }
+  .hero p { font-size: 0.84rem; }
+  .htag { font-size: 0.7rem; }
+
+  .container { padding: 1.5rem 0.9rem 3rem; }
+  .toc { padding: 0.9rem 1rem; }
+  .toc-list a { font-size: 0.74rem; }
+  .sec-title { font-size: 1.1rem; margin: 2rem 0 0.85rem; }
+
+  .code-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.3rem; }
+  .code-block { padding: 0.9rem 1rem; }
+  .code-block pre { font-size: 0.76rem; }
+
+  .trace-wrap::before { display: block; }
+  .trace-table { font-size: 0.74rem; }
+  .trace-table th { padding: 0.38rem 0.6rem; font-size: 0.68rem; }
+  .trace-table td { padding: 0.32rem 0.6rem; }
+
+  .tbl-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; padding: 0.3rem 0; }
+  table { font-size: 0.76rem; }
+  th, td { padding: 0.38rem 0.6rem; }
+
+  .concept { padding: 1rem; }
+  .bit-grid { max-width: 210px; }
+  .bit-cell { font-size: 0.7rem; padding: 0.22rem 0; }
+
+  .info, .warn, .tip { font-size: 0.8rem; padding: 0.85rem 1rem; }
+
+  .quiz-q { padding: 0.9rem 1rem; font-size: 0.83rem; }
+  .quiz-ans { padding: 0 1rem 1rem; }
+  .ans-val { font-size: 0.92rem; }
+  .ans-explain { font-size: 0.82rem; }
+  .ans-code-wrap::before { content: '← 좌우 스크롤'; display: block; font-size: 0.68rem; color: var(--gray); text-align: right; margin-bottom: 0.2rem; }
+  .ans-code pre { font-size: 0.74rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <a class="hero-back" href="index.html">← Level-3 목록</a>
+    <h1>🔥 C 심화 50제</h1>
+    <p>이중포인터 · 동적메모리 · 함수포인터 · 상호재귀 · 비트필드 · 형변환</p>
+    <div class="hero-meta">
+      <span class="htag">심화 50문제</span>
+      <span class="htag">01번</span>
+      <span class="htag">기출 변형 + 예상 심화</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="toc">
+    <div class="toc-title">목차</div>
+    <div class="toc-list">
+      <a href="#dblptr">01 이중포인터</a>
+      <a href="#arrptr">02 배열-포인터 연산</a>
+      <a href="#struct">03 구조체·공용체</a>
+      <a href="#dynmem">04 동적 메모리</a>
+      <a href="#fnptr">05 함수 포인터</a>
+      <a href="#recur">06 재귀함수 심화</a>
+      <a href="#bitop">07 비트 연산 심화</a>
+      <a href="#strfn">08 문자열 함수 심화</a>
+      <a href="#scope">09 저장 클래스·스코프</a>
+      <a href="#cast">10 형변환·오버플로우</a>
+    </div>
+  </div>
+
+  <!-- ① 이중 포인터 & 포인터 배열 -->
+  <div class="sec-title" id="dblptr"><span class="sec-num">01</span> 이중 포인터 &amp; 포인터 배열</div>
+  <div class="info">💡 <code>int **pp</code>는 "포인터를 가리키는 포인터". <code>**pp</code>는 pp → p → 대상값까지 두 단계 역참조. 포인터 배열 <code>int *arr[n]</code>의 원소는 각각 다른 변수의 주소를 담을 수 있다.</div>
+
+  <div class="quiz-wrap">
+
+    <!-- 1-1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오.</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="tp">int</span> x = <span class="num">10</span>;
+<span class="ln">4</span>    <span class="tp">int</span> *p = &amp;x;
+<span class="ln">5</span>    <span class="tp">int</span> **pp = &amp;p;
+<span class="ln">6</span>    **pp = <span class="num">20</span>;
+<span class="ln">7</span>    printf(<span class="str">"%d %d"</span>, x, *p);
+<span class="ln">8</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">9</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>라인</th><th>x</th><th>p</th><th>pp</th><th>*p</th><th>**pp</th><th>출력</th></tr>
+            <tr><td>3</td><td class="changed">10</td><td>—</td><td>—</td><td>—</td><td>—</td><td></td></tr>
+            <tr><td>4</td><td>10</td><td class="changed">&amp;x</td><td>—</td><td class="changed">10</td><td>—</td><td></td></tr>
+            <tr><td>5</td><td>10</td><td>&amp;x</td><td class="changed">&amp;p</td><td>10</td><td class="changed">10</td><td></td></tr>
+            <tr><td>6</td><td class="changed">20</td><td>&amp;x</td><td>&amp;p</td><td class="changed">20</td><td class="changed">20</td><td></td></tr>
+            <tr><td>7</td><td>20</td><td>&amp;x</td><td>&amp;p</td><td>20</td><td>20</td><td class="output">20 20</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">20 20</div>
+        <div class="ans-explain">pp→p→x 순서로 이어지므로 <code>**pp</code>는 x 자체를 가리킨다. <code>**pp = 20</code>은 x를 20으로 바꾸고, 이후 x와 *p는 모두 20이 된다.</div>
+      </div>
+    </div>
+
+    <!-- 1-2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (포인터 배열)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="tp">int</span> a = <span class="num">1</span>, b = <span class="num">2</span>, c = <span class="num">3</span>;
+<span class="ln">4</span>    <span class="tp">int</span> *arr[<span class="num">3</span>] = {&amp;a, &amp;b, &amp;c};
+<span class="ln">5</span>    *arr[<span class="num">1</span>] += <span class="num">10</span>;
+<span class="ln">6</span>    printf(<span class="str">"%d %d %d"</span>, a, b, c);
+<span class="ln">7</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">8</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>라인</th><th>a</th><th>b</th><th>c</th><th>arr[0..2]</th><th>출력</th></tr>
+            <tr><td>3</td><td class="changed">1</td><td class="changed">2</td><td class="changed">3</td><td>—</td><td></td></tr>
+            <tr><td>4</td><td>1</td><td>2</td><td>3</td><td class="changed">&amp;a, &amp;b, &amp;c</td><td></td></tr>
+            <tr><td>5</td><td>1</td><td class="changed">12</td><td>3</td><td>&amp;a, &amp;b, &amp;c</td><td></td></tr>
+            <tr><td>6</td><td>1</td><td>12</td><td>3</td><td>&amp;a, &amp;b, &amp;c</td><td class="output">1 12 3</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">1 12 3</div>
+        <div class="ans-explain"><code>arr[1]</code>은 &amp;b이므로 <code>*arr[1] += 10</code>은 b를 2에서 12로 바꾼다. a, c는 영향 없음.</div>
+      </div>
+    </div>
+
+    <!-- 1-3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (이중 포인터로 포인터 교환)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">void</span> <span class="fn">swap</span>(<span class="tp">int</span> **pa, <span class="tp">int</span> **pb) {
+<span class="ln">3</span>    <span class="tp">int</span> *temp = *pa;
+<span class="ln">4</span>    *pa = *pb;
+<span class="ln">5</span>    *pb = temp;
+<span class="ln">6</span>}
+<span class="ln">7</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">8</span>    <span class="tp">int</span> x = <span class="num">5</span>, y = <span class="num">9</span>;
+<span class="ln">9</span>    <span class="tp">int</span> *p = &amp;x, *q = &amp;y;
+<span class="ln">10</span>    <span class="fn">swap</span>(&amp;p, &amp;q);
+<span class="ln">11</span>    printf(<span class="str">"%d %d"</span>, *p, *q);
+<span class="ln">12</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">13</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>단계</th><th>p</th><th>q</th><th>pa</th><th>pb</th><th>temp</th></tr>
+            <tr><td>8~9 (main)</td><td class="changed">&amp;x(5)</td><td class="changed">&amp;y(9)</td><td>—</td><td>—</td><td>—</td></tr>
+            <tr><td>swap 진입</td><td>&amp;x</td><td>&amp;y</td><td class="changed">&amp;p</td><td class="changed">&amp;q</td><td>—</td></tr>
+            <tr><td>3: temp=*pa</td><td>&amp;x</td><td>&amp;y</td><td>&amp;p</td><td>&amp;q</td><td class="changed">&amp;x</td></tr>
+            <tr><td>4: *pa=*pb</td><td class="changed">&amp;y</td><td>&amp;y</td><td>&amp;p</td><td>&amp;q</td><td>&amp;x</td></tr>
+            <tr><td>5: *pb=temp</td><td>&amp;y</td><td class="changed">&amp;x</td><td>&amp;p</td><td>&amp;q</td><td>&amp;x</td></tr>
+            <tr><td>11: 출력</td><td>&amp;y</td><td>&amp;x</td><td>—</td><td>—</td><td>—</td><td class="output">9 5</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">9 5</div>
+        <div class="ans-explain">swap은 p, q가 "가리키는 대상"이 아니라 p, q 자체(포인터 값)를 서로 바꾼다. 이중 포인터로 전달했기 때문에 함수 안에서 원본 포인터가 바뀐다. 결과적으로 p는 y를, q는 x를 가리키게 되어 *p=9, *q=5.</div>
+      </div>
+    </div>
+
+    <!-- 1-4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (이중 포인터 + 배열 순회)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="tp">int</span> arr[<span class="num">3</span>] = {<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>};
+<span class="ln">4</span>    <span class="tp">int</span> *p = arr;
+<span class="ln">5</span>    <span class="tp">int</span> **pp = &amp;p;
+<span class="ln">6</span>    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i &lt; <span class="num">3</span>; i++) {
+<span class="ln">7</span>        printf(<span class="str">"%d "</span>, **pp);
+<span class="ln">8</span>        (*pp)++;
+<span class="ln">9</span>    }
+<span class="ln">10</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">11</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>i</th><th>p (=*pp)</th><th>**pp</th><th>출력</th><th>(*pp)++ 이후 p</th></tr>
+            <tr><td>0</td><td>&amp;arr[0]</td><td class="changed">10</td><td class="output">10 </td><td class="changed">&amp;arr[1]</td></tr>
+            <tr><td>1</td><td>&amp;arr[1]</td><td class="changed">20</td><td class="output">20 </td><td class="changed">&amp;arr[2]</td></tr>
+            <tr><td>2</td><td>&amp;arr[2]</td><td class="changed">30</td><td class="output">30 </td><td class="changed">&amp;arr[3] (배열 끝 다음)</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">10 20 30&nbsp;(끝에 공백 포함)</div>
+        <div class="ans-explain">pp→p→arr 이므로 <code>**pp</code>는 p가 가리키는 현재 원소값. <code>(*pp)++</code>는 p 자체를 한 칸씩 전진시킨다. 3번 반복하며 10, 20, 30을 순서대로 출력.</div>
+      </div>
+    </div>
+
+    <!-- 1-5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (포인터 배열 회전)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="tp">int</span> a = <span class="num">1</span>, b = <span class="num">2</span>, c = <span class="num">3</span>;
+<span class="ln">4</span>    <span class="tp">int</span> *arr[<span class="num">3</span>] = {&amp;a, &amp;b, &amp;c};
+<span class="ln">5</span>    <span class="tp">int</span> **pp = arr;
+<span class="ln">6</span>    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i &lt; <span class="num">2</span>; i++) {
+<span class="ln">7</span>        <span class="tp">int</span> *t = *(pp + i);
+<span class="ln">8</span>        *(pp + i) = *(pp + i + <span class="num">1</span>);
+<span class="ln">9</span>        *(pp + i + <span class="num">1</span>) = t;
+<span class="ln">10</span>    }
+<span class="ln">11</span>    printf(<span class="str">"%d %d %d"</span>, *arr[<span class="num">0</span>], *arr[<span class="num">1</span>], *arr[<span class="num">2</span>]);
+<span class="ln">12</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">13</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>i</th><th>t</th><th>arr[0]</th><th>arr[1]</th><th>arr[2]</th></tr>
+            <tr><td>시작</td><td>—</td><td>&amp;a</td><td>&amp;b</td><td>&amp;c</td></tr>
+            <tr><td>0</td><td class="changed">&amp;a</td><td class="changed">&amp;b</td><td class="changed">&amp;a</td><td>&amp;c</td></tr>
+            <tr><td>1</td><td class="changed">&amp;a</td><td>&amp;b</td><td class="changed">&amp;c</td><td class="changed">&amp;a</td></tr>
+            <tr><td>최종 값</td><td>—</td><td>*&amp;b=2</td><td>*&amp;c=3</td><td>*&amp;a=1</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">2 3 1</div>
+        <div class="ans-explain">인접한 두 원소를 앞에서부터 순서대로 맞바꾸는 루프이므로 결과적으로 배열이 왼쪽으로 한 칸 회전한다: [&amp;a,&amp;b,&amp;c] → [&amp;b,&amp;c,&amp;a]. 따라서 *arr[0..2] = 2, 3, 1.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ② 배열-포인터 연산 & 포인터 산술 -->
+  <div class="sec-title" id="arrptr"><span class="sec-num">02</span> 배열-포인터 연산 &amp; 포인터 산술</div>
+  <div class="info">💡 포인터 + n은 (자료형 크기 × n)바이트 이동. 두 포인터의 차(p2-p1)는 바이트가 아니라 "원소 개수"로 계산된다. 2차원 배열 포인터는 <code>int (*p)[열개수]</code> 형태로 행 단위 이동.</div>
+
+  <div class="quiz-wrap">
+
+    <!-- 2-1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오.</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="tp">int</span> arr[<span class="num">5</span>] = {<span class="num">2</span>, <span class="num">4</span>, <span class="num">6</span>, <span class="num">8</span>, <span class="num">10</span>};
+<span class="ln">4</span>    <span class="tp">int</span> *p = arr;
+<span class="ln">5</span>    printf(<span class="str">"%d %d %d"</span>, *(p+<span class="num">1</span>), *(p+<span class="num">3</span>), *(arr+<span class="num">4</span>));
+<span class="ln">6</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">7</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>표현식</th><th>인덱스</th><th>값</th></tr>
+            <tr><td>*(p+1)</td><td>arr[1]</td><td class="active">4</td></tr>
+            <tr><td>*(p+3)</td><td>arr[3]</td><td class="active">8</td></tr>
+            <tr><td>*(arr+4)</td><td>arr[4]</td><td class="active">10</td></tr>
+            <tr><td colspan="2">출력</td><td class="output">4 8 10</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">4 8 10</div>
+        <div class="ans-explain">arr = {2,4,6,8,10}. p는 arr[0]을 가리키므로 <code>*(p+n)</code>은 arr[n]과 동일하다. arr+4도 배열 이름에 대한 포인터 연산이므로 동일 규칙 적용.</div>
+      </div>
+    </div>
+
+    <!-- 2-2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (포인터 역방향 순회)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="tp">int</span> arr[<span class="num">4</span>] = {<span class="num">5</span>, <span class="num">10</span>, <span class="num">15</span>, <span class="num">20</span>};
+<span class="ln">4</span>    <span class="tp">int</span> *p = arr + <span class="num">3</span>;
+<span class="ln">5</span>    <span class="tp">int</span> sum = <span class="num">0</span>;
+<span class="ln">6</span>    <span class="kw">while</span> (p &gt;= arr) {
+<span class="ln">7</span>        sum += *p;
+<span class="ln">8</span>        p--;
+<span class="ln">9</span>    }
+<span class="ln">10</span>    printf(<span class="str">"%d"</span>, sum);
+<span class="ln">11</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">12</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>반복</th><th>p 위치</th><th>*p</th><th>sum</th></tr>
+            <tr><td>1</td><td>arr+3</td><td>20</td><td class="changed">20</td></tr>
+            <tr><td>2</td><td>arr+2</td><td>15</td><td class="changed">35</td></tr>
+            <tr><td>3</td><td>arr+1</td><td>10</td><td class="changed">45</td></tr>
+            <tr><td>4</td><td>arr+0</td><td>5</td><td class="changed">50</td></tr>
+            <tr><td>종료</td><td>arr-1 (조건 거짓)</td><td>—</td><td class="output">50</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">50</div>
+        <div class="ans-explain">p는 배열 끝(arr+3)에서 시작하여 arr에 도달할 때까지 한 칸씩 감소하며 모든 원소를 더한다. 20+15+10+5 = 50.</div>
+      </div>
+    </div>
+
+    <!-- 2-3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (2차원 배열 행 포인터)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="tp">int</span> arr[<span class="num">3</span>][<span class="num">3</span>] = {{<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>},{<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>},{<span class="num">7</span>,<span class="num">8</span>,<span class="num">9</span>}};
+<span class="ln">4</span>    <span class="tp">int</span> (*p)[<span class="num">3</span>] = arr;
+<span class="ln">5</span>    p++;
+<span class="ln">6</span>    printf(<span class="str">"%d %d"</span>, (*p)[<span class="num">1</span>], *(*p+<span class="num">2</span>));
+<span class="ln">7</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">8</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>라인</th><th>p가 가리키는 행</th><th>(*p)[1]</th><th>*(*p+2)</th></tr>
+            <tr><td>4</td><td class="changed">arr[0] = {1,2,3}</td><td>—</td><td>—</td></tr>
+            <tr><td>5: p++</td><td class="changed">arr[1] = {4,5,6}</td><td>—</td><td>—</td></tr>
+            <tr><td>6</td><td>arr[1]</td><td class="active">5</td><td class="active">6</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">5 6</div>
+        <div class="ans-explain"><code>int (*p)[3]</code>는 "int[3] 행"을 가리키는 포인터이므로 p++는 한 행(12바이트) 전진한다. p가 arr[1]을 가리키게 되므로 (*p)[1]=5, *(*p+2)=6.</div>
+      </div>
+    </div>
+
+    <!-- 2-4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (포인터 뺄셈)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="tp">int</span> arr[<span class="num">4</span>] = {<span class="num">100</span>, <span class="num">200</span>, <span class="num">300</span>, <span class="num">400</span>};
+<span class="ln">4</span>    <span class="tp">int</span> *p1 = arr;
+<span class="ln">5</span>    <span class="tp">int</span> *p2 = arr + <span class="num">3</span>;
+<span class="ln">6</span>    printf(<span class="str">"%ld "</span>, (<span class="kw">long</span>)(p2 - p1));
+<span class="ln">7</span>    printf(<span class="str">"%d"</span>, *p2 - *p1);
+<span class="ln">8</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">9</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>표현식</th><th>의미</th><th>값</th></tr>
+            <tr><td>p2 - p1</td><td>포인터 간 "원소 개수" 차이 (바이트 아님)</td><td class="active">3</td></tr>
+            <tr><td>*p2 - *p1</td><td>400 - 100</td><td class="active">300</td></tr>
+            <tr><td colspan="2">출력</td><td class="output">3 300</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">3 300</div>
+        <div class="ans-explain">두 int 포인터의 차는 (주소차이 ÷ sizeof(int))로 계산되어 원소 개수 단위로 나온다. p2가 p1보다 3칸 뒤에 있으므로 3. *p2-*p1은 단순 값 차이인 300.</div>
+      </div>
+    </div>
+
+    <!-- 2-5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (2차원 배열을 1차원처럼 순회)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="tp">int</span> arr[<span class="num">2</span>][<span class="num">3</span>] = {{<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>},{<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>}};
+<span class="ln">4</span>    <span class="tp">int</span> *p = &amp;arr[<span class="num">0</span>][<span class="num">0</span>];
+<span class="ln">5</span>    <span class="tp">int</span> sum = <span class="num">0</span>;
+<span class="ln">6</span>    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i &lt; <span class="num">6</span>; i++) {
+<span class="ln">7</span>        sum += *(p + i) * (i % <span class="num">2</span> == <span class="num">0</span> ? <span class="num">1</span> : -<span class="num">1</span>);
+<span class="ln">8</span>    }
+<span class="ln">9</span>    printf(<span class="str">"%d"</span>, sum);
+<span class="ln">10</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">11</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>i</th><th>*(p+i)</th><th>부호</th><th>더하는 값</th><th>sum</th></tr>
+            <tr><td>0</td><td>1</td><td>+</td><td>+1</td><td class="changed">1</td></tr>
+            <tr><td>1</td><td>2</td><td>-</td><td>-2</td><td class="changed">-1</td></tr>
+            <tr><td>2</td><td>3</td><td>+</td><td>+3</td><td class="changed">2</td></tr>
+            <tr><td>3</td><td>4</td><td>-</td><td>-4</td><td class="changed">-2</td></tr>
+            <tr><td>4</td><td>5</td><td>+</td><td>+5</td><td class="changed">3</td></tr>
+            <tr><td>5</td><td>6</td><td>-</td><td>-6</td><td class="output">-3</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">-3</div>
+        <div class="ans-explain">2차원 배열도 메모리상에는 1열로 연속 배치되므로 <code>&amp;arr[0][0]</code>부터 6칸을 순서대로 접근하면 1,2,3,4,5,6이 나온다. 짝수 인덱스는 더하고 홀수 인덱스는 빼면 1-2+3-4+5-6 = -3.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ③ 구조체 & 공용체 -->
+  <div class="sec-title" id="struct"><span class="sec-num">03</span> 구조체 &amp; 공용체(union), 중첩/배열 구조체</div>
+  <div class="info">💡 struct는 각 멤버가 독립된 메모리를 가지지만, union은 모든 멤버가 "같은 메모리"를 공유한다(가장 큰 멤버 크기만큼 확보). 리틀 엔디안(x86) 기준 하위 바이트가 낮은 주소에 저장된다.</div>
+
+  <div class="quiz-wrap">
+
+    <!-- 3-1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (구조체 배열)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="kw">struct</span> Item { <span class="tp">char</span> name[<span class="num">10</span>]; <span class="tp">int</span> price; };
+<span class="ln">3</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">4</span>    <span class="kw">struct</span> Item items[<span class="num">3</span>] = {{<span class="str">"Pen"</span>,<span class="num">1000</span>}, {<span class="str">"Book"</span>,<span class="num">5000</span>}, {<span class="str">"Bag"</span>,<span class="num">20000</span>}};
+<span class="ln">5</span>    <span class="tp">int</span> total = <span class="num">0</span>;
+<span class="ln">6</span>    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i &lt; <span class="num">3</span>; i++) total += items[i].price;
+<span class="ln">7</span>    printf(<span class="str">"%d"</span>, total);
+<span class="ln">8</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">9</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>i</th><th>items[i].name</th><th>items[i].price</th><th>total</th></tr>
+            <tr><td>0</td><td>"Pen"</td><td>1000</td><td class="changed">1000</td></tr>
+            <tr><td>1</td><td>"Book"</td><td>5000</td><td class="changed">6000</td></tr>
+            <tr><td>2</td><td>"Bag"</td><td>20000</td><td class="output">26000</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">26000</div>
+        <div class="ans-explain">구조체 배열을 순회하며 price 멤버만 누적. 1000+5000+20000 = 26000.</div>
+      </div>
+    </div>
+
+    <!-- 3-2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (중첩 구조체)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="kw">struct</span> Point { <span class="tp">int</span> x, y; };
+<span class="ln">3</span><span class="kw">struct</span> Rect { <span class="kw">struct</span> Point tl, br; };
+<span class="ln">4</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">5</span>    <span class="kw">struct</span> Rect r = {{<span class="num">1</span>,<span class="num">2</span>},{<span class="num">5</span>,<span class="num">6</span>}};
+<span class="ln">6</span>    <span class="tp">int</span> w = r.br.x - r.tl.x;
+<span class="ln">7</span>    <span class="tp">int</span> h = r.br.y - r.tl.y;
+<span class="ln">8</span>    printf(<span class="str">"%d %d %d"</span>, w, h, w*h);
+<span class="ln">9</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">10</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>라인</th><th>r.tl(x,y)</th><th>r.br(x,y)</th><th>w</th><th>h</th></tr>
+            <tr><td>5</td><td class="changed">(1,2)</td><td class="changed">(5,6)</td><td>—</td><td>—</td></tr>
+            <tr><td>6</td><td>(1,2)</td><td>(5,6)</td><td class="changed">4</td><td>—</td></tr>
+            <tr><td>7</td><td>(1,2)</td><td>(5,6)</td><td>4</td><td class="changed">4</td></tr>
+            <tr><td>8</td><td colspan="4">출력: w h w*h</td><td class="output">4 4 16</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">4 4 16</div>
+        <div class="ans-explain">중첩 구조체는 <code>r.br.x</code>처럼 점(.)을 연달아 사용해 접근한다. w=5-1=4, h=6-2=4, 넓이 w*h=16.</div>
+      </div>
+    </div>
+
+    <!-- 3-3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (union 메모리 공유)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="kw">union</span> Data { <span class="tp">int</span> i; <span class="tp">char</span> c[<span class="num">4</span>]; };
+<span class="ln">3</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">4</span>    <span class="kw">union</span> Data d;
+<span class="ln">5</span>    d.i = <span class="num">65</span>;
+<span class="ln">6</span>    printf(<span class="str">"%d %c"</span>, d.i, d.c[<span class="num">0</span>]);
+<span class="ln">7</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">8</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>바이트</th><th>주소 오프셋</th><th>값(리틀 엔디안)</th></tr>
+            <tr><td>c[0]</td><td>+0 (최하위 바이트)</td><td class="active">65 (0x41) = 'A'</td></tr>
+            <tr><td>c[1]</td><td>+1</td><td>0</td></tr>
+            <tr><td>c[2]</td><td>+2</td><td>0</td></tr>
+            <tr><td>c[3]</td><td>+3 (최상위 바이트)</td><td>0</td></tr>
+            <tr><td colspan="2">출력 (d.i, d.c[0])</td><td class="output">65 A</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">65 A</div>
+        <div class="ans-explain">union은 i와 c가 같은 메모리를 공유한다. d.i=65는 메모리에 0x00000041로 저장되며, x86(리틀 엔디안)에서는 최하위 바이트가 첫 주소에 오므로 c[0]=0x41='A'. (바이트 순서는 컴파일러/CPU의 엔디안에 따라 달라지는 구현 정의 동작이며, 여기서는 일반적인 x86 리틀 엔디안 기준.)</div>
+      </div>
+    </div>
+
+    <!-- 3-4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (구조체 포인터 배열 + 함수)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="kw">struct</span> Emp { <span class="tp">char</span> name[<span class="num">10</span>]; <span class="tp">int</span> salary; };
+<span class="ln">3</span><span class="tp">void</span> <span class="fn">raise</span>(<span class="kw">struct</span> Emp *e, <span class="tp">int</span> amt) {
+<span class="ln">4</span>    e-&gt;salary += amt;
+<span class="ln">5</span>}
+<span class="ln">6</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">7</span>    <span class="kw">struct</span> Emp staff[<span class="num">2</span>] = {{<span class="str">"Lee"</span>,<span class="num">3000</span>}, {<span class="str">"Kim"</span>,<span class="num">3500</span>}};
+<span class="ln">8</span>    <span class="kw">struct</span> Emp *p = staff;
+<span class="ln">9</span>    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i &lt; <span class="num">2</span>; i++) {
+<span class="ln">10</span>        <span class="fn">raise</span>(p + i, <span class="num">500</span> * (i + <span class="num">1</span>));
+<span class="ln">11</span>    }
+<span class="ln">12</span>    printf(<span class="str">"%d %d"</span>, staff[<span class="num">0</span>].salary, staff[<span class="num">1</span>].salary);
+<span class="ln">13</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">14</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>i</th><th>대상</th><th>amt</th><th>salary(이전→이후)</th></tr>
+            <tr><td>0</td><td>p+0 = &amp;staff[0]</td><td>500×1=500</td><td>3000 → <span class="changed">3500</span></td></tr>
+            <tr><td>1</td><td>p+1 = &amp;staff[1]</td><td>500×2=1000</td><td>3500 → <span class="changed">4500</span></td></tr>
+            <tr><td colspan="3">출력 (staff[0].salary staff[1].salary)</td><td class="output">3500 4500</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">3500 4500</div>
+        <div class="ans-explain">구조체 포인터를 함수에 전달하여 원본 salary를 직접 수정(-&gt; 연산자). staff[0]은 500 인상되어 3500, staff[1]은 1000 인상되어 4500.</div>
+      </div>
+    </div>
+
+    <!-- 3-5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (union 안의 struct — 색상 분해)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="kw">struct</span> RGB { <span class="kw">unsigned</span> <span class="tp">char</span> r, g, b, a; };
+<span class="ln">3</span><span class="kw">union</span> Pixel { <span class="kw">unsigned</span> <span class="tp">int</span> value; <span class="kw">struct</span> RGB rgb; };
+<span class="ln">4</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">5</span>    <span class="kw">union</span> Pixel p;
+<span class="ln">6</span>    p.value = <span class="num">0x11223344</span>;
+<span class="ln">7</span>    printf(<span class="str">"%x %x %x %x"</span>, p.rgb.r, p.rgb.g, p.rgb.b, p.rgb.a);
+<span class="ln">8</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">9</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>메모리 주소(낮음→높음)</th><th>바이트 값</th><th>대응 멤버</th></tr>
+            <tr><td>+0 (최하위)</td><td class="active">0x44</td><td>rgb.r</td></tr>
+            <tr><td>+1</td><td class="active">0x33</td><td>rgb.g</td></tr>
+            <tr><td>+2</td><td class="active">0x22</td><td>rgb.b</td></tr>
+            <tr><td>+3 (최상위)</td><td class="active">0x11</td><td>rgb.a</td></tr>
+            <tr><td colspan="2">출력 (r g b a)</td><td class="output">44 33 22 11</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">44 33 22 11</div>
+        <div class="ans-explain">0x11223344는 메모리에 리틀 엔디안으로 44 33 22 11 순서(낮은 주소부터)로 저장된다. struct RGB는 선언 순서(r,g,b,a)대로 낮은 주소부터 매핑되므로 r=0x44, g=0x33, b=0x22, a=0x11.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ④ 동적 메모리 -->
+  <div class="sec-title" id="dynmem"><span class="sec-num">04</span> 동적 메모리 (malloc/calloc/realloc/free)</div>
+  <div class="info">💡 malloc은 초기화 안 된(쓰레기값) 메모리, calloc은 0으로 초기화된 메모리를 반환. realloc은 기존 내용을 보존한 채 크기를 재조정. free 이후에도 포인터 변수 자체는 남아있는데(dangling pointer), 이를 역참조하면 정의되지 않은 동작(UB)이다.</div>
+
+  <div class="quiz-wrap">
+
+    <!-- 4-1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (malloc 기본)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="str">#include &lt;stdlib.h&gt;</span>
+<span class="ln">3</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">4</span>    <span class="tp">int</span> *arr = (<span class="tp">int</span>*)<span class="fn">malloc</span>(<span class="num">5</span> * <span class="kw">sizeof</span>(<span class="tp">int</span>));
+<span class="ln">5</span>    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i &lt; <span class="num">5</span>; i++) arr[i] = i * <span class="num">2</span>;
+<span class="ln">6</span>    <span class="tp">int</span> sum = <span class="num">0</span>;
+<span class="ln">7</span>    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i &lt; <span class="num">5</span>; i++) sum += arr[i];
+<span class="ln">8</span>    printf(<span class="str">"%d"</span>, sum);
+<span class="ln">9</span>    <span class="fn">free</span>(arr);
+<span class="ln">10</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">11</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>i</th><th>arr[i]=i*2</th><th>sum 누적</th></tr>
+            <tr><td>0</td><td>0</td><td class="changed">0</td></tr>
+            <tr><td>1</td><td>2</td><td class="changed">2</td></tr>
+            <tr><td>2</td><td>4</td><td class="changed">6</td></tr>
+            <tr><td>3</td><td>6</td><td class="changed">12</td></tr>
+            <tr><td>4</td><td>8</td><td class="output">20</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">20</div>
+        <div class="ans-explain">malloc으로 int 5개 공간을 확보 후 0,2,4,6,8을 채우고 합산: 0+2+4+6+8=20.</div>
+      </div>
+    </div>
+
+    <!-- 4-2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (calloc 초기화)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="str">#include &lt;stdlib.h&gt;</span>
+<span class="ln">3</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">4</span>    <span class="tp">int</span> *arr = (<span class="tp">int</span>*)<span class="fn">calloc</span>(<span class="num">4</span>, <span class="kw">sizeof</span>(<span class="tp">int</span>));
+<span class="ln">5</span>    arr[<span class="num">0</span>] = <span class="num">10</span>;
+<span class="ln">6</span>    arr[<span class="num">2</span>] += <span class="num">5</span>;
+<span class="ln">7</span>    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i &lt; <span class="num">4</span>; i++) printf(<span class="str">"%d "</span>, arr[i]);
+<span class="ln">8</span>    <span class="fn">free</span>(arr);
+<span class="ln">9</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">10</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>라인</th><th>arr[0]</th><th>arr[1]</th><th>arr[2]</th><th>arr[3]</th></tr>
+            <tr><td>4 (calloc)</td><td class="changed">0</td><td class="changed">0</td><td class="changed">0</td><td class="changed">0</td></tr>
+            <tr><td>5</td><td class="changed">10</td><td>0</td><td>0</td><td>0</td></tr>
+            <tr><td>6</td><td>10</td><td>0</td><td class="changed">5</td><td>0</td></tr>
+            <tr><td>7 (출력)</td><td colspan="4" class="output">10 0 5 0 </td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">10 0 5 0&nbsp;(끝에 공백 포함)</div>
+        <div class="ans-explain">calloc은 malloc과 달리 할당 즉시 모든 바이트를 0으로 초기화한다. 따라서 초기값은 {0,0,0,0}이며 arr[0]=10, arr[2]+=5 이후 {10,0,5,0}.</div>
+      </div>
+    </div>
+
+    <!-- 4-3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (realloc 확장)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="str">#include &lt;stdlib.h&gt;</span>
+<span class="ln">3</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">4</span>    <span class="tp">int</span> *arr = (<span class="tp">int</span>*)<span class="fn">malloc</span>(<span class="num">3</span> * <span class="kw">sizeof</span>(<span class="tp">int</span>));
+<span class="ln">5</span>    arr[<span class="num">0</span>]=<span class="num">1</span>; arr[<span class="num">1</span>]=<span class="num">2</span>; arr[<span class="num">2</span>]=<span class="num">3</span>;
+<span class="ln">6</span>    arr = (<span class="tp">int</span>*)<span class="fn">realloc</span>(arr, <span class="num">5</span> * <span class="kw">sizeof</span>(<span class="tp">int</span>));
+<span class="ln">7</span>    arr[<span class="num">3</span>] = <span class="num">4</span>; arr[<span class="num">4</span>] = <span class="num">5</span>;
+<span class="ln">8</span>    <span class="tp">int</span> sum = <span class="num">0</span>;
+<span class="ln">9</span>    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i &lt; <span class="num">5</span>; i++) sum += arr[i];
+<span class="ln">10</span>    printf(<span class="str">"%d"</span>, sum);
+<span class="ln">11</span>    <span class="fn">free</span>(arr);
+<span class="ln">12</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">13</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>라인</th><th>arr[0..2]</th><th>arr[3]</th><th>arr[4]</th><th>sum</th></tr>
+            <tr><td>4~5</td><td class="changed">1, 2, 3</td><td>미할당</td><td>미할당</td><td>—</td></tr>
+            <tr><td>6 (realloc 5개로 확장)</td><td>1, 2, 3 (보존됨)</td><td>불확정</td><td>불확정</td><td>—</td></tr>
+            <tr><td>7</td><td>1, 2, 3</td><td class="changed">4</td><td class="changed">5</td><td>—</td></tr>
+            <tr><td>8~9 (합산)</td><td colspan="3">1+2+3+4+5</td><td class="output">15</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">15</div>
+        <div class="ans-explain">realloc은 기존 3개의 값(1,2,3)을 새 블록으로 그대로 복사·보존한다. 새로 늘어난 arr[3], arr[4]에 4, 5를 채우면 합계는 1+2+3+4+5=15.</div>
+      </div>
+    </div>
+
+    <!-- 4-4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드를 실행하면 어떤 문제가 발생하는지, 그리고 실행 결과를 어떻게 판단해야 하는지 쓰시오. (dangling pointer)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="str">#include &lt;stdlib.h&gt;</span>
+<span class="ln">3</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">4</span>    <span class="tp">int</span> *p = (<span class="tp">int</span>*)<span class="fn">malloc</span>(<span class="kw">sizeof</span>(<span class="tp">int</span>));
+<span class="ln">5</span>    *p = <span class="num">100</span>;
+<span class="ln">6</span>    <span class="fn">free</span>(p);
+<span class="ln">7</span>    printf(<span class="str">"%d"</span>, *p);   <span class="cmt">// free 이후 역참조</span>
+<span class="ln">8</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">9</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>라인</th><th>p</th><th>p가 가리키는 메모리 상태</th></tr>
+            <tr><td>4</td><td class="changed">힙 주소 할당됨</td><td>쓰레기값</td></tr>
+            <tr><td>5</td><td>동일 주소</td><td class="changed">100</td></tr>
+            <tr><td>6: free(p)</td><td class="changed">dangling pointer (해제된 주소를 여전히 가리킴)</td><td>해제됨 — 더 이상 유효하지 않음</td></tr>
+            <tr><td>7: *p 접근</td><td>유효하지 않은 주소 역참조</td><td class="output">정의되지 않은 동작(UB)</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">실행 결과 예측 불가 (Undefined Behavior)</div>
+        <div class="ans-explain"><code>free(p)</code>는 메모리를 시스템에 반납하지만 p라는 변수 자체를 NULL로 만들지는 않는다(dangling pointer). 이후 <code>*p</code>로 역참조하는 것은 이미 해제된 메모리에 접근하는 정의되지 않은 동작이다. 실제로는 우연히 100이 그대로 남아 출력될 수도 있지만, 이는 구현에 따라 다르며 컴파일러/런타임/최적화 옵션에 따라 다른 값이 나오거나 프로그램이 비정상 종료될 수 있다. 안전하게 하려면 free 후 <code>p = NULL;</code>로 초기화해야 한다.</div>
+      </div>
+    </div>
+
+    <!-- 4-5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과와 메모리 누수 여부를 쓰시오.</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="str">#include &lt;stdlib.h&gt;</span>
+<span class="ln">3</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">4</span>    <span class="tp">int</span> *a = (<span class="tp">int</span>*)<span class="fn">malloc</span>(<span class="num">3</span> * <span class="kw">sizeof</span>(<span class="tp">int</span>));
+<span class="ln">5</span>    <span class="tp">int</span> *b = (<span class="tp">int</span>*)<span class="fn">malloc</span>(<span class="num">3</span> * <span class="kw">sizeof</span>(<span class="tp">int</span>));
+<span class="ln">6</span>    a[<span class="num">0</span>]=<span class="num">1</span>; a[<span class="num">1</span>]=<span class="num">2</span>; a[<span class="num">2</span>]=<span class="num">3</span>;
+<span class="ln">7</span>    b[<span class="num">0</span>]=<span class="num">10</span>; b[<span class="num">1</span>]=<span class="num">20</span>; b[<span class="num">2</span>]=<span class="num">30</span>;
+<span class="ln">8</span>    a = b;   <span class="cmt">// a가 원래 가리키던 블록의 주소를 잃음</span>
+<span class="ln">9</span>    printf(<span class="str">"%d %d"</span>, a[<span class="num">0</span>], b[<span class="num">2</span>]);
+<span class="ln">10</span>    <span class="fn">free</span>(a);
+<span class="ln">11</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">12</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>라인</th><th>a가 가리키는 블록</th><th>b가 가리키는 블록</th><th>비고</th></tr>
+            <tr><td>4~7</td><td class="changed">블록A {1,2,3}</td><td class="changed">블록B {10,20,30}</td><td>독립된 두 힙 블록</td></tr>
+            <tr><td>8: a = b</td><td class="changed">블록B (블록A 주소 소실!)</td><td>블록B</td><td class="output">블록A는 이제 접근 불가 → 메모리 누수</td></tr>
+            <tr><td>9</td><td>a[0]=b[0]=10</td><td>b[2]=30</td><td class="output">10 30</td></tr>
+            <tr><td>10: free(a)</td><td colspan="2">블록B만 해제됨</td><td>블록A는 끝까지 해제되지 않음 (누수 확정)</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">출력: 10 30 &nbsp;/&nbsp; 메모리 누수 발생 (블록A)</div>
+        <div class="ans-explain">a=b 대입으로 a가 원래 가리키던 블록A의 주소를 잃어버리는데, 그 전에 free(a)를 호출하지 않았으므로 블록A는 어떤 포인터로도 접근할 수 없는 채 힙에 남아 메모리 누수가 발생한다. 이후 a와 b는 같은 블록B를 가리키므로 a[0]=10, b[2]=30이 출력되고, free(a)는 블록B만 해제한다.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ⑤ 함수 포인터 & 콜백 -->
+  <div class="sec-title" id="fnptr"><span class="sec-num">05</span> 함수 포인터 &amp; 콜백</div>
+  <div class="info">💡 <code>리턴타입 (*변수명)(매개변수타입...)</code> 형태로 선언한다. 함수 포인터에 함수 이름을 대입하면 그 함수를 가리키고, <code>fp(args)</code>로 호출할 수 있다. 다른 함수의 매개변수로 전달하면 "콜백"이 된다.</div>
+
+  <div class="quiz-wrap">
+
+    <!-- 5-1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오.</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">add</span>(<span class="tp">int</span> a, <span class="tp">int</span> b) { <span class="kw">return</span> a + b; }
+<span class="ln">3</span><span class="tp">int</span> <span class="fn">sub</span>(<span class="tp">int</span> a, <span class="tp">int</span> b) { <span class="kw">return</span> a - b; }
+<span class="ln">4</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">5</span>    <span class="tp">int</span> (*fp)(<span class="tp">int</span>, <span class="tp">int</span>) = add;
+<span class="ln">6</span>    printf(<span class="str">"%d "</span>, fp(<span class="num">3</span>, <span class="num">4</span>));
+<span class="ln">7</span>    fp = sub;
+<span class="ln">8</span>    printf(<span class="str">"%d"</span>, fp(<span class="num">3</span>, <span class="num">4</span>));
+<span class="ln">9</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">10</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>라인</th><th>fp가 가리키는 함수</th><th>fp(3,4)</th><th>출력</th></tr>
+            <tr><td>5</td><td class="changed">add</td><td>—</td><td></td></tr>
+            <tr><td>6</td><td>add</td><td class="active">3+4=7</td><td class="output">7 </td></tr>
+            <tr><td>7</td><td class="changed">sub</td><td>—</td><td></td></tr>
+            <tr><td>8</td><td>sub</td><td class="active">3-4=-1</td><td class="output">-1</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">7 -1</div>
+        <div class="ans-explain">fp는 함수 포인터로, add를 가리킬 때는 add(3,4)=7, sub로 재대입한 뒤에는 sub(3,4)=-1을 반환한다.</div>
+      </div>
+    </div>
+
+    <!-- 5-2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (함수 포인터 배열)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">mul</span>(<span class="tp">int</span> a, <span class="tp">int</span> b) { <span class="kw">return</span> a * b; }
+<span class="ln">3</span><span class="tp">int</span> <span class="fn">divi</span>(<span class="tp">int</span> a, <span class="tp">int</span> b) { <span class="kw">return</span> a / b; }
+<span class="ln">4</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">5</span>    <span class="tp">int</span> (*ops[<span class="num">2</span>])(<span class="tp">int</span>, <span class="tp">int</span>) = {mul, divi};
+<span class="ln">6</span>    <span class="tp">int</span> result = <span class="num">0</span>;
+<span class="ln">7</span>    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i &lt; <span class="num">2</span>; i++) result += ops[i](<span class="num">12</span>, <span class="num">3</span>);
+<span class="ln">8</span>    printf(<span class="str">"%d"</span>, result);
+<span class="ln">9</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">10</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>i</th><th>ops[i]</th><th>ops[i](12,3)</th><th>result</th></tr>
+            <tr><td>0</td><td>mul</td><td>12×3=36</td><td class="changed">36</td></tr>
+            <tr><td>1</td><td>divi</td><td>12/3=4</td><td class="output">40</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">40</div>
+        <div class="ans-explain">함수 포인터 배열 ops에 mul, divi를 담아 인덱스로 호출한다. 36+4=40.</div>
+      </div>
+    </div>
+
+    <!-- 5-3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (콜백으로 배열 변환)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">square</span>(<span class="tp">int</span> x) { <span class="kw">return</span> x * x; }
+<span class="ln">3</span><span class="tp">int</span> <span class="fn">cube</span>(<span class="tp">int</span> x) { <span class="kw">return</span> x * x * x; }
+<span class="ln">4</span><span class="tp">void</span> <span class="fn">apply</span>(<span class="tp">int</span> *arr, <span class="tp">int</span> n, <span class="tp">int</span> (*f)(<span class="tp">int</span>)) {
+<span class="ln">5</span>    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i &lt; n; i++) arr[i] = f(arr[i]);
+<span class="ln">6</span>}
+<span class="ln">7</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">8</span>    <span class="tp">int</span> arr[<span class="num">3</span>] = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>};
+<span class="ln">9</span>    <span class="fn">apply</span>(arr, <span class="num">3</span>, square);
+<span class="ln">10</span>    <span class="fn">apply</span>(arr, <span class="num">3</span>, cube);
+<span class="ln">11</span>    printf(<span class="str">"%d %d %d"</span>, arr[<span class="num">0</span>], arr[<span class="num">1</span>], arr[<span class="num">2</span>]);
+<span class="ln">12</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">13</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>단계</th><th>arr[0]</th><th>arr[1]</th><th>arr[2]</th></tr>
+            <tr><td>초기</td><td>1</td><td>2</td><td>3</td></tr>
+            <tr><td>apply(square) 이후</td><td class="changed">1</td><td class="changed">4</td><td class="changed">9</td></tr>
+            <tr><td>apply(cube) 이후</td><td class="changed">1</td><td class="changed">64</td><td class="changed">729</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">1 64 729</div>
+        <div class="ans-explain">apply는 콜백 함수 f를 배열 전체에 적용한다. 첫 호출(square)로 [1,4,9]가 되고, 그 결과에 다시 cube를 적용하면 [1³, 4³, 9³] = [1, 64, 729].</div>
+      </div>
+    </div>
+
+    <!-- 5-4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (비교자 콜백을 이용한 버블정렬)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">desc</span>(<span class="tp">int</span> a, <span class="tp">int</span> b) { <span class="kw">return</span> a &lt; b; }
+<span class="ln">3</span><span class="tp">void</span> <span class="fn">bsort</span>(<span class="tp">int</span> *arr, <span class="tp">int</span> n, <span class="tp">int</span> (*cmp)(<span class="tp">int</span>, <span class="tp">int</span>)) {
+<span class="ln">4</span>    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i &lt; n - <span class="num">1</span>; i++)
+<span class="ln">5</span>        <span class="kw">for</span> (<span class="tp">int</span> j = <span class="num">0</span>; j &lt; n - <span class="num">1</span> - i; j++)
+<span class="ln">6</span>            <span class="kw">if</span> (cmp(arr[j], arr[j+<span class="num">1</span>])) {
+<span class="ln">7</span>                <span class="tp">int</span> t = arr[j]; arr[j] = arr[j+<span class="num">1</span>]; arr[j+<span class="num">1</span>] = t;
+<span class="ln">8</span>            }
+<span class="ln">9</span>}
+<span class="ln">10</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">11</span>    <span class="tp">int</span> arr[<span class="num">4</span>] = {<span class="num">4</span>, <span class="num">1</span>, <span class="num">3</span>, <span class="num">2</span>};
+<span class="ln">12</span>    <span class="fn">bsort</span>(arr, <span class="num">4</span>, desc);
+<span class="ln">13</span>    printf(<span class="str">"%d %d %d %d"</span>, arr[<span class="num">0</span>], arr[<span class="num">1</span>], arr[<span class="num">2</span>], arr[<span class="num">3</span>]);
+<span class="ln">14</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">15</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>i</th><th>j</th><th>cmp(arr[j],arr[j+1])=a&lt;b</th><th>swap?</th><th>배열 상태</th></tr>
+            <tr><td>0</td><td>0</td><td>cmp(4,1): 4&lt;1 → 거짓</td><td>X</td><td>4 1 3 2</td></tr>
+            <tr><td>0</td><td>1</td><td>cmp(1,3): 1&lt;3 → 참</td><td class="changed">O</td><td>4 3 1 2</td></tr>
+            <tr><td>0</td><td>2</td><td>cmp(1,2): 1&lt;2 → 참</td><td class="changed">O</td><td>4 3 2 1</td></tr>
+            <tr><td>1</td><td>0</td><td>cmp(4,3): 4&lt;3 → 거짓</td><td>X</td><td>4 3 2 1</td></tr>
+            <tr><td>1</td><td>1</td><td>cmp(3,2): 3&lt;2 → 거짓</td><td>X</td><td>4 3 2 1</td></tr>
+            <tr><td>2</td><td>0</td><td>cmp(4,3): 4&lt;3 → 거짓</td><td>X</td><td class="output">4 3 2 1</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">4 3 2 1</div>
+        <div class="ans-explain">cmp가 <code>a&lt;b</code>를 반환하므로 앞 원소가 뒤 원소보다 작을 때 교환이 일어나 큰 값이 앞으로 이동한다 — 즉 내림차순 정렬이 된다. 최종 결과는 4 3 2 1.</div>
+      </div>
+    </div>
+
+    <!-- 5-5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (함수 포인터 디스패치 테이블)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">op_add</span>(<span class="tp">int</span> a, <span class="tp">int</span> b) { <span class="kw">return</span> a + b; }
+<span class="ln">3</span><span class="tp">int</span> <span class="fn">op_mul</span>(<span class="tp">int</span> a, <span class="tp">int</span> b) { <span class="kw">return</span> a * b; }
+<span class="ln">4</span><span class="tp">int</span> <span class="fn">op_sub</span>(<span class="tp">int</span> a, <span class="tp">int</span> b) { <span class="kw">return</span> a - b; }
+<span class="ln">5</span><span class="kw">typedef</span> <span class="tp">int</span> (*FnPtr)(<span class="tp">int</span>, <span class="tp">int</span>);
+<span class="ln">6</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">7</span>    FnPtr table[<span class="num">3</span>] = {op_add, op_mul, op_sub};
+<span class="ln">8</span>    <span class="tp">int</span> seq[<span class="num">4</span>] = {<span class="num">0</span>, <span class="num">1</span>, <span class="num">2</span>, <span class="num">0</span>};
+<span class="ln">9</span>    <span class="tp">int</span> nums[<span class="num">4</span>] = {<span class="num">3</span>, <span class="num">2</span>, <span class="num">4</span>, <span class="num">1</span>};
+<span class="ln">10</span>    <span class="tp">int</span> val = <span class="num">5</span>;
+<span class="ln">11</span>    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i &lt; <span class="num">4</span>; i++) val = table[seq[i]](val, nums[i]);
+<span class="ln">12</span>    printf(<span class="str">"%d"</span>, val);
+<span class="ln">13</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">14</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>i</th><th>seq[i]</th><th>연산</th><th>nums[i]</th><th>val (이전→이후)</th></tr>
+            <tr><td>0</td><td>0</td><td>op_add</td><td>3</td><td>5 → <span class="changed">8</span></td></tr>
+            <tr><td>1</td><td>1</td><td>op_mul</td><td>2</td><td>8 → <span class="changed">16</span></td></tr>
+            <tr><td>2</td><td>2</td><td>op_sub</td><td>4</td><td>16 → <span class="changed">12</span></td></tr>
+            <tr><td>3</td><td>0</td><td>op_add</td><td>1</td><td>12 → <span class="output">13</span></td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">13</div>
+        <div class="ans-explain">table은 함수 포인터 배열, seq는 매번 어떤 연산을 쓸지 지정하는 인덱스다. val=5에서 시작해 add(+3)=8, mul(×2)=16, sub(-4)=12, add(+1)=13 순으로 누적 계산된다.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ⑥ 재귀함수 심화 -->
+  <div class="sec-title" id="recur"><span class="sec-num">06</span> 재귀함수 심화 (상호재귀, 순수 재귀 트레이스)</div>
+  <div class="warn">⚠️ 상호재귀는 두 함수가 서로를 호출하며 내려가다가 기저조건에서 멈추고, 그 반환값이 역순으로 거슬러 올라오며 계산된다. 가지치기가 있는 재귀(두 번 이상 자신을 호출)는 호출 트리가 기하급수적으로 커질 수 있다.</div>
+
+  <div class="quiz-wrap">
+
+    <!-- 6-1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오.</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">sum</span>(<span class="tp">int</span> n) {
+<span class="ln">3</span>    <span class="kw">if</span> (n == <span class="num">0</span>) <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">4</span>    <span class="kw">return</span> n + <span class="fn">sum</span>(n - <span class="num">1</span>);
+<span class="ln">5</span>}
+<span class="ln">6</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">7</span>    printf(<span class="str">"%d"</span>, <span class="fn">sum</span>(<span class="num">5</span>));
+<span class="ln">8</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">9</span>}</pre></div></div>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.8rem;">
+          <div>
+            <div style="font-size:0.78rem; color:var(--gray); margin-bottom:0.4rem; font-weight:700;">▼ 호출(내려가기)</div>
+            <div class="call-stack">
+              <div class="call-frame"><span>sum(5)</span><span class="call-arrow">→ 5+sum(4)</span></div>
+              <div class="call-frame"><span>sum(4)</span><span class="call-arrow">→ 4+sum(3)</span></div>
+              <div class="call-frame"><span>sum(3)</span><span class="call-arrow">→ 3+sum(2)</span></div>
+              <div class="call-frame"><span>sum(2)</span><span class="call-arrow">→ 2+sum(1)</span></div>
+              <div class="call-frame"><span>sum(1)</span><span class="call-arrow">→ 1+sum(0)</span></div>
+              <div class="call-frame base"><span>sum(0)</span><span class="call-arrow">→ return 0</span></div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:0.78rem; color:var(--gray); margin-bottom:0.4rem; font-weight:700;">▲ 반환(올라오기)</div>
+            <div class="call-stack">
+              <div class="call-frame ret"><span>sum(5)</span><span class="call-arrow">=5+10=<strong>15</strong></span></div>
+              <div class="call-frame ret"><span>sum(4)</span><span class="call-arrow">=4+6=10</span></div>
+              <div class="call-frame ret"><span>sum(3)</span><span class="call-arrow">=3+3=6</span></div>
+              <div class="call-frame ret"><span>sum(2)</span><span class="call-arrow">=2+1=3</span></div>
+              <div class="call-frame ret"><span>sum(1)</span><span class="call-arrow">=1+0=1</span></div>
+              <div class="call-frame base"><span>sum(0)</span><span class="call-arrow">=0</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">15</div>
+        <div class="ans-explain">sum(5)=5+4+3+2+1+0=15. 기저조건 sum(0)=0에서 시작해 역순으로 더해 올라온다.</div>
+      </div>
+    </div>
+
+    <!-- 6-2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (거듭제곱 재귀)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">power</span>(<span class="tp">int</span> base, <span class="tp">int</span> exp) {
+<span class="ln">3</span>    <span class="kw">if</span> (exp == <span class="num">0</span>) <span class="kw">return</span> <span class="num">1</span>;
+<span class="ln">4</span>    <span class="kw">return</span> base * <span class="fn">power</span>(base, exp - <span class="num">1</span>);
+<span class="ln">5</span>}
+<span class="ln">6</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">7</span>    printf(<span class="str">"%d"</span>, <span class="fn">power</span>(<span class="num">2</span>, <span class="num">5</span>));
+<span class="ln">8</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">9</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>호출</th><th>exp==0?</th><th>반환값</th></tr>
+            <tr><td>power(2,5)</td><td>X</td><td>2×power(2,4)</td></tr>
+            <tr><td>power(2,4)</td><td>X</td><td>2×power(2,3)</td></tr>
+            <tr><td>power(2,3)</td><td>X</td><td>2×power(2,2)</td></tr>
+            <tr><td>power(2,2)</td><td>X</td><td>2×power(2,1)</td></tr>
+            <tr><td>power(2,1)</td><td>X</td><td>2×power(2,0)</td></tr>
+            <tr><td>power(2,0)</td><td class="changed">O</td><td>1</td></tr>
+            <tr><td colspan="2">역순 계산: 1→2→4→8→16→</td><td class="output">32</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">32</div>
+        <div class="ans-explain">power(2,5)=2⁵=32. 기저조건 exp==0에서 1을 반환하고, 매 단계마다 base를 곱하며 올라온다: 1→2→4→8→16→32.</div>
+      </div>
+    </div>
+
+    <!-- 6-3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (상호재귀 — 홀짝 판별)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">isOdd</span>(<span class="tp">int</span> n);
+<span class="ln">3</span><span class="tp">int</span> <span class="fn">isEven</span>(<span class="tp">int</span> n) {
+<span class="ln">4</span>    <span class="kw">if</span> (n == <span class="num">0</span>) <span class="kw">return</span> <span class="num">1</span>;
+<span class="ln">5</span>    <span class="kw">return</span> <span class="fn">isOdd</span>(n - <span class="num">1</span>);
+<span class="ln">6</span>}
+<span class="ln">7</span><span class="tp">int</span> <span class="fn">isOdd</span>(<span class="tp">int</span> n) {
+<span class="ln">8</span>    <span class="kw">if</span> (n == <span class="num">0</span>) <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">9</span>    <span class="kw">return</span> <span class="fn">isEven</span>(n - <span class="num">1</span>);
+<span class="ln">10</span>}
+<span class="ln">11</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">12</span>    printf(<span class="str">"%d %d"</span>, <span class="fn">isEven</span>(<span class="num">6</span>), <span class="fn">isOdd</span>(<span class="num">6</span>));
+<span class="ln">13</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">14</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>호출 체인 (isEven(6))</th><th>기저값</th><th>반환(역순)</th></tr>
+            <tr><td>isEven(6)→isOdd(5)→isEven(4)→isOdd(3)→isEven(2)→isOdd(1)→isEven(0)</td><td class="changed">isEven(0)=1</td><td>isOdd(1)=1 → isEven(2)=1 → isOdd(3)=1 → isEven(4)=1 → isOdd(5)=1 → <span class="output">isEven(6)=1</span></td></tr>
+          </table>
+          <table class="trace-table" style="margin-top:0.6rem;">
+            <tr><th>호출 체인 (isOdd(6))</th><th>기저값</th><th>반환(역순)</th></tr>
+            <tr><td>isOdd(6)→isEven(5)→isOdd(4)→isEven(3)→isOdd(2)→isEven(1)→isOdd(0)</td><td class="changed">isOdd(0)=0</td><td>isEven(1)=0 → isOdd(2)=0 → isEven(3)=0 → isOdd(4)=0 → isEven(5)=0 → <span class="output">isOdd(6)=0</span></td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">1 0</div>
+        <div class="ans-explain">isEven과 isOdd가 서로를 호출하는 상호재귀. n을 1씩 줄여가며 n==0에 도달하면 각각 1(짝수), 0(홀수 아님)을 반환하고 그대로 거슬러 올라온다. 6은 짝수이므로 isEven(6)=1, isOdd(6)=0.</div>
+      </div>
+    </div>
+
+    <!-- 6-4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (유클리드 호제법 재귀)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">gcd</span>(<span class="tp">int</span> a, <span class="tp">int</span> b) {
+<span class="ln">3</span>    <span class="kw">if</span> (b == <span class="num">0</span>) <span class="kw">return</span> a;
+<span class="ln">4</span>    <span class="kw">return</span> <span class="fn">gcd</span>(b, a % b);
+<span class="ln">5</span>}
+<span class="ln">6</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">7</span>    printf(<span class="str">"%d"</span>, <span class="fn">gcd</span>(<span class="num">48</span>, <span class="num">18</span>));
+<span class="ln">8</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">9</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>호출</th><th>a</th><th>b</th><th>a % b</th><th>b==0?</th></tr>
+            <tr><td>gcd(48,18)</td><td>48</td><td>18</td><td>48%18=12</td><td>X → gcd(18,12)</td></tr>
+            <tr><td>gcd(18,12)</td><td>18</td><td>12</td><td>18%12=6</td><td>X → gcd(12,6)</td></tr>
+            <tr><td>gcd(12,6)</td><td>12</td><td>6</td><td>12%6=0</td><td>X → gcd(6,0)</td></tr>
+            <tr><td>gcd(6,0)</td><td>6</td><td class="changed">0</td><td>—</td><td class="output">O → return 6</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">6</div>
+        <div class="ans-explain">유클리드 호제법: gcd(48,18)→gcd(18,12)→gcd(12,6)→gcd(6,0)=6. 48과 18의 최대공약수는 6이며, 모든 반환값이 그대로 6으로 거슬러 올라온다.</div>
+      </div>
+    </div>
+
+    <!-- 6-5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (분기 재귀 — 격자 경로 수)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">paths</span>(<span class="tp">int</span> r, <span class="tp">int</span> c) {
+<span class="ln">3</span>    <span class="kw">if</span> (r == <span class="num">0</span> || c == <span class="num">0</span>) <span class="kw">return</span> <span class="num">1</span>;
+<span class="ln">4</span>    <span class="kw">return</span> <span class="fn">paths</span>(r - <span class="num">1</span>, c) + <span class="fn">paths</span>(r, c - <span class="num">1</span>);
+<span class="ln">5</span>}
+<span class="ln">6</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">7</span>    printf(<span class="str">"%d"</span>, <span class="fn">paths</span>(<span class="num">2</span>, <span class="num">2</span>));
+<span class="ln">8</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">9</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>호출</th><th>기저조건(r==0||c==0)?</th><th>반환값</th></tr>
+            <tr><td>paths(0,2), paths(0,1)</td><td class="changed">O</td><td>1</td></tr>
+            <tr><td>paths(1,0), paths(2,0)</td><td class="changed">O</td><td>1</td></tr>
+            <tr><td>paths(1,1) = paths(0,1)+paths(1,0)</td><td>X</td><td>1+1=2</td></tr>
+            <tr><td>paths(1,2) = paths(0,2)+paths(1,1)</td><td>X</td><td>1+2=3</td></tr>
+            <tr><td>paths(2,1) = paths(1,1)+paths(2,0)</td><td>X</td><td>2+1=3</td></tr>
+            <tr><td>paths(2,2) = paths(1,2)+paths(2,1)</td><td>X</td><td class="output">3+3=6</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">6</div>
+        <div class="ans-explain">각 호출이 두 갈래로 분기하는 재귀. r 또는 c가 0이면 경로가 1가지(기저조건), 그렇지 않으면 왼쪽으로 한 칸, 위로 한 칸 줄인 두 경로의 합이다. paths(1,1)이 두 번(paths(1,2)와 paths(2,1) 하위에서) 각각 다시 계산되며(메모이제이션 없음), 최종 paths(2,2)=6.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ⑦ 비트 연산 심화 -->
+  <div class="sec-title" id="bitop"><span class="sec-num">07</span> 비트 연산 심화 (시프트, 마스킹, 비트필드)</div>
+  <div class="warn">⚠️ 음수를 오른쪽 시프트할 때 부호비트가 유지되는 산술 시프트(&gt;&gt;)와, unsigned로 캐스팅 후 0으로 채우는 논리 시프트는 결과가 다르다. 비트필드(<code>: n</code>)는 할당 범위를 초과하면 하위 n비트만 저장(잘림)한다.</div>
+
+  <div class="quiz-wrap">
+
+    <!-- 7-1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오.</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="tp">int</span> a = <span class="num">6</span>;
+<span class="ln">4</span>    <span class="tp">int</span> b = a &lt;&lt; <span class="num">2</span> | <span class="num">1</span>;
+<span class="ln">5</span>    <span class="tp">int</span> c = b &gt;&gt; <span class="num">1</span> &amp; <span class="num">3</span>;
+<span class="ln">6</span>    printf(<span class="str">"%d %d"</span>, b, c);
+<span class="ln">7</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">8</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>단계</th><th>2진수</th><th>10진수</th></tr>
+            <tr><td>a = 6</td><td>0110</td><td>6</td></tr>
+            <tr><td>a &lt;&lt; 2</td><td>011000</td><td>24</td></tr>
+            <tr><td>(a&lt;&lt;2) | 1 = b</td><td>011001</td><td class="changed">25</td></tr>
+            <tr><td>b &gt;&gt; 1</td><td>01100</td><td>12</td></tr>
+            <tr><td>(b&gt;&gt;1) &amp; 3 = c</td><td>1100 &amp; 0011 = 0000</td><td class="changed">0</td></tr>
+            <tr><td colspan="2">출력</td><td class="output">25 0</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">25 0</div>
+        <div class="ans-explain">&lt;&lt;와 &gt;&gt;는 |, &amp;보다 우선순위가 높다. b=(6&lt;&lt;2)|1=24|1=25. c=(25&gt;&gt;1)&amp;3=12&amp;3=0.</div>
+      </div>
+    </div>
+
+    <!-- 7-2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (바이트 마스킹)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="kw">unsigned</span> <span class="tp">int</span> x = <span class="num">0xABCD</span>;
+<span class="ln">4</span>    <span class="kw">unsigned</span> <span class="tp">int</span> low = x &amp; <span class="num">0xFF</span>;
+<span class="ln">5</span>    <span class="kw">unsigned</span> <span class="tp">int</span> high = (x &gt;&gt; <span class="num">8</span>) &amp; <span class="num">0xFF</span>;
+<span class="ln">6</span>    printf(<span class="str">"%X %X"</span>, high, low);
+<span class="ln">7</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">8</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>표현식</th><th>계산</th><th>결과(16진)</th></tr>
+            <tr><td>x</td><td>—</td><td>ABCD</td></tr>
+            <tr><td>low = x &amp; 0xFF</td><td>하위 1바이트 추출</td><td class="changed">CD</td></tr>
+            <tr><td>high = (x&gt;&gt;8) &amp; 0xFF</td><td>상위 1바이트를 아래로 내려서 추출</td><td class="changed">AB</td></tr>
+            <tr><td colspan="2">출력 (high low)</td><td class="output">AB CD</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">AB CD</div>
+        <div class="ans-explain">0xABCD의 하위 1바이트는 0xCD, 8비트 오른쪽으로 밀고 마스킹하면 상위 1바이트 0xAB를 얻는다.</div>
+      </div>
+    </div>
+
+    <!-- 7-3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (비트필드 잘림)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="kw">struct</span> Flags {
+<span class="ln">3</span>    <span class="kw">unsigned</span> <span class="tp">int</span> a : <span class="num">1</span>;
+<span class="ln">4</span>    <span class="kw">unsigned</span> <span class="tp">int</span> b : <span class="num">2</span>;
+<span class="ln">5</span>    <span class="kw">unsigned</span> <span class="tp">int</span> c : <span class="num">3</span>;
+<span class="ln">6</span>};
+<span class="ln">7</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">8</span>    <span class="kw">struct</span> Flags f = {<span class="num">0</span>};
+<span class="ln">9</span>    f.a = <span class="num">3</span>;    <span class="cmt">// 1비트: 3(011)의 하위 1비트</span>
+<span class="ln">10</span>    f.b = <span class="num">6</span>;    <span class="cmt">// 2비트: 6(110)의 하위 2비트</span>
+<span class="ln">11</span>    f.c = <span class="num">12</span>;   <span class="cmt">// 3비트: 12(1100)의 하위 3비트</span>
+<span class="ln">12</span>    printf(<span class="str">"%d %d %d"</span>, f.a, f.b, f.c);
+<span class="ln">13</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">14</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>대입</th><th>2진수 원본</th><th>저장 가능 비트수</th><th>실제 저장값</th></tr>
+            <tr><td>f.a = 3</td><td>011</td><td>1비트 (하위 1비트만)</td><td class="changed">1</td></tr>
+            <tr><td>f.b = 6</td><td>110</td><td>2비트 (하위 2비트만)</td><td class="changed">2 (10₂)</td></tr>
+            <tr><td>f.c = 12</td><td>1100</td><td>3비트 (하위 3비트만)</td><td class="changed">4 (100₂)</td></tr>
+            <tr><td colspan="3">출력</td><td class="output">1 2 4</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">1 2 4</div>
+        <div class="ans-explain">비트필드는 지정된 비트 수를 초과하는 값을 대입하면 하위 비트만 잘려서 저장된다. 3(011)→1비트만 저장→1. 6(110)→하위2비트(10)→2. 12(1100)→하위3비트(100)→4.</div>
+      </div>
+    </div>
+
+    <!-- 7-4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (비트 SET/CLEAR/TOGGLE)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="str">#define SET(x,n)    ((x) |= (1 &lt;&lt; (n)))</span>
+<span class="ln">3</span><span class="str">#define CLR(x,n)    ((x) &amp;= ~(1 &lt;&lt; (n)))</span>
+<span class="ln">4</span><span class="str">#define TOGGLE(x,n) ((x) ^= (1 &lt;&lt; (n)))</span>
+<span class="ln">5</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">6</span>    <span class="kw">unsigned</span> <span class="tp">int</span> flags = <span class="num">0</span>;
+<span class="ln">7</span>    SET(flags, <span class="num">0</span>);
+<span class="ln">8</span>    SET(flags, <span class="num">3</span>);
+<span class="ln">9</span>    TOGGLE(flags, <span class="num">3</span>);
+<span class="ln">10</span>    CLR(flags, <span class="num">0</span>);
+<span class="ln">11</span>    SET(flags, <span class="num">5</span>);
+<span class="ln">12</span>    printf(<span class="str">"%d"</span>, flags);
+<span class="ln">13</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">14</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>연산</th><th>2진수</th><th>10진수</th></tr>
+            <tr><td>초기</td><td>00000000</td><td>0</td></tr>
+            <tr><td>SET(0비트)</td><td>00000001</td><td class="changed">1</td></tr>
+            <tr><td>SET(3비트)</td><td>00001001</td><td class="changed">9</td></tr>
+            <tr><td>TOGGLE(3비트)</td><td>00000001</td><td class="changed">1</td></tr>
+            <tr><td>CLR(0비트)</td><td>00000000</td><td class="changed">0</td></tr>
+            <tr><td>SET(5비트)</td><td>00100000</td><td class="output">32</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">32</div>
+        <div class="ans-explain">SET은 |=로 해당 비트를 1로, CLR은 &amp;= ~로 0으로, TOGGLE은 ^=로 반전시킨다. 순서대로 적용하면 마지막엔 5번 비트만 켜진 32(00100000₂)가 남는다.</div>
+      </div>
+    </div>
+
+    <!-- 7-5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (산술 시프트 vs 논리 시프트)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="tp">int</span> x = -<span class="num">8</span>;   <span class="cmt">// 32비트 2의보수: 0xFFFFFFF8</span>
+<span class="ln">4</span>    <span class="tp">int</span> y = x &gt;&gt; <span class="num">2</span>;   <span class="cmt">// 산술 시프트 (부호비트 유지)</span>
+<span class="ln">5</span>    <span class="kw">unsigned</span> <span class="tp">int</span> z = (<span class="kw">unsigned</span> <span class="tp">int</span>)x &gt;&gt; <span class="num">2</span>;  <span class="cmt">// 논리 시프트</span>
+<span class="ln">6</span>    printf(<span class="str">"%d %u"</span>, y, z);
+<span class="ln">7</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">8</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>변수</th><th>비트 패턴(32bit)</th><th>시프트 방식</th><th>결과</th></tr>
+            <tr><td>x = -8</td><td>1111...11111000</td><td>—</td><td>-8</td></tr>
+            <tr><td>y = x&gt;&gt;2</td><td>1111...11111110 (부호비트 1로 채움)</td><td>산술 시프트</td><td class="changed">-2</td></tr>
+            <tr><td>z = (unsigned)x&gt;&gt;2</td><td>0011...11111110 (0으로 채움)</td><td>논리 시프트</td><td class="changed">1073741822</td></tr>
+            <tr><td colspan="3">출력 (y u)</td><td class="output">-2 1073741822</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">-2 1073741822</div>
+        <div class="ans-explain">signed int인 x를 오른쪽으로 시프트하면(gcc/x86 기준) 부호비트를 유지하는 산술 시프트가 적용되어 -8&gt;&gt;2=-2. unsigned로 캐스팅한 뒤 시프트하면 빈 자리를 0으로 채우는 논리 시프트가 되어 매우 큰 양수 1073741822가 나온다. (signed 우측 시프트는 C 표준상 구현정의 동작이며, 여기서는 gcc/x86 관례를 따름.)</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ⑧ 문자열 함수 심화 -->
+  <div class="sec-title" id="strfn"><span class="sec-num">08</span> 문자열 함수 심화 (strcpy/strcat/strcmp/strtok/sprintf)</div>
+  <div class="info">💡 strcat/strcpy는 대상 버퍼가 충분히 커야 한다(안전 검사 없음). strcmp는 사전순 차이를 정수로 반환(0=같음, 음수/양수=대소). strtok은 호출할 때마다 원본 문자열을 파괴하며 이전 위치를 기억한다(첫 호출만 대상 문자열, 이후는 NULL).</div>
+
+  <div class="quiz-wrap">
+
+    <!-- 8-1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오.</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="str">#include &lt;string.h&gt;</span>
+<span class="ln">3</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">4</span>    <span class="tp">char</span> dest[<span class="num">20</span>] = <span class="str">"Hello"</span>;
+<span class="ln">5</span>    <span class="tp">char</span> src[<span class="num">10</span>] = <span class="str">"World"</span>;
+<span class="ln">6</span>    <span class="fn">strcat</span>(dest, <span class="str">" "</span>);
+<span class="ln">7</span>    <span class="fn">strcat</span>(dest, src);
+<span class="ln">8</span>    printf(<span class="str">"%s"</span>, dest);
+<span class="ln">9</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">10</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>라인</th><th>dest 내용</th></tr>
+            <tr><td>4</td><td class="changed">"Hello"</td></tr>
+            <tr><td>6: strcat(dest," ")</td><td class="changed">"Hello "</td></tr>
+            <tr><td>7: strcat(dest,src)</td><td class="changed">"Hello World"</td></tr>
+            <tr><td>8</td><td class="output">Hello World</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">Hello World</div>
+        <div class="ans-explain">strcat은 dest 문자열 끝(\0 위치)에 두번째 인자를 이어붙인다. "Hello"+" "+"World" = "Hello World".</div>
+      </div>
+    </div>
+
+    <!-- 8-2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (strcmp 반환값)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="str">#include &lt;string.h&gt;</span>
+<span class="ln">3</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">4</span>    <span class="tp">char</span> a[] = <span class="str">"apple"</span>;
+<span class="ln">5</span>    <span class="tp">char</span> b[] = <span class="str">"banana"</span>;
+<span class="ln">6</span>    <span class="tp">int</span> r = <span class="fn">strcmp</span>(a, b);
+<span class="ln">7</span>    <span class="kw">if</span> (r &lt; <span class="num">0</span>) printf(<span class="str">"A"</span>);
+<span class="ln">8</span>    <span class="kw">else</span> <span class="kw">if</span> (r &gt; <span class="num">0</span>) printf(<span class="str">"B"</span>);
+<span class="ln">9</span>    <span class="kw">else</span> printf(<span class="str">"E"</span>);
+<span class="ln">10</span>    printf(<span class="str">"%d"</span>, r &lt; <span class="num">0</span> ? -<span class="num">1</span> : (r &gt; <span class="num">0</span> ? <span class="num">1</span> : <span class="num">0</span>));
+<span class="ln">11</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">12</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>비교</th><th>첫 다른 문자</th><th>r 부호</th><th>분기</th></tr>
+            <tr><td>strcmp("apple","banana")</td><td>'a'(97) vs 'b'(98)</td><td class="changed">음수</td><td>r&lt;0 → "A"</td></tr>
+            <tr><td colspan="3">정규화 출력</td><td class="output">A-1</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">A-1</div>
+        <div class="ans-explain">'a'(97)가 'b'(98)보다 작으므로 strcmp는 음수를 반환한다. r&lt;0이므로 "A" 출력 후, 삼항연산자로 정규화한 -1을 이어서 출력.</div>
+      </div>
+    </div>
+
+    <!-- 8-3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (strtok 토큰 분리)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="str">#include &lt;string.h&gt;</span>
+<span class="ln">3</span><span class="str">#include &lt;stdlib.h&gt;</span>
+<span class="ln">4</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">5</span>    <span class="tp">char</span> str[<span class="num">20</span>] = <span class="str">"2024-07-06"</span>;
+<span class="ln">6</span>    <span class="tp">char</span> *token = <span class="fn">strtok</span>(str, <span class="str">"-"</span>);
+<span class="ln">7</span>    <span class="tp">int</span> sum = <span class="num">0</span>;
+<span class="ln">8</span>    <span class="kw">while</span> (token != NULL) {
+<span class="ln">9</span>        sum += <span class="fn">atoi</span>(token);
+<span class="ln">10</span>        token = <span class="fn">strtok</span>(NULL, <span class="str">"-"</span>);
+<span class="ln">11</span>    }
+<span class="ln">12</span>    printf(<span class="str">"%d"</span>, sum);
+<span class="ln">13</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">14</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>호출</th><th>token</th><th>atoi(token)</th><th>sum</th></tr>
+            <tr><td>strtok(str,"-")</td><td>"2024"</td><td>2024</td><td class="changed">2024</td></tr>
+            <tr><td>strtok(NULL,"-")</td><td>"07"</td><td>7</td><td class="changed">2031</td></tr>
+            <tr><td>strtok(NULL,"-")</td><td>"06"</td><td>6</td><td class="changed">2037</td></tr>
+            <tr><td>strtok(NULL,"-")</td><td>NULL (종료)</td><td>—</td><td class="output">2037</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">2037</div>
+        <div class="ans-explain">strtok은 "-"를 구분자로 "2024","07","06" 순서로 토큰을 잘라낸다. atoi로 정수 변환해 누적하면 2024+7+6=2037. ("07"은 atoi가 8진수로 해석하지 않고 10진수 7로 변환한다.)</div>
+      </div>
+    </div>
+
+    <!-- 8-4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (sprintf + strlen)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="str">#include &lt;string.h&gt;</span>
+<span class="ln">3</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">4</span>    <span class="tp">char</span> buf[<span class="num">30</span>];
+<span class="ln">5</span>    <span class="tp">int</span> a = <span class="num">7</span>, b = <span class="num">3</span>;
+<span class="ln">6</span>    <span class="fn">sprintf</span>(buf, <span class="str">"%d+%d=%d"</span>, a, b, a + b);
+<span class="ln">7</span>    printf(<span class="str">"%s (%d)"</span>, buf, (<span class="tp">int</span>)<span class="fn">strlen</span>(buf));
+<span class="ln">8</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">9</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>라인</th><th>buf</th><th>strlen(buf)</th></tr>
+            <tr><td>6</td><td class="changed">"7+3=10"</td><td>—</td></tr>
+            <tr><td>7</td><td>"7+3=10"</td><td class="changed">6</td></tr>
+            <tr><td colspan="2">출력</td><td class="output">7+3=10 (6)</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">7+3=10 (6)</div>
+        <div class="ans-explain">sprintf는 지정된 서식대로 문자열을 buf에 기록한다: "7+3=10". 이 문자열의 길이는 '7','+','3','=','1','0' 6글자.</div>
+      </div>
+    </div>
+
+    <!-- 8-5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (strcat 반복 + strcpy + strcmp 종합)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="str">#include &lt;string.h&gt;</span>
+<span class="ln">3</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">4</span>    <span class="tp">char</span> result[<span class="num">50</span>] = <span class="str">""</span>;
+<span class="ln">5</span>    <span class="tp">char</span> *words[<span class="num">3</span>] = {<span class="str">"Info"</span>, <span class="str">"Processing"</span>, <span class="str">"Engineer"</span>};
+<span class="ln">6</span>    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i &lt; <span class="num">3</span>; i++) {
+<span class="ln">7</span>        <span class="fn">strcat</span>(result, words[i]);
+<span class="ln">8</span>        <span class="kw">if</span> (i &lt; <span class="num">2</span>) <span class="fn">strcat</span>(result, <span class="str">"_"</span>);
+<span class="ln">9</span>    }
+<span class="ln">10</span>    <span class="tp">char</span> check[<span class="num">50</span>];
+<span class="ln">11</span>    <span class="fn">strcpy</span>(check, result);
+<span class="ln">12</span>    printf(<span class="str">"%s %d"</span>, check, <span class="fn">strcmp</span>(result, check));
+<span class="ln">13</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">14</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>i</th><th>words[i]</th><th>result 상태</th></tr>
+            <tr><td>0</td><td>"Info"</td><td class="changed">"Info_"</td></tr>
+            <tr><td>1</td><td>"Processing"</td><td class="changed">"Info_Processing_"</td></tr>
+            <tr><td>2</td><td>"Engineer" (i&lt;2 거짓, "_" 추가 안함)</td><td class="changed">"Info_Processing_Engineer"</td></tr>
+            <tr><td>strcpy(check,result)</td><td>—</td><td>check = "Info_Processing_Engineer" (동일)</td></tr>
+            <tr><td>strcmp(result,check)</td><td>—</td><td class="output">0 (완전히 동일)</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">Info_Processing_Engineer 0</div>
+        <div class="ans-explain">for문에서 단어 사이에 "_"를 넣어 이어붙이되 마지막 단어 뒤에는 붙이지 않는다. strcpy로 완전히 같은 내용을 check에 복사했으므로 strcmp는 0(같음)을 반환한다.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ⑨ 저장 클래스 & 스코프 -->
+  <div class="sec-title" id="scope"><span class="sec-num">09</span> 저장 클래스 &amp; 스코프 (auto/static/register/extern, 전역변수)</div>
+  <div class="info">💡 지역변수가 전역변수와 이름이 같으면 지역변수가 우선(섀도잉)한다. static 지역변수는 함수 호출이 끝나도 값이 유지되며, 재귀 호출에서도 "단 하나"의 저장공간을 모든 호출이 공유한다. extern은 다른 곳에 정의된 전역변수를 참조함을 컴파일러에 알린다.</div>
+
+  <div class="quiz-wrap">
+
+    <!-- 9-1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (전역/지역 섀도잉)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> x = <span class="num">100</span>;
+<span class="ln">3</span><span class="tp">void</span> <span class="fn">show</span>() {
+<span class="ln">4</span>    <span class="tp">int</span> x = <span class="num">10</span>;
+<span class="ln">5</span>    printf(<span class="str">"%d "</span>, x);
+<span class="ln">6</span>}
+<span class="ln">7</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">8</span>    <span class="fn">show</span>();
+<span class="ln">9</span>    printf(<span class="str">"%d"</span>, x);
+<span class="ln">10</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">11</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>위치</th><th>전역 x</th><th>지역 x</th><th>출력</th></tr>
+            <tr><td>전역 선언</td><td class="changed">100</td><td>—</td><td></td></tr>
+            <tr><td>show() 내부</td><td>100 (가려짐)</td><td class="changed">10</td><td class="output">10 </td></tr>
+            <tr><td>main의 printf</td><td>100</td><td>—</td><td class="output">100</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">10 100</div>
+        <div class="ans-explain">show() 내부의 지역변수 x는 전역 x를 가리는(shadow) 별개의 변수다. show()는 지역 x=10을 출력하고, main의 printf는 전역 x=100을 그대로 출력한다.</div>
+      </div>
+    </div>
+
+    <!-- 9-2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (extern)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> counter = <span class="num">0</span>;
+<span class="ln">3</span><span class="tp">void</span> <span class="fn">increase</span>() {
+<span class="ln">4</span>    <span class="kw">extern</span> <span class="tp">int</span> counter;
+<span class="ln">5</span>    counter += <span class="num">3</span>;
+<span class="ln">6</span>}
+<span class="ln">7</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">8</span>    <span class="fn">increase</span>();
+<span class="ln">9</span>    <span class="fn">increase</span>();
+<span class="ln">10</span>    printf(<span class="str">"%d"</span>, counter);
+<span class="ln">11</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">12</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>호출</th><th>extern counter 참조</th><th>counter 값</th></tr>
+            <tr><td>초기</td><td>—</td><td>0</td></tr>
+            <tr><td>increase() 1회</td><td>전역 counter</td><td class="changed">3</td></tr>
+            <tr><td>increase() 2회</td><td>전역 counter</td><td class="output">6</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">6</div>
+        <div class="ans-explain"><code>extern int counter;</code>는 새 변수를 만드는 것이 아니라 파일 상단에 이미 정의된 전역 counter를 함수 내부에서 참조하겠다는 선언이다. 2번 호출로 0+3+3=6.</div>
+      </div>
+    </div>
+
+    <!-- 9-3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (static 지역변수 누적)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">counter</span>() {
+<span class="ln">3</span>    <span class="kw">static</span> <span class="tp">int</span> cnt = <span class="num">0</span>;
+<span class="ln">4</span>    cnt++;
+<span class="ln">5</span>    <span class="kw">return</span> cnt;
+<span class="ln">6</span>}
+<span class="ln">7</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">8</span>    <span class="tp">int</span> total = <span class="num">0</span>;
+<span class="ln">9</span>    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i &lt; <span class="num">3</span>; i++) total += <span class="fn">counter</span>();
+<span class="ln">10</span>    printf(<span class="str">"%d "</span>, total);
+<span class="ln">11</span>    total += <span class="fn">counter</span>();
+<span class="ln">12</span>    printf(<span class="str">"%d"</span>, total);
+<span class="ln">13</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">14</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>호출 순서</th><th>cnt (호출 후)</th><th>total 누적</th></tr>
+            <tr><td>1번째 (for i=0)</td><td>1</td><td class="changed">1</td></tr>
+            <tr><td>2번째 (for i=1)</td><td>2</td><td class="changed">3</td></tr>
+            <tr><td>3번째 (for i=2)</td><td>3</td><td class="output">6 (첫 출력)</td></tr>
+            <tr><td>4번째 (for 이후)</td><td>4</td><td class="output">10 (두번째 출력)</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">6 10</div>
+        <div class="ans-explain">static cnt는 호출 간 값이 유지되어 1,2,3,4로 계속 증가한다. for문 3회 호출 합계 1+2+3=6을 먼저 출력하고, 4번째 호출 결과(4)를 더한 10을 이어서 출력.</div>
+      </div>
+    </div>
+
+    <!-- 9-4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (중첩 블록 스코프)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="tp">int</span> x = <span class="num">1</span>;
+<span class="ln">4</span>    {
+<span class="ln">5</span>        <span class="tp">int</span> x = <span class="num">2</span>;
+<span class="ln">6</span>        {
+<span class="ln">7</span>            <span class="tp">int</span> x = <span class="num">3</span>;
+<span class="ln">8</span>            printf(<span class="str">"%d "</span>, x);
+<span class="ln">9</span>        }
+<span class="ln">10</span>        printf(<span class="str">"%d "</span>, x);
+<span class="ln">11</span>    }
+<span class="ln">12</span>    printf(<span class="str">"%d"</span>, x);
+<span class="ln">13</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">14</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>블록</th><th>바깥 x</th><th>중간 x</th><th>안쪽 x</th><th>출력</th></tr>
+            <tr><td>바깥 (라인3)</td><td class="changed">1</td><td>—</td><td>—</td><td></td></tr>
+            <tr><td>중간 (라인5)</td><td>1 (가려짐)</td><td class="changed">2</td><td>—</td><td></td></tr>
+            <tr><td>안쪽 (라인7~8)</td><td>1 (가려짐)</td><td>2 (가려짐)</td><td class="changed">3</td><td class="output">3 </td></tr>
+            <tr><td>중간 복귀 (라인10)</td><td>1 (가려짐)</td><td>2</td><td>소멸됨</td><td class="output">2 </td></tr>
+            <tr><td>바깥 복귀 (라인12)</td><td>1</td><td>소멸됨</td><td>소멸됨</td><td class="output">1</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">3 2 1</div>
+        <div class="ans-explain">중괄호 블록마다 새로운 x가 선언되어 바깥쪽 x를 가린다. 블록을 빠져나오면 그 블록의 x는 소멸하고 바깥쪽 x가 다시 보인다. 안쪽부터 3, 2, 1 순서로 출력.</div>
+      </div>
+    </div>
+
+    <!-- 9-5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (재귀 함수 속 static 변수 공유)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">trace</span>(<span class="tp">int</span> n) {
+<span class="ln">3</span>    <span class="kw">static</span> <span class="tp">int</span> depth = <span class="num">0</span>;
+<span class="ln">4</span>    depth++;
+<span class="ln">5</span>    <span class="kw">if</span> (n &lt;= <span class="num">0</span>) {
+<span class="ln">6</span>        printf(<span class="str">"%d "</span>, depth);
+<span class="ln">7</span>        <span class="kw">return</span> depth;
+<span class="ln">8</span>    }
+<span class="ln">9</span>    <span class="tp">int</span> r = <span class="fn">trace</span>(n - <span class="num">1</span>);
+<span class="ln">10</span>    depth += <span class="num">1</span>;
+<span class="ln">11</span>    <span class="kw">return</span> r;
+<span class="ln">12</span>}
+<span class="ln">13</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">14</span>    <span class="tp">int</span> result = <span class="fn">trace</span>(<span class="num">3</span>);
+<span class="ln">15</span>    printf(<span class="str">"%d"</span>, result);
+<span class="ln">16</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">17</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>호출</th><th>depth++ 후</th><th>동작</th><th>r (반환값)</th></tr>
+            <tr><td>trace(3)</td><td>1</td><td>n&gt;0 → trace(2) 호출</td><td>대기</td></tr>
+            <tr><td>trace(2)</td><td>2</td><td>n&gt;0 → trace(1) 호출</td><td>대기</td></tr>
+            <tr><td>trace(1)</td><td>3</td><td>n&gt;0 → trace(0) 호출</td><td>대기</td></tr>
+            <tr><td>trace(0)</td><td class="changed">4</td><td>n&lt;=0 → printf("4 "), return 4</td><td class="output">4 (출력됨)</td></tr>
+            <tr><td>trace(1) 복귀</td><td>5 (depth+=1)</td><td>r=4 그대로 반환</td><td>4</td></tr>
+            <tr><td>trace(2) 복귀</td><td>6 (depth+=1)</td><td>r=4 그대로 반환</td><td>4</td></tr>
+            <tr><td>trace(3) 복귀</td><td>7 (depth+=1)</td><td>r=4 그대로 반환 → result=4</td><td>4</td></tr>
+            <tr><td>main printf</td><td>—</td><td>result 출력</td><td class="output">4</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">4 4</div>
+        <div class="ans-explain">static depth는 재귀 호출 전체가 "단 하나"의 변수를 공유한다. trace(3)→trace(2)→trace(1)→trace(0)까지 내려가며 depth가 1→4로 증가하고, trace(0)에서 depth(4)를 출력한다. 반환값 r=4는 그대로 위로 전달되어 최종 result=4가 되고 main에서 다시 4를 출력한다(그 사이 depth는 계속 증가하지만 반환값 r에는 반영되지 않음).</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ⑩ 형변환 & 오버플로우 -->
+  <div class="sec-title" id="cast"><span class="sec-num">10</span> 형변환 &amp; 오버플로우/언더플로우 (정수 프로모션, signed/unsigned)</div>
+  <div class="warn">⚠️ signed와 unsigned를 비교/연산하면 signed 값이 unsigned로 변환된다(음수는 매우 큰 양수가 됨). char/short는 산술 연산 시 int로 승격(정수 프로모션)된다. signed 정수형의 범위를 벗어나는 값을 대입하면 구현정의 동작으로 하위 비트만 남는다(전형적으로 2의보수 wrap).</div>
+
+  <div class="quiz-wrap">
+
+    <!-- 10-1 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (정수/실수 나눗셈)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="tp">int</span> a = <span class="num">7</span>, b = <span class="num">2</span>;
+<span class="ln">4</span>    <span class="tp">float</span> f = a / b;
+<span class="ln">5</span>    <span class="tp">float</span> g = (<span class="tp">float</span>)a / b;
+<span class="ln">6</span>    printf(<span class="str">"%.1f %.1f"</span>, f, g);
+<span class="ln">7</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">8</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>표현식</th><th>연산 방식</th><th>결과</th></tr>
+            <tr><td>a / b</td><td>int÷int → 정수 나눗셈(소수점 버림) 후 float 대입</td><td class="changed">3 → 3.0</td></tr>
+            <tr><td>(float)a / b</td><td>a를 float로 형변환 후 나눗셈 → 실수 나눗셈</td><td class="changed">7.0/2 = 3.5</td></tr>
+            <tr><td colspan="2">출력</td><td class="output">3.0 3.5</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">3.0 3.5</div>
+        <div class="ans-explain">a/b는 둘 다 int이므로 정수 나눗셈이 먼저 수행되어 3이 되고, 그 다음에 float으로 변환되어 3.0. (float)a/b는 a를 먼저 float으로 바꿔 실수 나눗셈을 하므로 3.5.</div>
+      </div>
+    </div>
+
+    <!-- 10-2 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge year">기출변형</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (signed/unsigned 비교)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="tp">int</span> a = -<span class="num">1</span>;
+<span class="ln">4</span>    <span class="kw">unsigned</span> <span class="tp">int</span> b = <span class="num">1</span>;
+<span class="ln">5</span>    <span class="kw">if</span> (a &lt; b) printf(<span class="str">"A"</span>);
+<span class="ln">6</span>    <span class="kw">else</span> printf(<span class="str">"B"</span>);
+<span class="ln">7</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">8</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>표현식</th><th>변환 규칙</th><th>비교 결과</th></tr>
+            <tr><td>a (-1)</td><td>unsigned와 비교 시 unsigned int로 변환</td><td class="changed">4294967295</td></tr>
+            <tr><td>b</td><td>그대로</td><td>1</td></tr>
+            <tr><td>a &lt; b ?</td><td>4294967295 &lt; 1</td><td class="output">거짓 → "B"</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">B</div>
+        <div class="ans-explain">signed와 unsigned int를 비교하면 signed 값이 unsigned로 변환되는 "일반 산술 변환" 규칙에 의해 -1은 4294967295(부호 없는 최댓값)가 된다. 따라서 a&lt;b는 거짓이 되어 "B"가 출력된다 — signed/unsigned 혼용 비교의 대표적인 함정.</div>
+      </div>
+    </div>
+
+    <!-- 10-3 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (signed char 오버플로우)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="kw">signed</span> <span class="tp">char</span> c = <span class="num">127</span>;
+<span class="ln">4</span>    c = c + <span class="num">1</span>;
+<span class="ln">5</span>    printf(<span class="str">"%d"</span>, c);
+<span class="ln">6</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">7</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>단계</th><th>값/설명</th></tr>
+            <tr><td>c = 127</td><td>signed char 최댓값 (0111 1111)</td></tr>
+            <tr><td>c + 1 연산</td><td>정수 프로모션으로 int(127)+1=128 계산</td></tr>
+            <tr><td>다시 signed char에 대입</td><td>128을 8비트로 자르면 1000 0000 → 2의보수로 -128</td></tr>
+            <tr><td>출력</td><td class="output">-128</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">-128</div>
+        <div class="ans-explain">signed char의 표현 범위는 -128~127. c+1을 계산할 때 정수 프로모션이 일어나 int로 128까지 정상 계산되지만, 다시 signed char(8비트)에 저장하면서 상위 비트가 잘려 1000 0000(2의보수로 -128)이 된다. (범위를 벗어난 값을 signed 타입에 대입하는 것은 C 표준상 구현정의 동작이며, 2의보수 체계에서는 -128로 감싸도는 것이 일반적이다.)</div>
+      </div>
+    </div>
+
+    <!-- 10-4 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (unsigned 언더플로우 함정)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="kw">unsigned</span> <span class="tp">int</span> i;
+<span class="ln">4</span>    <span class="tp">int</span> count = <span class="num">0</span>;
+<span class="ln">5</span>    <span class="kw">for</span> (i = <span class="num">3</span>; i &gt;= <span class="num">0</span>; i--) {
+<span class="ln">6</span>        count++;
+<span class="ln">7</span>        <span class="kw">if</span> (count &gt; <span class="num">10</span>) <span class="kw">break</span>;   <span class="cmt">// 무한루프 방지 안전장치</span>
+<span class="ln">8</span>    }
+<span class="ln">9</span>    printf(<span class="str">"%d"</span>, count);
+<span class="ln">10</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">11</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>반복</th><th>i (반복 시작 값)</th><th>i &gt;= 0 ?</th><th>count</th></tr>
+            <tr><td>1</td><td>3</td><td>참</td><td class="changed">1</td></tr>
+            <tr><td>2</td><td>2</td><td>참</td><td class="changed">2</td></tr>
+            <tr><td>3</td><td>1</td><td>참</td><td class="changed">3</td></tr>
+            <tr><td>4</td><td>0</td><td>참</td><td class="changed">4</td></tr>
+            <tr><td>5</td><td>4294967295 (i-- 언더플로우)</td><td>항상 참 (unsigned는 음수 불가)</td><td class="changed">5</td></tr>
+            <tr><td>6~11</td><td>계속 큰 값 유지</td><td>참</td><td class="changed">6~10</td></tr>
+            <tr><td>12</td><td>—</td><td>—</td><td class="output">11 → count&gt;10 이므로 break</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">11</div>
+        <div class="ans-explain">i가 unsigned이므로 i--가 0에서 더 내려가면 음수가 아니라 4294967295로 언더플로우(wrap)된다. 따라서 <code>i &gt;= 0</code>은 항상 참이 되어 원래 의도(4번 반복)와 달리 무한루프에 빠진다. count가 11이 되는 순간 안전장치 break로 탈출하므로 출력은 11. (안전장치가 없었다면 실제 무한루프.)</div>
+      </div>
+    </div>
+
+    <!-- 10-5 -->
+    <div class="quiz-card">
+      <div class="quiz-q" onclick="toggle(this)">
+        <div><span class="quiz-badge adv">심화</span>&nbsp; 다음 C 코드의 출력 결과를 쓰시오. (char/unsigned char 혼합 정수 프로모션)</div>
+        <span class="quiz-chevron">▼</span>
+      </div>
+      <div class="quiz-ans">
+        <div class="ans-code-wrap"><div class="ans-code"><pre>
+<span class="ln">1</span><span class="str">#include &lt;stdio.h&gt;</span>
+<span class="ln">2</span><span class="tp">int</span> <span class="fn">main</span>() {
+<span class="ln">3</span>    <span class="tp">char</span> c = -<span class="num">1</span>;
+<span class="ln">4</span>    <span class="kw">unsigned</span> <span class="tp">char</span> uc = -<span class="num">1</span>;
+<span class="ln">5</span>    <span class="tp">short</span> s = -<span class="num">1</span>;
+<span class="ln">6</span>    printf(<span class="str">"%d %d %d"</span>, c, uc, s);
+<span class="ln">7</span>    <span class="tp">int</span> result = c + uc;
+<span class="ln">8</span>    printf(<span class="str">" %d"</span>, result);
+<span class="ln">9</span>    <span class="kw">return</span> <span class="num">0</span>;
+<span class="ln">10</span>}</pre></div></div>
+        <div class="trace-wrap">
+          <table class="trace-table">
+            <tr><th>변수</th><th>저장값(비트)</th><th>printf 시 int로 승격된 값</th></tr>
+            <tr><td>c (signed char, 가정: char는 기본 signed)</td><td>1111 1111</td><td class="changed">-1</td></tr>
+            <tr><td>uc (unsigned char)</td><td>1111 1111</td><td class="changed">255</td></tr>
+            <tr><td>s (short)</td><td>1111...1111</td><td class="changed">-1</td></tr>
+            <tr><td>result = c + uc</td><td>int(-1) + int(255)</td><td class="output">254</td></tr>
+            <tr><td colspan="2">전체 출력</td><td class="output">-1 255 -1 254</td></tr>
+          </table>
+        </div>
+        <div class="ans-label">정답</div>
+        <div class="ans-val">-1 255 -1 254</div>
+        <div class="ans-explain">c와 uc는 같은 비트 패턴(1111 1111)을 갖지만 타입이 다르므로 int로 승격될 때 값이 달라진다: signed char는 -1, unsigned char는 255. s(short)도 -1. result=c+uc는 두 값 모두 int로 승격된 뒤 더해져 -1+255=254. (char의 기본 부호는 컴파일러/플랫폼에 따라 다를 수 있으며, 여기서는 x86 gcc의 일반적 기본값인 signed char를 가정.)</div>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /container -->
+
+<footer style="text-align:center; padding:1.5rem; color:var(--gray); font-size:0.78rem; border-top:1px solid var(--border);">
+  Level-3 · 01 C 심화 50제 · <a href="index.html" style="color:var(--accent); text-decoration:none;">← 목록으로</a>
+</footer>
+
+<script>
+function toggle(el) {
+  const card = el.closest('.quiz-card');
+  const wasOpen = card.classList.contains('open');
+  card.classList.toggle('open');
+  if (wasOpen) {
+    const sol = card.querySelector('.sol-block');
+    const btn = card.querySelector('.reveal-btn');
+    if (sol) sol.classList.remove('open');
+    if (btn) btn.textContent = '정답 보기 ▼';
+  }
+}
+
+function initReveal() {
+  document.querySelectorAll('.quiz-ans').forEach(ans => {
+    if (ans.querySelector('.reveal-btn')) return;
+    const codeWrap = ans.querySelector(':scope > .ans-code-wrap');
+    const solBlock = document.createElement('div');
+    solBlock.className = 'sol-block';
+    const toMove = [];
+    let node = codeWrap ? codeWrap.nextSibling : ans.firstChild;
+    while (node) { toMove.push(node); node = node.nextSibling; }
+    toMove.forEach(n => solBlock.appendChild(n));
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'reveal-btn';
+    btn.textContent = '정답 보기 ▼';
+    btn.onclick = function (e) {
+      e.stopPropagation();
+      const open = solBlock.classList.toggle('open');
+      btn.textContent = open ? '정답 숨기기 ▲' : '정답 보기 ▼';
+    };
+    ans.appendChild(btn);
+    ans.appendChild(solBlock);
+  });
+}
+document.addEventListener('DOMContentLoaded', initReveal);
+</script>
+</body>
+</html>
