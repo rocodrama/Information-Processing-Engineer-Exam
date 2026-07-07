@@ -74,10 +74,6 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 .quiz-card.open .quiz-chevron { transform: rotate(180deg); }
 .quiz-ans { display: none; padding: 0 1.2rem 1.1rem; border-top: 1px solid var(--border); }
 .quiz-card.open .quiz-ans { display: block; }
-.reveal-btn { display: inline-flex; align-items: center; gap: 0.3rem; margin-top: 0.9rem; padding: 0.5rem 1.1rem; border-radius: 8px; border: 1.5px solid var(--accent); background: transparent; color: var(--accent); font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; font-family: inherit; }
-.reveal-btn:hover { background: var(--accent); color: white; }
-.sol-block { display: none; margin-top: 0.8rem; }
-.sol-block.open { display: block; }
 .ans-label { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin: 0.8rem 0 0.3rem; }
 .ans-val   { font-size: 1rem; font-weight: 700; color: var(--dark); font-family: monospace; }
 .ans-explain { font-size: 0.86rem; color: #374151; margin-top: 0.5rem; line-height: 1.65; }
@@ -152,7 +148,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"액터(Actor)와 시스템 간의 상호작용을 통해 시스템이 제공해야 할 기능적 요구사항을 표현하는 UML 행위 다이어그램"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"액터(Actor)와 시스템 간의 상호작용을 통해 시스템이 제공해야 할 기능적 요구사항을 표현하는 UML 행위 다이어그램"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -164,7 +160,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"클래스의 속성, 오퍼레이션(메서드)과 클래스 간의 관계(연관, 상속 등)를 표현하는 UML 구조 다이어그램"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"클래스의 속성, 오퍼레이션(메서드)과 클래스 간의 관계(연관, 상속 등)를 표현하는 UML 구조 다이어그램"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -176,7 +172,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"객체들 사이에 주고받는 메시지를 시간의 흐름 순서에 따라 표현하는 UML 행위 다이어그램"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"객체들 사이에 주고받는 메시지를 시간의 흐름 순서에 따라 표현하는 UML 행위 다이어그램"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -188,7 +184,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"전체와 부분의 관계이지만, 전체 객체가 소멸되어도 부분 객체는 독립적으로 존재할 수 있는 클래스 다이어그램 관계"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"전체와 부분의 관계이지만, 전체 객체가 소멸되어도 부분 객체는 독립적으로 존재할 수 있는 클래스 다이어그램 관계"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -200,7 +196,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"전체 객체가 소멸되면 부분 객체도 함께 소멸되는 강한 전체-부분 관계를 나타내는 클래스 다이어그램 관계"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"전체 객체가 소멸되면 부분 객체도 함께 소멸되는 강한 전체-부분 관계를 나타내는 클래스 다이어그램 관계"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -212,7 +208,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"진행자(Moderator)가 주도하며 정해진 체크리스트를 기반으로 결함을 찾아내는, 요구사항 검증 기법 중 가장 공식적인 방법"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"진행자(Moderator)가 주도하며 정해진 체크리스트를 기반으로 결함을 찾아내는, 요구사항 검증 기법 중 가장 공식적인 방법"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -224,7 +220,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"시스템이 '무엇을 해야 하는가'가 아니라 응답시간, 가용성, 보안 등 '얼마나 잘 수행해야 하는가'를 정의하는 요구사항"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"시스템이 '무엇을 해야 하는가'가 아니라 응답시간, 가용성, 보안 등 '얼마나 잘 수행해야 하는가'를 정의하는 요구사항"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -236,7 +232,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"유스케이스 다이어그램에서 시스템과 상호작용하는 외부의 사람이나 다른 시스템"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"유스케이스 다이어그램에서 시스템과 상호작용하는 외부의 사람이나 다른 시스템"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -248,7 +244,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"기본 유스케이스가 실행될 때 다른 유스케이스의 기능을 반드시 포함하여 수행하는 유스케이스 관계"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"기본 유스케이스가 실행될 때 다른 유스케이스의 기능을 반드시 포함하여 수행하는 유스케이스 관계"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -260,7 +256,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"소프트웨어 요구사항 명세서(SRS)의 특성 중, 각 요구사항의 출처를 파악하고 이후 설계·구현 단계까지 연결하여 확인할 수 있는 성질"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"소프트웨어 요구사항 명세서(SRS)의 특성 중, 각 요구사항의 출처를 파악하고 이후 설계·구현 단계까지 연결하여 확인할 수 있는 성질"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -278,7 +274,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"테이블의 모든 속성값이 더 이상 분해할 수 없는 원자값(Atomic Value)을 갖도록 반복 그룹을 제거하는 정규화 단계"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"테이블의 모든 속성값이 더 이상 분해할 수 없는 원자값(Atomic Value)을 갖도록 반복 그룹을 제거하는 정규화 단계"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -290,7 +286,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"기본키(복합키)의 일부에만 종속되는 부분 함수 종속을 제거하여 완전 함수 종속만 남기는 정규화 단계"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"기본키(복합키)의 일부에만 종속되는 부분 함수 종속을 제거하여 완전 함수 종속만 남기는 정규화 단계"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -302,7 +298,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"A→B, B→C가 성립할 때 A→C가 되는 이행 함수 종속을 제거하는 정규화 단계"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"A→B, B→C가 성립할 때 A→C가 되는 이행 함수 종속을 제거하는 정규화 단계"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -314,7 +310,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"제3정규형을 만족하면서, 테이블 내의 모든 결정자가 후보키가 되도록 만드는 정규형"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"제3정규형을 만족하면서, 테이블 내의 모든 결정자가 후보키가 되도록 만드는 정규형"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -326,7 +322,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"정규화된 테이블에 중복 컬럼이나 파생(계산) 컬럼을 추가하여 조회 성능을 높이지만, 데이터 무결성이 저하될 수 있는 기법"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"정규화된 테이블에 중복 컬럼이나 파생(계산) 컬럼을 추가하여 조회 성능을 높이지만, 데이터 무결성이 저하될 수 있는 기법"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -338,7 +334,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"데이터를 삽입할 때 원하지 않는 불필요한 데이터까지 함께 삽입해야만 하는 이상현상"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"데이터를 삽입할 때 원하지 않는 불필요한 데이터까지 함께 삽입해야만 하는 이상현상"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -350,7 +346,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"인덱스 순서에 맞춰 테이블의 데이터 자체를 물리적으로 정렬하여 저장하며, 한 테이블에 하나만 만들 수 있는 인덱스"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"인덱스 순서에 맞춰 테이블의 데이터 자체를 물리적으로 정렬하여 저장하며, 한 테이블에 하나만 만들 수 있는 인덱스"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -362,7 +358,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"실제 데이터를 저장하지 않고, SELECT문의 실행 결과를 마치 테이블처럼 사용할 수 있게 하는 가상의 테이블"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"실제 데이터를 저장하지 않고, SELECT문의 실행 결과를 마치 테이블처럼 사용할 수 있게 하는 가상의 테이블"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -374,7 +370,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"INSERT/UPDATE/DELETE 같은 특정 이벤트가 발생하면 별도의 호출 없이 자동으로 실행되는, DB에 저장된 프로그램"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"INSERT/UPDATE/DELETE 같은 특정 이벤트가 발생하면 별도의 호출 없이 자동으로 실행되는, DB에 저장된 프로그램"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -386,7 +382,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"트랜잭션의 연산이 모두 반영되거나(Commit) 전혀 반영되지 않아야(Rollback) 한다는 ACID 특성"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"트랜잭션의 연산이 모두 반영되거나(Commit) 전혀 반영되지 않아야(Rollback) 한다는 ACID 특성"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -404,7 +400,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"여러 이기종 시스템 간의 데이터 및 프로세스를 유기적으로 연동시키기 위한 애플리케이션 통합 기술"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"여러 이기종 시스템 간의 데이터 및 프로세스를 유기적으로 연동시키기 위한 애플리케이션 통합 기술"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -416,7 +412,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"모든 연계 시스템이 중앙의 허브를 거쳐서 데이터를 주고받는 EAI 구축 유형 (허브 장애 시 전체 영향)"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"모든 연계 시스템이 중앙의 허브를 거쳐서 데이터를 주고받는 EAI 구축 유형 (허브 장애 시 전체 영향)"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -428,7 +424,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"시스템 간을 1:1로 직접 연결하는 가장 단순한 EAI 구축 유형으로, 시스템 수가 늘어날수록 연계 복잡도가 급격히 증가"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"시스템 간을 1:1로 직접 연결하는 가장 단순한 EAI 구축 유형으로, 시스템 수가 늘어날수록 연계 복잡도가 급격히 증가"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -440,7 +436,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"표준화된 메시지 버스를 통해 시스템을 연계하며, EAI 구축 유형 중 확장성이 가장 우수한 방식"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"표준화된 메시지 버스를 통해 시스템을 연계하며, EAI 구축 유형 중 확장성이 가장 우수한 방식"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -452,7 +448,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"서비스 중심의 미들웨어로 메시지 라우팅, 데이터 형식·프로토콜 변환을 담당하여 시스템 간 결합도를 낮추는 기술"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"서비스 중심의 미들웨어로 메시지 라우팅, 데이터 형식·프로토콜 변환을 담당하여 시스템 간 결합도를 낮추는 기술"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -464,7 +460,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"HTTP 메서드(GET/POST/PUT/DELETE)를 이용해 자원을 표현하고 조작하는 경량 아키텍처 스타일"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"HTTP 메서드(GET/POST/PUT/DELETE)를 이용해 자원을 표현하고 조작하는 경량 아키텍처 스타일"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -476,7 +472,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"XML 기반으로 메시지를 교환하고 WSDL로 서비스를 명세하며, 보안·트랜잭션 기능은 강력하지만 상대적으로 무거운 프로토콜"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"XML 기반으로 메시지를 교환하고 WSDL로 서비스를 명세하며, 보안·트랜잭션 기능은 강력하지만 상대적으로 무거운 프로토콜"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -488,7 +484,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"송신 시스템이 응답을 기다리지 않고 다음 처리를 계속 진행하며, 결과는 콜백이나 큐로 수신하는 연계 방식"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"송신 시스템이 응답을 기다리지 않고 다음 처리를 계속 진행하며, 결과는 콜백이나 큐로 수신하는 연계 방식"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -500,7 +496,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"EAI/ESB 같은 미들웨어를 경유하여 시스템 간에 연계함으로써, 직접 연결 방식보다 결합도를 낮추는 연계 방식"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"EAI/ESB 같은 미들웨어를 경유하여 시스템 간에 연계함으로써, 직접 연결 방식보다 결합도를 낮추는 연계 방식"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -512,7 +508,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"키-값(key-value) 구조의 경량 데이터 형식으로, XML보다 가볍고 파싱이 빨라 웹·모바일 API 연계에 주로 사용되는 형식"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"키-값(key-value) 구조의 경량 데이터 형식으로, XML보다 가볍고 파싱이 빨라 웹·모바일 API 연계에 주로 사용되는 형식"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -530,7 +526,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"모듈 내부의 모든 구성 요소가 오직 하나의 기능을 수행하기 위해 관련되어 있는, 응집도 중 가장 바람직한 유형"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"모듈 내부의 모든 구성 요소가 오직 하나의 기능을 수행하기 위해 관련되어 있는, 응집도 중 가장 바람직한 유형"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -542,7 +538,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"서로 아무런 관련이 없는 요소들이 우연히 하나의 모듈로 묶인, 응집도 중 가장 나쁜(최저) 유형"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"서로 아무런 관련이 없는 요소들이 우연히 하나의 모듈로 묶인, 응집도 중 가장 나쁜(최저) 유형"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -554,7 +550,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"다른 모듈의 내부 데이터나 코드를 직접 참조하거나 수정하는, 결합도 중 가장 나쁜(강한) 유형"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"다른 모듈의 내부 데이터나 코드를 직접 참조하거나 수정하는, 결합도 중 가장 나쁜(강한) 유형"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -566,7 +562,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"모듈 간에 꼭 필요한 데이터만 매개변수로 전달하는, 결합도 중 가장 바람직한(가장 낮은) 유형"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"모듈 간에 꼭 필요한 데이터만 매개변수로 전달하는, 결합도 중 가장 바람직한(가장 낮은) 유형"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -578,7 +574,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"클래스의 인스턴스가 오직 하나만 생성되도록 보장하고, 어디서든 접근 가능한 전역적인 접근점을 제공하는 생성 패턴"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"클래스의 인스턴스가 오직 하나만 생성되도록 보장하고, 어디서든 접근 가능한 전역적인 접근점을 제공하는 생성 패턴"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -590,7 +586,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"객체 생성 로직을 서브클래스에 위임하여, 어떤 클래스의 인스턴스를 생성할지는 서브클래스가 결정하도록 하는 생성 패턴"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"객체 생성 로직을 서브클래스에 위임하여, 어떤 클래스의 인스턴스를 생성할지는 서브클래스가 결정하도록 하는 생성 패턴"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -602,7 +598,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"한 객체의 상태가 변할 때, 그 객체에 의존하는 다른 객체들에게 자동으로 알림이 전달되도록 일대다 의존 관계를 정의하는 행위 패턴"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"한 객체의 상태가 변할 때, 그 객체에 의존하는 다른 객체들에게 자동으로 알림이 전달되도록 일대다 의존 관계를 정의하는 행위 패턴"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -614,7 +610,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"여러 알고리즘을 각각 캡슐화하여 서로 교체 가능하게 만들어, 실행 중에도 알고리즘을 독립적으로 바꿔 쓸 수 있게 하는 행위 패턴"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"여러 알고리즘을 각각 캡슐화하여 서로 교체 가능하게 만들어, 실행 중에도 알고리즘을 독립적으로 바꿔 쓸 수 있게 하는 행위 패턴"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -626,7 +622,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"기존 클래스의 코드를 변경하지 않고, 객체에 새로운 책임(기능)을 동적으로 추가할 수 있게 해주는 구조 패턴"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"기존 클래스의 코드를 변경하지 않고, 객체에 새로운 책임(기능)을 동적으로 추가할 수 있게 해주는 구조 패턴"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -638,7 +634,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"서로 호환되지 않는 인터페이스를 가진 클래스들이 함께 동작할 수 있도록 중간에서 변환해주는 구조 패턴"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"서로 호환되지 않는 인터페이스를 가진 클래스들이 함께 동작할 수 있도록 중간에서 변환해주는 구조 패턴"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -650,7 +646,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"여러 서브시스템의 복잡한 기능들을 감추고, 단순화된 하나의 통합 인터페이스만을 클라이언트에 제공하는 구조 패턴"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"여러 서브시스템의 복잡한 기능들을 감추고, 단순화된 하나의 통합 인터페이스만을 클라이언트에 제공하는 구조 패턴"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -668,7 +664,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"인터페이스 설계서에 명시되는 항목으로, 데이터를 보내는 쪽과 받는 쪽의 시스템을 식별하는 정보"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"인터페이스 설계서에 명시되는 항목으로, 데이터를 보내는 쪽과 받는 쪽의 시스템을 식별하는 정보"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -680,7 +676,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"송신 후 응답을 기다렸다가 그 결과를 받은 뒤에야 다음 처리를 진행하는 인터페이스 연동 방식"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"송신 후 응답을 기다렸다가 그 결과를 받은 뒤에야 다음 처리를 진행하는 인터페이스 연동 방식"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -692,7 +688,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"HTTP 응답 코드 중, 요청이 정상적으로 처리되었음을 나타내는 코드대"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"HTTP 응답 코드 중, 요청이 정상적으로 처리되었음을 나타내는 코드대"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -704,7 +700,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"HTTP 응답 코드 중, 잘못된 요청이나 인증·권한 문제 등 클라이언트 측의 오류를 나타내는 코드대"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"HTTP 응답 코드 중, 잘못된 요청이나 인증·권한 문제 등 클라이언트 측의 오류를 나타내는 코드대"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -716,7 +712,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"HTTP 응답 코드 중, 서버 내부의 처리 실패로 발생하는 오류를 나타내는 코드대"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"HTTP 응답 코드 중, 서버 내부의 처리 실패로 발생하는 오류를 나타내는 코드대"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -728,7 +724,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"분산 환경에서 다양한 언어와 플랫폼의 소프트웨어 테스트를 자동화할 수 있게 지원하는 프레임워크"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"분산 환경에서 다양한 언어와 플랫폼의 소프트웨어 테스트를 자동화할 수 있게 지원하는 프레임워크"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -740,7 +736,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"웹 기반으로 팀원들이 협업하며 테스트케이스를 작성·실행할 수 있는 테스트 자동화 도구"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"웹 기반으로 팀원들이 협업하며 테스트케이스를 작성·실행할 수 있는 테스트 자동화 도구"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -752,7 +748,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"STAF와 FitNesse를 통합하여 만든 한국형 테스트 자동화 프레임워크"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"STAF와 FitNesse를 통합하여 만든 한국형 테스트 자동화 프레임워크"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -764,7 +760,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"웹 브라우저를 제어하여 웹 애플리케이션 테스트를 자동화하는 대표적인 오픈소스 도구"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"웹 브라우저를 제어하여 웹 애플리케이션 테스트를 자동화하는 대표적인 오픈소스 도구"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -776,7 +772,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"전자서명이나 해시값 비교를 통해 인터페이스로 전송되는 데이터가 위·변조되지 않았음을 검증하는 것"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"전자서명이나 해시값 비교를 통해 인터페이스로 전송되는 데이터가 위·변조되지 않았음을 검증하는 것"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -794,7 +790,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"화면의 레이아웃을 간단한 선과 도형으로 스케치하며 색상·이미지 같은 디자인 요소는 배제한, 상세도가 가장 낮은 화면 설계 산출물"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"화면의 레이아웃을 간단한 선과 도형으로 스케치하며 색상·이미지 같은 디자인 요소는 배제한, 상세도가 가장 낮은 화면 설계 산출물"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -806,7 +802,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"화면 단위로 흐름, 상호작용, 처리 로직까지 상세하게 기술하여 개발팀에 전달하는, 상세도가 높은 화면 설계 문서"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"화면 단위로 흐름, 상호작용, 처리 로직까지 상세하게 기술하여 개발팀에 전달하는, 상세도가 높은 화면 설계 문서"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -818,7 +814,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"실제 클릭과 동작이 가능한 형태로 만들어 사용자의 검증과 피드백을 받는 데 활용하는 화면 설계 산출물"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"실제 클릭과 동작이 가능한 형태로 만들어 사용자의 검증과 피드백을 받는 데 활용하는 화면 설계 산출물"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -830,7 +826,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"전사적으로 공통 적용되는 화면 디자인과 구성 규칙을 정의한, UI 지침보다 상위 개념의 문서"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"전사적으로 공통 적용되는 화면 디자인과 구성 규칙을 정의한, UI 지침보다 상위 개념의 문서"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -842,7 +838,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"동일한 기능은 항상 동일한 디자인·위치·동작 방식으로 제공해야 한다는 UI 설계 원칙"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"동일한 기능은 항상 동일한 디자인·위치·동작 방식으로 제공해야 한다는 UI 설계 원칙"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -854,7 +850,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"사용자가 별도의 학습 없이도 쉽게 이해하고 사용할 수 있어야 한다는 UI 설계 원칙"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"사용자가 별도의 학습 없이도 쉽게 이해하고 사용할 수 있어야 한다는 UI 설계 원칙"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -866,7 +862,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"사용자가 정확하고 완전하게 자신의 목표(작업)를 달성할 수 있도록 하는 UI 설계 원칙"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"사용자가 정확하고 완전하게 자신의 목표(작업)를 달성할 수 있도록 하는 UI 설계 원칙"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -878,7 +874,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"시스템이 제공하는 기능들을 트리 형태로 계층적으로 분류하여, 사용자가 원하는 기능을 빠르게 찾을 수 있도록 설계하는 것"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"시스템이 제공하는 기능들을 트리 형태로 계층적으로 분류하여, 사용자가 원하는 기능을 빠르게 찾을 수 있도록 설계하는 것"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -890,7 +886,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"사용자의 행동(클릭, 입력 등)에 대해 시스템이 그 결과를 즉시 알려주는 사용자 편의성 요소"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"사용자의 행동(클릭, 입력 등)에 대해 시스템이 그 결과를 즉시 알려주는 사용자 편의성 요소"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -902,7 +898,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"장애인을 포함한 다양한 특성의 사용자들도 쉽게 이용할 수 있도록 보장하는 사용자 편의성 요소"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"장애인을 포함한 다양한 특성의 사용자들도 쉽게 이용할 수 있도록 보장하는 사용자 편의성 요소"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -920,7 +916,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"입력 값의 범위를 유효/무효 구간으로 나누고 각 구간의 대표값으로 테스트 케이스를 설계하는 기법"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"입력 값의 범위를 유효/무효 구간으로 나누고 각 구간의 대표값으로 테스트 케이스를 설계하는 기법"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -932,7 +928,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"입력 조건의 유효·무효 경계 부근의 값(최댓값, 최솟값, 경계값±1 등)을 집중적으로 테스트하는 블랙박스 기법"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"입력 조건의 유효·무효 경계 부근의 값(최댓값, 최솟값, 경계값±1 등)을 집중적으로 테스트하는 블랙박스 기법"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -944,7 +940,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"입력 조건(원인)과 출력 결과(효과) 사이의 논리적 관계를 그래프로 표현하여 테스트케이스를 도출하는 블랙박스 기법"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"입력 조건(원인)과 출력 결과(효과) 사이의 논리적 관계를 그래프로 표현하여 테스트케이스를 도출하는 블랙박스 기법"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -956,7 +952,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"여러 조건과 그에 따른 행동(결과)의 조합을 표 형태로 정리하여 가능한 모든 경우의 수를 테스트하는 블랙박스 기법"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"여러 조건과 그에 따른 행동(결과)의 조합을 표 형태로 정리하여 가능한 모든 경우의 수를 테스트하는 블랙박스 기법"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -968,7 +964,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"시스템이 가질 수 있는 상태와 이벤트에 따른 상태 변화(전이)를 기반으로 설계하는 블랙박스 테스트 기법"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"시스템이 가질 수 있는 상태와 이벤트에 따른 상태 변화(전이)를 기반으로 설계하는 블랙박스 테스트 기법"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -980,7 +976,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"프로그램의 모든 구문(코드 라인)이 최소 한 번은 실행되도록 하는, 화이트박스 커버리지 기법 중 강도가 가장 약한 기준"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"프로그램의 모든 구문(코드 라인)이 최소 한 번은 실행되도록 하는, 화이트박스 커버리지 기법 중 강도가 가장 약한 기준"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -992,7 +988,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"프로그램 내 모든 분기(if문 등의 참/거짓)가 최소 한 번씩 실행되도록 하는 화이트박스 커버리지 기법"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"프로그램 내 모든 분기(if문 등의 참/거짓)가 최소 한 번씩 실행되도록 하는 화이트박스 커버리지 기법"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1004,7 +1000,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"각 개별 조건식의 참/거짓과 전체 결정(분기)의 참/거짓을 모두 최소 한 번씩 만족시키는, 조건 커버리지보다 강력한 화이트박스 커버리지 기준"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"각 개별 조건식의 참/거짓과 전체 결정(분기)의 참/거짓을 모두 최소 한 번씩 만족시키는, 조건 커버리지보다 강력한 화이트박스 커버리지 기준"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1016,7 +1012,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"아직 개발되지 않은 상위 모듈을 대신하여, 하향식 통합 테스트에서 하위 모듈을 호출하는 데 사용하는 테스트용 제어 프로그램"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"아직 개발되지 않은 상위 모듈을 대신하여, 하향식 통합 테스트에서 하위 모듈을 호출하는 데 사용하는 테스트용 제어 프로그램"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1028,7 +1024,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"아직 개발되지 않은 상위 모듈을 대체하여, 상향식 통합 테스트에서 완성된 하위 모듈을 호출·구동해주는 테스트용 제어 프로그램"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"아직 개발되지 않은 상위 모듈을 대체하여, 상향식 통합 테스트에서 완성된 하위 모듈을 호출·구동해주는 테스트용 제어 프로그램"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1040,7 +1036,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"테스트 결과가 옳은지 그른지를 판단하는 기준"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"테스트 결과가 옳은지 그른지를 판단하는 기준"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1058,7 +1054,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"CREATE, ALTER, DROP처럼 데이터베이스의 구조를 정의하며, 실행 시 자동으로 COMMIT되어 롤백이 불가능한 SQL 언어 분류"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"CREATE, ALTER, DROP처럼 데이터베이스의 구조를 정의하며, 실행 시 자동으로 COMMIT되어 롤백이 불가능한 SQL 언어 분류"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1070,7 +1066,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"SELECT, INSERT, UPDATE, DELETE처럼 테이블의 데이터를 조회·조작하는 SQL 언어 분류"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"SELECT, INSERT, UPDATE, DELETE처럼 테이블의 데이터를 조회·조작하는 SQL 언어 분류"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1082,7 +1078,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"GRANT, REVOKE 명령어로 데이터베이스 사용자의 권한을 부여하거나 회수하는 SQL 언어 분류"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"GRANT, REVOKE 명령어로 데이터베이스 사용자의 권한을 부여하거나 회수하는 SQL 언어 분류"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1094,7 +1090,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"COMMIT, ROLLBACK, SAVEPOINT로 트랜잭션의 처리를 제어하는 SQL 언어 분류"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"COMMIT, ROLLBACK, SAVEPOINT로 트랜잭션의 처리를 제어하는 SQL 언어 분류"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1106,7 +1102,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"조인 조건을 만족하는, 즉 두 테이블에 모두 일치하는 행만 결과에 포함시키는 조인"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"조인 조건을 만족하는, 즉 두 테이블에 모두 일치하는 행만 결과에 포함시키는 조인"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1118,7 +1114,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"왼쪽 테이블의 모든 행을 결과에 포함하고, 오른쪽 테이블에서 일치하는 값이 없으면 NULL로 채우는 조인"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"왼쪽 테이블의 모든 행을 결과에 포함하고, 오른쪽 테이블에서 일치하는 값이 없으면 NULL로 채우는 조인"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1130,7 +1126,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"하나의 테이블에 서로 다른 별칭(Alias)을 부여하여 자기 자신과 조인하는 방식"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"하나의 테이블에 서로 다른 별칭(Alias)을 부여하여 자기 자신과 조인하는 방식"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1142,7 +1138,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"별도의 반환값 없이 CALL이나 EXEC 명령으로 명시적으로 호출해야 실행되는, DB에 저장된 절차형 프로그램"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"별도의 반환값 없이 CALL이나 EXEC 명령으로 명시적으로 호출해야 실행되는, DB에 저장된 절차형 프로그램"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1154,7 +1150,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"반드시 하나의 값을 반환해야 하며, SELECT 문 안에서 직접 호출하여 사용할 수 있는 절차형 SQL 객체"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"반드시 하나의 값을 반환해야 하며, SELECT 문 안에서 직접 호출하여 사용할 수 있는 절차형 SQL 객체"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1166,7 +1162,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"순위를 매길 때 동점자가 있어도 다음 순위 번호를 건너뛰지 않고 연속된 순위를 부여하는 윈도우(순위) 함수"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"순위를 매길 때 동점자가 있어도 다음 순위 번호를 건너뛰지 않고 연속된 순위를 부여하는 윈도우(순위) 함수"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1184,7 +1180,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"인가된 사용자만 정보에 접근할 수 있도록 보장하는, 보안의 3대 요소(CIA) 중 하나"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"인가된 사용자만 정보에 접근할 수 있도록 보장하는, 보안의 3대 요소(CIA) 중 하나"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1196,7 +1192,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"정보가 비인가자에 의해 변경되지 않고 정확성과 완전성이 유지되도록 보장하는, 보안의 3대 요소 중 하나"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"정보가 비인가자에 의해 변경되지 않고 정확성과 완전성이 유지되도록 보장하는, 보안의 3대 요소 중 하나"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1208,7 +1204,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"인가된 사용자가 필요할 때 언제든지 정보와 시스템에 접근할 수 있도록 보장하는, 보안의 3대 요소 중 하나"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"인가된 사용자가 필요할 때 언제든지 정보와 시스템에 접근할 수 있도록 보장하는, 보안의 3대 요소 중 하나"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1220,7 +1216,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"입력값 검증 미흡을 악용하여 악의적인 SQL 구문을 삽입, 데이터베이스를 비정상적으로 조회·조작하는 공격 기법"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"입력값 검증 미흡을 악용하여 악의적인 SQL 구문을 삽입, 데이터베이스를 비정상적으로 조회·조작하는 공격 기법"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1232,7 +1228,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"악성 스크립트를 게시판 등 웹페이지에 삽입하여, 다른 사용자의 브라우저에서 의도치 않게 실행되게 하는 공격 기법"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"악성 스크립트를 게시판 등 웹페이지에 삽입하여, 다른 사용자의 브라우저에서 의도치 않게 실행되게 하는 공격 기법"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1244,7 +1240,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"로그인된 사용자가 자신의 의지와 무관하게, 공격자가 의도한 요청(글 삭제·비밀번호 변경 등)을 서버로 전송하게 되는 웹 공격 기법"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"로그인된 사용자가 자신의 의지와 무관하게, 공격자가 의도한 요청(글 삭제·비밀번호 변경 등)을 서버로 전송하게 되는 웹 공격 기법"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1256,7 +1252,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"암호화와 복호화에 동일한 키를 사용하며, 속도는 빠르지만 키 분배가 어려운 암호화 방식 (예: AES, DES, SEED)"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"암호화와 복호화에 동일한 키를 사용하며, 속도는 빠르지만 키 분배가 어려운 암호화 방식 (예: AES, DES, SEED)"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1268,7 +1264,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"공개키와 개인키 한 쌍을 사용하여 키 분배 문제는 해결하지만 속도가 느린 암호화 방식 (예: RSA)"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"공개키와 개인키 한 쌍을 사용하여 키 분배 문제는 해결하지만 속도가 느린 암호화 방식 (예: RSA)"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1280,7 +1276,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"데이터(자원)의 소유자가 다른 사용자의 접근 권한을 직접 결정하는 접근통제 모델"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"데이터(자원)의 소유자가 다른 사용자의 접근 권한을 직접 결정하는 접근통제 모델"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1292,7 +1288,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"시스템(보안관리자)이 보안 등급에 따라 강제로 접근 권한을 부여하며, 사용자가 임의로 변경할 수 없는 접근통제 모델"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"시스템(보안관리자)이 보안 등급에 따라 강제로 접근 권한을 부여하며, 사용자가 임의로 변경할 수 없는 접근통제 모델"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1304,7 +1300,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"사전에 정의된 역할(Role)에 따라 사용자에게 권한을 부여하는 접근통제 모델"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"사전에 정의된 역할(Role)에 따라 사용자에게 권한을 부여하는 접근통제 모델"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1322,7 +1318,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"데이터와 그 데이터를 처리하는 메서드를 하나로 묶고, private 등을 통해 외부에서의 직접 접근을 제한하는 객체지향의 특성"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"데이터와 그 데이터를 처리하는 메서드를 하나로 묶고, private 등을 통해 외부에서의 직접 접근을 제한하는 객체지향의 특성"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1334,7 +1330,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"부모 클래스가 가진 속성과 메서드를 자식 클래스가 물려받아 재사용할 수 있게 하는 객체지향의 특성"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"부모 클래스가 가진 속성과 메서드를 자식 클래스가 물려받아 재사용할 수 있게 하는 객체지향의 특성"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1346,7 +1342,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"동일한 이름의 메서드나 연산자가 상황(객체)에 따라 서로 다른 방식으로 동작할 수 있는 객체지향의 특성"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"동일한 이름의 메서드나 연산자가 상황(객체)에 따라 서로 다른 방식으로 동작할 수 있는 객체지향의 특성"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1358,7 +1354,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"객체들의 공통적인 특징만 추출하여 클래스로 설계하고, 불필요한 세부 구현은 감추는 객체지향의 특성"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"객체들의 공통적인 특징만 추출하여 클래스로 설계하고, 불필요한 세부 구현은 감추는 객체지향의 특성"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1370,7 +1366,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"같은 이름의 메서드를 매개변수의 개수나 타입을 다르게 하여 한 클래스 안에 여러 개 정의하는 것으로, 컴파일 타임에 어떤 메서드를 호출할지 결정되는 다형성"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"같은 이름의 메서드를 매개변수의 개수나 타입을 다르게 하여 한 클래스 안에 여러 개 정의하는 것으로, 컴파일 타임에 어떤 메서드를 호출할지 결정되는 다형성"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1382,7 +1378,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"부모 클래스의 메서드를 자식 클래스에서 같은 시그니처로 재정의하는 것으로, 실행(런타임) 시점에 어떤 메서드가 호출될지 결정되는 다형성"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"부모 클래스의 메서드를 자식 클래스에서 같은 시그니처로 재정의하는 것으로, 실행(런타임) 시점에 어떤 메서드가 호출될지 결정되는 다형성"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1394,7 +1390,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"프로그램 실행 중 발생하는 오류를 try 블록에서 감지하고, catch(또는 except) 블록에서 별도로 처리하는 구문 체계"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"프로그램 실행 중 발생하는 오류를 try 블록에서 감지하고, catch(또는 except) 블록에서 별도로 처리하는 구문 체계"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1406,7 +1402,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"하나 이상의 추상 메서드를 포함할 수 있으며, 일반 메서드도 함께 가질 수 있지만 다중 상속은 불가능한 클래스 유형"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"하나 이상의 추상 메서드를 포함할 수 있으며, 일반 메서드도 함께 가질 수 있지만 다중 상속은 불가능한 클래스 유형"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1418,7 +1414,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"여러 클래스가 공통으로 구현해야 할 메서드의 규격(선언)만을 정의하며, 자바에서는 여러 개를 동시에 구현(implements)할 수 있는 추상적 타입"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"여러 클래스가 공통으로 구현해야 할 메서드의 규격(선언)만을 정의하며, 자바에서는 여러 개를 동시에 구현(implements)할 수 있는 추상적 타입"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1430,7 +1426,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"자주 사용되는 함수·클래스를 미리 구현하여 모아 놓아, 개발자가 재사용할 수 있도록 제공하는 코드의 모음"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"자주 사용되는 함수·클래스를 미리 구현하여 모아 놓아, 개발자가 재사용할 수 있도록 제공하는 코드의 모음"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1448,7 +1444,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"OSI 7계층 중, 비트(전기적 신호)를 이용해 물리적인 매체로 데이터를 전송하는 최하위(1계층) 계층"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"OSI 7계층 중, 비트(전기적 신호)를 이용해 물리적인 매체로 데이터를 전송하는 최하위(1계층) 계층"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1460,7 +1456,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"OSI 7계층 중, MAC 주소를 사용해 인접한 노드 간에 프레임 단위로 데이터를 전달하는 2계층"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"OSI 7계층 중, MAC 주소를 사용해 인접한 노드 간에 프레임 단위로 데이터를 전달하는 2계층"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1472,7 +1468,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"OSI 7계층 중, IP 주소를 기반으로 최적의 경로를 설정(라우팅)하여 데이터를 전달하는 3계층"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"OSI 7계층 중, IP 주소를 기반으로 최적의 경로를 설정(라우팅)하여 데이터를 전달하는 3계층"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1484,7 +1480,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"OSI 7계층 중, 종단 간(End-to-End) 신뢰성 있는 데이터 전송을 담당하며 TCP·UDP가 위치하는 4계층"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"OSI 7계층 중, 종단 간(End-to-End) 신뢰성 있는 데이터 전송을 담당하며 TCP·UDP가 위치하는 4계층"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1496,7 +1492,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"3-way handshake로 연결을 설정하는 연결지향 방식이며, 데이터 전달과 순서를 보장하는 신뢰성 있는 전송 계층 프로토콜"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"3-way handshake로 연결을 설정하는 연결지향 방식이며, 데이터 전달과 순서를 보장하는 신뢰성 있는 전송 계층 프로토콜"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1508,7 +1504,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"연결 설정 없이 비연결형으로 빠르게 데이터를 전송하지만, 전달 순서와 신뢰성을 보장하지 않는 전송 계층 프로토콜"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"연결 설정 없이 비연결형으로 빠르게 데이터를 전송하지만, 전달 순서와 신뢰성을 보장하지 않는 전송 계층 프로토콜"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1520,7 +1516,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"네트워크 상에서 IP 주소를 실제 물리적인 MAC 주소로 변환해주는 프로토콜"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"네트워크 상에서 IP 주소를 실제 물리적인 MAC 주소로 변환해주는 프로토콜"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1532,7 +1528,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"네트워크에 새로 접속한 호스트에게 IP 주소 등의 네트워크 설정 정보를 자동으로 할당해주는 프로토콜"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"네트워크에 새로 접속한 호스트에게 IP 주소 등의 네트워크 설정 정보를 자동으로 할당해주는 프로토콜"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1544,7 +1540,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"사람이 기억하기 쉬운 도메인 이름을 실제 통신에 필요한 IP 주소로 변환해주는 프로토콜"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"사람이 기억하기 쉬운 도메인 이름을 실제 통신에 필요한 IP 주소로 변환해주는 프로토콜"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1556,7 +1552,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"여러 프로세스가 각자 자원을 점유한 채 서로 다른 프로세스가 가진 자원을 요청하며 무한정 대기하게 되는 상태"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"여러 프로세스가 각자 자원을 점유한 채 서로 다른 프로세스가 가진 자원을 요청하며 무한정 대기하게 되는 상태"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1568,7 +1564,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"프로세스가 도착한 순서대로 CPU를 할당하는, 가장 단순한 비선점 스케줄링 기법"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"프로세스가 도착한 순서대로 CPU를 할당하는, 가장 단순한 비선점 스케줄링 기법"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1580,7 +1576,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"정해진 시간 할당량(Time Quantum)만큼씩 프로세스에 CPU를 순환 배분하는 선점형 스케줄링 기법"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"정해진 시간 할당량(Time Quantum)만큼씩 프로세스에 CPU를 순환 배분하는 선점형 스케줄링 기법"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1592,7 +1588,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"메모리를 고정된 크기의 블록으로 나누어 관리하며, 외부 단편화는 없지만 내부 단편화가 발생할 수 있는 메모리 관리 기법"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"메모리를 고정된 크기의 블록으로 나누어 관리하며, 외부 단편화는 없지만 내부 단편화가 발생할 수 있는 메모리 관리 기법"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1604,7 +1600,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"메모리를 프로그램의 논리적 의미 단위로 나누어 관리하며, 내부 단편화는 없지만 외부 단편화가 발생할 수 있는 메모리 관리 기법"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"메모리를 프로그램의 논리적 의미 단위로 나누어 관리하며, 내부 단편화는 없지만 외부 단편화가 발생할 수 있는 메모리 관리 기법"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1622,7 +1618,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"소스코드를 컴파일하여 실행 가능한 형태로 만드는 과정"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"소스코드를 컴파일하여 실행 가능한 형태로 만드는 과정"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1634,7 +1630,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"빌드된 결과물을 사용자가 설치할 수 있는 형태(설치파일 등)로 묶는 과정"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"빌드된 결과물을 사용자가 설치할 수 있는 형태(설치파일 등)로 묶는 과정"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1646,7 +1642,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"제품의 변경사항, 개선사항, 알려진 문제 등을 사용자에게 안내하기 위해 작성하는 문서"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"제품의 변경사항, 개선사항, 알려진 문제 등을 사용자에게 안내하기 위해 작성하는 문서"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1658,7 +1654,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"디지털 저작물(콘텐츠)의 무단 복제와 배포를 방지하기 위한 저작권 보호 기술"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"디지털 저작물(콘텐츠)의 무단 복제와 배포를 방지하기 위한 저작권 보호 기술"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1670,7 +1666,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"압축과 암호화를 동시에 적용하여 소프트웨어의 무단 배포와 복제를 방지하는 도구"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"압축과 암호화를 동시에 적용하여 소프트웨어의 무단 배포와 복제를 방지하는 도구"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1682,7 +1678,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"관리할 형상 항목(CI)을 식별하고 소프트웨어 형상관리의 기준선(Baseline)을 설정하는 형상관리 활동"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"관리할 형상 항목(CI)을 식별하고 소프트웨어 형상관리의 기준선(Baseline)을 설정하는 형상관리 활동"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1694,7 +1690,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"형상 항목에 대한 변경 요청을 검토하고 승인 또는 거부한 뒤 변경을 통제하는 형상관리 활동"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"형상 항목에 대한 변경 요청을 검토하고 승인 또는 거부한 뒤 변경을 통제하는 형상관리 활동"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1706,7 +1702,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge adv">심화</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"형상관리 항목이 기준선(베이스라인)과 일치하는지, 정확하게 반영되었는지를 검증하는 형상관리 활동"</span></div>
+        <div><span class="quiz-badge adv">심화</span>&nbsp;<span style="color:var(--dark);">"형상관리 항목이 기준선(베이스라인)과 일치하는지, 정확하게 반영되었는지를 검증하는 형상관리 활동"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1718,7 +1714,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"원격 저장소에 저장된 최신 변경사항을 로컬 저장소로 가져와 병합하는 Git 명령어"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"원격 저장소에 저장된 최신 변경사항을 로컬 저장소로 가져와 병합하는 Git 명령어"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1730,7 +1726,7 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
     <div class="quiz-card">
       <div class="quiz-q" onclick="toggle(this)">
-        <div><span class="quiz-badge year">기출</span>&nbsp;다음 설명에 해당하는 용어를 쓰시오.<br><span style="font-weight:400; color:var(--gray); font-size:0.86rem;">"작업 디렉터리에서 변경된 파일을 다음 커밋 대상으로 스테이징 영역에 추가하는 Git 명령어"</span></div>
+        <div><span class="quiz-badge year">기출</span>&nbsp;<span style="color:var(--dark);">"작업 디렉터리에서 변경된 파일을 다음 커밋 대상으로 스테이징 영역에 추가하는 Git 명령어"</span></div>
         <span class="quiz-chevron">▼</span>
       </div>
       <div class="quiz-ans">
@@ -1750,41 +1746,8 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
 
 <script>
 function toggle(el) {
-  const card = el.closest('.quiz-card');
-  const wasOpen = card.classList.contains('open');
-  card.classList.toggle('open');
-  if (wasOpen) {
-    const sol = card.querySelector('.sol-block');
-    const btn = card.querySelector('.reveal-btn');
-    if (sol) sol.classList.remove('open');
-    if (btn) btn.textContent = '정답 보기 ▼';
-  }
+  el.closest('.quiz-card').classList.toggle('open');
 }
-
-function initReveal() {
-  document.querySelectorAll('.quiz-ans').forEach(ans => {
-    if (ans.querySelector('.reveal-btn')) return;
-    const codeWrap = ans.querySelector(':scope > .ans-code-wrap');
-    const solBlock = document.createElement('div');
-    solBlock.className = 'sol-block';
-    const toMove = [];
-    let node = codeWrap ? codeWrap.nextSibling : ans.firstChild;
-    while (node) { toMove.push(node); node = node.nextSibling; }
-    toMove.forEach(n => solBlock.appendChild(n));
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'reveal-btn';
-    btn.textContent = '정답 보기 ▼';
-    btn.onclick = function (e) {
-      e.stopPropagation();
-      const open = solBlock.classList.toggle('open');
-      btn.textContent = open ? '정답 숨기기 ▲' : '정답 보기 ▼';
-    };
-    ans.appendChild(btn);
-    ans.appendChild(solBlock);
-  });
-}
-document.addEventListener('DOMContentLoaded', initReveal);
 </script>
 </body>
 </html>
