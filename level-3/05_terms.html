@@ -253,6 +253,70 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
         <span class="t-answer"><span class="t-term">extend 관계 (확장 관계)</span><span class="t-exp">점선 화살표에 &lt;&lt;extend&gt;&gt;로 표기하며 조건에 따라 선택적으로 실행됩니다. 항상 실행되는 include(포함) 관계와 반대되는 개념입니다.</span></span>
       </td>
     </tr>
+    <tr>
+      <td class="t-num">14</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"클래스 다이어그램을 특정 시점(순간)의 실제 인스턴스와 그 인스턴스들 간의 관계로 구체화하여 표현하는 UML 구조 다이어그램"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">객체 다이어그램 (Object Diagram)</span><span class="t-exp">클래스 다이어그램이 클래스 간의 일반적인 관계를 정의하는 '설계도'라면, 객체 다이어그램은 특정 시점에 실제로 존재하는 객체(인스턴스)와 그 값들의 관계를 보여주는 '스냅샷'입니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">15</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"소프트웨어를 구성하는 실행 모듈(컴포넌트) 간의 의존 관계와 제공·요구 인터페이스를 표현하는 UML 구조 다이어그램"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">컴포넌트 다이어그램 (Component Diagram)</span><span class="t-exp">라이브러리·실행파일 같은 물리적인 코드 모듈 단위의 구성과 인터페이스 관계를 나타내어, 시스템 구현 관점의 구조를 보여줍니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">16</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"서버, PC 등 물리적인 하드웨어 노드에 소프트웨어 컴포넌트가 어떻게 배치되는지를 표현하는 UML 구조 다이어그램"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">배치 다이어그램 (Deployment Diagram)</span><span class="t-exp">노드(Node)와 노드 간 통신 경로를 표현하여, 실제 시스템이 어떤 하드웨어 구성으로 운영되는지 물리적 배치 구조를 파악하는 데 사용됩니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">17</td>
+      <td class="t-desc"><span class="quiz-badge adv">심화</span>&nbsp;"클래스나 컴포넌트 등의 모델 요소들을 논리적인 묶음 단위로 그룹화하고, 그 묶음들 사이의 의존 관계를 표현하는 UML 구조 다이어그램"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">패키지 다이어그램 (Package Diagram)</span><span class="t-exp">대규모 시스템의 많은 클래스를 패키지 단위로 묶어 전체 구조를 개략적으로 파악할 수 있게 해주는 구조(정적) 다이어그램입니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">18</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"업무 처리 절차나 알고리즘의 흐름을 조건 분기와 병행 처리까지 포함하여 순서도와 유사하게 표현하는 UML 행위 다이어그램"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">활동 다이어그램 (Activity Diagram)</span><span class="t-exp">시작·종료 노드와 조건 분기, 동기화 바(병행 처리)를 이용해 업무 처리 흐름 자체를 표현합니다. 객체 간 메시지 순서에 초점을 둔 시퀀스 다이어그램, 하나의 객체가 겪는 상태 변화에 초점을 둔 상태 다이어그램과 구분해야 합니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">19</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"하나의 객체가 생명주기 동안 가질 수 있는 상태들과, 이벤트에 따른 상태 간의 전이(Transition)를 표현하는 UML 행위 다이어그램"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">상태 다이어그램 (State Diagram, State Machine Diagram)</span><span class="t-exp">주문 상태(대기→결제→배송→완료)처럼 하나의 객체가 시간 흐름에 따라 상태를 바꾸는 과정을 표현합니다. 여러 객체 간 메시지 교환 순서를 다루는 시퀀스 다이어그램과는 표현 대상이 다릅니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">20</td>
+      <td class="t-desc"><span class="quiz-badge adv">심화</span>&nbsp;"객체들 간의 메시지 교환을, 시간 흐름보다는 객체들의 연결 관계(구조)를 중심으로 번호가 매겨진 메시지로 표현하는 UML 행위 다이어그램"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">협력 다이어그램 (Collaboration Diagram, 통신 다이어그램/Communication Diagram)</span><span class="t-exp">시퀀스 다이어그램과 표현하는 정보는 유사하지만, 시간 흐름보다 객체 간 연결 구조를 강조하며 메시지에 번호를 붙여 순서를 나타냅니다. UML 2.0부터는 통신 다이어그램이라는 이름으로도 불립니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">21</td>
+      <td class="t-desc"><span class="quiz-badge adv">심화</span>&nbsp;"UML 다이어그램 중, 시스템의 정적인 구조(클래스·객체·컴포넌트·배치·패키지 등)를 표현하는 다이어그램들을 통칭하는 대분류"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">구조(정적) 다이어그램 (Structural Diagram)</span><span class="t-exp">시간에 따른 변화가 아니라 시스템을 구성하는 요소와 그 관계를 표현합니다. 반대되는 대분류는 유스케이스·시퀀스·활동·상태·협력 다이어그램이 속하는 행위(동적) 다이어그램입니다.</span></span>
+      </td>
+    </tr>
   </tbody>
 </table>
 </div>
@@ -414,6 +478,38 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
       <td class="t-ans-cell" onclick="toggleAns(this)">
         <span class="t-placeholder">👆 클릭해서 정답 보기</span>
         <span class="t-answer"><span class="t-term">도메인 무결성 (Domain Integrity)</span><span class="t-exp">예를 들어 '성별' 속성에는 정의된 값('남','여')만 들어갈 수 있도록 제한하는 것이 해당됩니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">20</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"여러 트랜잭션이 동시에 읽기(SELECT)는 가능하지만 쓰기는 허용하지 않는, 읽기 전용 동시성 제어 락"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">공유락 (Shared Lock, S-Lock)</span><span class="t-exp">다른 트랜잭션의 동시 공유락 획득은 허용하지만 배타락은 허용하지 않으며, 데이터를 읽기만 할 때 사용합니다. 쓰기 작업에는 배타락(X-Lock)이 필요합니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">21</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"트랜잭션이 데이터를 수정(쓰기)하는 동안 다른 모든 트랜잭션의 읽기·쓰기 접근을 차단하는 동시성 제어 락"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">배타락 (Exclusive Lock, X-Lock)</span><span class="t-exp">한 트랜잭션이 배타락을 보유하면 다른 트랜잭션은 공유락이든 배타락이든 획득할 수 없으며, 데이터 갱신(쓰기) 작업에 사용됩니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">22</td>
+      <td class="t-desc"><span class="quiz-badge adv">심화</span>&nbsp;"장애 발생 시점에 아직 COMMIT되지 않은 트랜잭션의 변경사항을 로그를 이용해 취소하고, 트랜잭션 수행 이전 상태로 되돌리는 회복 연산"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">Undo (실행 취소)</span><span class="t-exp">원자성(Atomicity)을 보장하기 위한 연산으로, 완료되지 않은 트랜잭션은 아예 없었던 것처럼 되돌립니다. 커밋된 트랜잭션을 재실행하는 Redo와 대비됩니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">23</td>
+      <td class="t-desc"><span class="quiz-badge adv">심화</span>&nbsp;"장애 발생 이전에 이미 COMMIT되었지만 디스크에 완전히 반영되지 못한 트랜잭션의 변경 내용을, 로그를 이용해 다시 실행하는 회복 연산"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">Redo (재실행)</span><span class="t-exp">지속성(Durability)을 보장하기 위한 연산으로, 커밋된 트랜잭션의 결과가 반드시 반영되도록 합니다. 미완료 트랜잭션을 취소하는 Undo와 반대되는 개념입니다.</span></span>
       </td>
     </tr>
   </tbody>
@@ -724,6 +820,46 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
       <td class="t-ans-cell" onclick="toggleAns(this)">
         <span class="t-placeholder">👆 클릭해서 정답 보기</span>
         <span class="t-answer"><span class="t-term">행위 패턴 (Behavioral Pattern)</span><span class="t-exp">객체가 어떻게 협력하고 책임을 나누어 상호작용하는지를 정의하는 패턴 범주로, GoF 3대 분류 중 가장 많은 패턴을 포함합니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">24</td>
+      <td class="t-desc"><span class="quiz-badge adv">심화</span>&nbsp;"복잡한 객체를 생성하는 절차를 여러 단계로 분리하여, 동일한 생성 절차에서도 서로 다른 구성(표현)의 객체를 만들 수 있게 하는 생성 패턴"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">빌더 패턴 (Builder Pattern)</span><span class="t-exp">생성자에 매개변수가 지나치게 많아지는 문제를 해결하며, 객체를 생성하는 절차와 그 결과물의 표현 방법을 분리하여 복잡한 객체를 단계적으로 조립합니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">25</td>
+      <td class="t-desc"><span class="quiz-badge adv">심화</span>&nbsp;"요청(실행할 작업) 자체를 하나의 객체로 캡슐화하여, 실행 취소(Undo)나 작업 대기열 처리, 로깅을 가능하게 하는 행위 패턴"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">커맨드 패턴 (Command Pattern)</span><span class="t-exp">요청을 호출하는 객체와 실제로 요청을 수행하는 객체를 분리하며, 에디터의 Ctrl+Z(실행 취소)나 매크로 기록 기능 구현에 대표적으로 활용됩니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">26</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"요구분석→설계→구현→테스트→유지보수의 각 단계를 순서대로 진행하며, 한 단계가 끝나야 다음 단계로 넘어가는 가장 고전적인 소프트웨어 개발 생명주기 모델"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">폭포수 모델 (Waterfall Model)</span><span class="t-exp">단계별 산출물이 명확하고 관리가 쉽지만, 이전 단계로 되돌아가기 어려워 요구사항 변경에 유연하게 대응하지 못하고 개발 후반부에야 오류가 발견되는 단점이 있습니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">27</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"계획 수립→위험 분석→개발 및 검증→고객 평가의 과정을 반복하며 점진적으로 시스템을 완성해 나가는, 위험관리(Risk Management)를 특히 강조하는 소프트웨어 개발 생명주기 모델"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">나선형 모델 (Spiral Model)</span><span class="t-exp">Boehm이 제안한 모델로 폭포수 모델과 프로토타입 모델의 장점을 결합했으며, 대규모·고위험 프로젝트에 적합하지만 반복 과정이 복잡하고 비용이 많이 듭니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">28</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"고객과의 협업과 짧은 반복 주기를 통해 변화하는 요구사항에 유연하게 대응하는 것을 강조하는 개발 방법론 (예: 스크럼, XP)"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">애자일 (Agile)</span><span class="t-exp">문서화보다 실행 가능한 소프트웨어를, 계획 준수보다 변화 대응을 중시합니다. 스크럼(Scrum)은 스프린트 단위 반복과 데일리 스크럼이, XP는 TDD·페어 프로그래밍 같은 기술적 실천이 특징입니다.</span></span>
       </td>
     </tr>
   </tbody>
@@ -1111,6 +1247,30 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
         <span class="t-answer"><span class="t-term">인수 테스트 (Acceptance Test)</span><span class="t-exp">V-모델에서 요구사항 분석 단계와 대응되며, 개발사 내부 인력이 수행하는 알파 테스트와 실제 사용자가 수행하는 베타 테스트로 나뉩니다.</span></span>
       </td>
     </tr>
+    <tr>
+      <td class="t-num">20</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"프로그램의 일부를 수정했을 때, 그 변경이 기존에 정상 동작하던 다른 기능에 새로운 결함(부작용)을 일으키지 않았는지 재확인하는 테스트"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">회귀 테스트 (Regression Test)</span><span class="t-exp">결함 수정이나 기능 추가 후 반드시 수행해야 하며, "예전에 잘 되던 기능이 여전히 잘 되는가"를 확인하는 것이 핵심입니다. 변경 영향 범위를 재검증하기 위해 자동화 도구로 반복 수행되는 경우가 많습니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">21</td>
+      <td class="t-desc"><span class="quiz-badge adv">심화</span>&nbsp;"시스템이 감당할 수 있는 한계를 초과하는 과도한 부하를 의도적으로 가하여, 임계점에서 시스템이 다운되지 않고 얼마나 안정적으로 견디는지를 확인하는 비기능 테스트"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">스트레스 테스트 (Stress Test, 강도 테스트)</span><span class="t-exp">정상 부하에서의 성능을 측정하는 성능 테스트와 달리, 한계를 초과한 극한 상황에서도 시스템이 견디는지, 장애 발생 시 정상적으로 복구되는지를 중점적으로 확인합니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">22</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"정상적인 부하 조건에서 시스템의 응답시간, 처리량(Throughput), 자원 사용률 등이 요구 수준을 만족하는지 측정하는 비기능 테스트"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">성능 테스트 (Performance Test)</span><span class="t-exp">한계를 초과한 상황에서의 안정성을 확인하는 스트레스 테스트와 달리, 실제 운영 환경과 유사한 부하에서 성능 요구사항 충족 여부를 확인하며 JMeter 같은 도구가 주로 사용됩니다.</span></span>
+      </td>
+    </tr>
   </tbody>
 </table>
 </div>
@@ -1232,6 +1392,22 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
       <td class="t-ans-cell" onclick="toggleAns(this)">
         <span class="t-placeholder">👆 클릭해서 정답 보기</span>
         <span class="t-answer"><span class="t-term">ROW_NUMBER</span><span class="t-exp">값이 같아도 무조건 1,2,3...처럼 중복 없는 순번을 부여한다는 점에서 동점을 같은 순위로 처리하는 RANK·DENSE_RANK와 구분됩니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">15</td>
+      <td class="t-desc"><span class="quiz-badge adv">심화</span>&nbsp;"조인 조건 없이 두 테이블의 각 행을 모두 짝지어, 두 테이블 행 수를 곱한 만큼의 결과를 만들어내는 조인"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">CROSS JOIN (교차 조인, 카티션 곱)</span><span class="t-exp">관계대수의 카티션 곱(Cartesian Product, ×) 연산에 대응되며, 조인 조건이 없어 결과 행 수가 두 테이블의 행 수를 곱한 값과 같아집니다. 실무에서는 조인 조건 누락으로 인한 의도치 않은 카티션 곱을 주의해야 합니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">16</td>
+      <td class="t-desc"><span class="quiz-badge adv">심화</span>&nbsp;"관계형 데이터베이스에서 원하는 결과를 얻기 위한 처리 절차를 선택·추출·조인 등의 수학적 연산 기호로 표현하는 절차적 언어"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">관계대수 (Relational Algebra)</span><span class="t-exp">선택(σ, Selection)은 SQL의 WHERE절에, 추출(π, Projection)은 SELECT절에 대응되며, 그 외에도 자연조인(⋈), 합집합(∪), 교집합(∩), 차집합(−), 카티션 곱(×) 연산자로 구성됩니다. 결과가 무엇인지만 명세하는 선언적 언어인 관계해석(Relational Calculus)과 대비됩니다.</span></span>
       </td>
     </tr>
   </tbody>
@@ -1389,6 +1565,86 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
         <span class="t-answer"><span class="t-term">책임추적성 (Accountability)</span><span class="t-exp">사고 발생 시 원인 분석과 책임 소재 파악을 가능하게 하며, CIA를 보완하는 추가 보안 요소로 언급됩니다.</span></span>
       </td>
     </tr>
+    <tr>
+      <td class="t-num">19</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"비밀번호, PIN, 보안 질문처럼 사용자만 알고 있는 정보를 이용해 신원을 확인하는 인증 방식"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">지식 기반 인증 (Something You Know)</span><span class="t-exp">소유 기반 인증(Something You Have), 생체 기반 인증(Something You Are)과 함께 인증 요소의 3대 유형을 이루며, 구현이 간편하지만 탈취·유추·망각의 위험이 있습니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">20</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"OTP 발생기, 스마트카드, 보안 토큰처럼 사용자가 물리적으로 소지한 것을 이용해 신원을 확인하는 인증 방식"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">소유 기반 인증 (Something You Have)</span><span class="t-exp">지식 기반 인증보다 보안성이 높지만 분실·도난 시 인증 수단을 잃어버릴 위험이 있으며, 지식 기반 인증과 결합해 다중 인증(MFA)을 구성하는 데 자주 사용됩니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">21</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"지문, 홍채, 얼굴, 정맥처럼 사용자의 신체적 특징을 이용해 신원을 확인하는 인증 방식"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">생체 기반 인증 (Something You Are)</span><span class="t-exp">편리하고 위조가 어렵지만, 한 번 유출되면 비밀번호처럼 변경할 수 없고 오인식률(오탐·미탐)이 존재한다는 한계가 있습니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">22</td>
+      <td class="t-desc"><span class="quiz-badge adv">심화</span>&nbsp;"지식·소유·생체 기반 인증 요소 중 서로 다른 두 가지 이상을 조합하여 신원을 확인하는 인증 방식"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">다중 인증 (MFA, Multi-Factor Authentication)</span><span class="t-exp">예를 들어 비밀번호(지식)와 OTP(소유)를 함께 요구하면 2단계 인증(2FA)이 되며, 하나의 인증 요소가 뚫리더라도 나머지 요소로 추가 방어가 가능해 보안성이 크게 향상됩니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">23</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"다수의 좀비 PC(봇넷)를 동원하여 동시에 대량의 트래픽을 특정 서버에 전송함으로써 정상적인 서비스 제공을 방해하는 공격"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">DDoS (Distributed Denial of Service, 분산 서비스 거부 공격)</span><span class="t-exp">단일 공격자가 수행하는 DoS와 달리 다수의 분산된 공격 근원지를 이용하여 공격 출처 추적이 어려우며, 보안의 3대 요소 중 가용성(Availability)을 직접적으로 침해합니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">24</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"네트워크 상에 흐르는 패킷을 도청하여 아이디·비밀번호 같은 정보를 몰래 수집하는 수동적 공격 기법"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">스니핑 (Sniffing)</span><span class="t-exp">데이터를 위·변조하지 않고 몰래 훔쳐보기만 하는 수동적 공격으로, 데이터를 위조해 속이는 능동적 공격인 스푸핑과 대비됩니다. 암호화(TLS/SSH)와 스위치 환경 구성으로 대응합니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">25</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"IP, MAC 주소, 이메일 발신자 등을 위조하여 신뢰할 수 있는 대상인 것처럼 속이는 능동적 공격 기법"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">스푸핑 (Spoofing)</span><span class="t-exp">단순히 도청만 하는 수동적 공격인 스니핑과 달리, 정보를 위조해 상대를 속이는 능동적 공격이며 ARP 스푸핑·IP 스푸핑·DNS 스푸핑 등으로 세분화됩니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">26</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"입력 데이터의 길이와 관계없이 항상 고정된 길이의 출력값을 생성하며, 그 출력값으로부터 원래의 입력을 역산할 수 없는 단방향 함수"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">해시 함수 (Hash Function)</span><span class="t-exp">MD5, SHA-1, SHA-256 등이 대표 알고리즘이며, 무결성 검증과 비밀번호 저장에 사용됩니다. 다만 MD5와 SHA-1은 충돌 취약점이 발견되어 현재는 SHA-256 이상의 사용이 권장됩니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">27</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"할당된 버퍼(메모리 공간)의 크기를 초과하는 데이터를 입력하여 인접한 메모리 영역을 덮어씀으로써, 프로그램 오동작이나 임의 코드 실행을 유발하는 공격"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">버퍼 오버플로우 (Buffer Overflow)</span><span class="t-exp">입력값의 길이를 검증하지 않는 함수를 사용할 때 주로 발생하며, 입력값 길이 검증과 스택 가드·ASLR 같은 보호 기법으로 대응합니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">28</td>
+      <td class="t-desc"><span class="quiz-badge adv">심화</span>&nbsp;"이미 인증을 마친 사용자의 세션 ID를 탈취하여, 재인증 없이 정상 사용자의 권한으로 시스템에 접근하는 공격"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">세션 하이재킹 (Session Hijacking)</span><span class="t-exp">TCP 시퀀스 번호 예측이나 쿠키 탈취 등을 통해 세션을 가로채며, 세션 ID의 주기적 갱신과 HTTPS·HttpOnly 쿠키 적용으로 대응합니다.</span></span>
+      </td>
+    </tr>
   </tbody>
 </table>
 </div>
@@ -1486,6 +1742,78 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
       <td class="t-ans-cell" onclick="toggleAns(this)">
         <span class="t-placeholder">👆 클릭해서 정답 보기</span>
         <span class="t-answer"><span class="t-term">프레임워크 (Framework)</span><span class="t-exp">개발자가 필요할 때 직접 호출해서 쓰는 라이브러리와 달리, 프레임워크는 전체 흐름의 제어권을 프레임워크 자신이 가지고 개발자의 코드를 호출합니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">12</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"인접한 두 원소를 비교하여 크기 순서가 잘못되어 있으면 서로 교환하는 과정을 반복하며, 한 pass가 끝날 때마다 가장 큰(작은) 값이 정렬된 위치로 확정되는 정렬 알고리즘"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">버블 정렬 (Bubble Sort)</span><span class="t-exp">구현이 매우 간단하지만 비교와 교환 횟수가 많아 평균·최악 시간복잡도가 모두 O(n²)로 비효율적입니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">13</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"매 pass마다 정렬되지 않은 범위 전체에서 최솟값(또는 최댓값)을 찾아 맨 앞자리와 교환하는 정렬 알고리즘"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">선택 정렬 (Selection Sort)</span><span class="t-exp">인접 원소끼리 비교·교환하는 버블 정렬과 달리 매번 최솟값을 찾아 위치를 확정하며, 교환 횟수는 적지만 비교 횟수는 동일하여 시간복잡도는 마찬가지로 O(n²)입니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">14</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"두 번째 원소부터 시작하여 이미 정렬된 앞부분의 적절한 위치를 찾아 값을 끼워 넣는 방식으로 정렬하는 알고리즘"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">삽입 정렬 (Insertion Sort)</span><span class="t-exp">평균적으로는 O(n²)이지만, 이미 거의 정렬된 데이터에 대해서는 O(n)에 가까운 성능을 보이는 것이 특징입니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">15</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"피벗(Pivot)을 기준으로 피벗보다 작은 값과 큰 값의 그룹으로 나눈 뒤, 나뉜 두 부분을 각각 재귀적으로 정렬하는 분할 정복 기반 정렬 알고리즘"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">퀵 정렬 (Quick Sort)</span><span class="t-exp">평균 시간복잡도는 O(n log n)으로 빠르지만, 이미 정렬된 데이터처럼 피벗 선택이 나쁜 최악의 경우에는 O(n²)까지 성능이 저하될 수 있습니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">16</td>
+      <td class="t-desc"><span class="quiz-badge adv">심화</span>&nbsp;"데이터를 더 이상 나눌 수 없을 때까지 반으로 분할한 뒤, 정렬된 부분들을 다시 하나로 합쳐나가는 분할 정복 기반 정렬 알고리즘"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">합병 정렬 (Merge Sort)</span><span class="t-exp">데이터 분포와 무관하게 항상 O(n log n)을 보장하는 안정 정렬이지만, 병합 과정에서 추가적인 메모리 공간(O(n))이 필요합니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">17</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"가장 나중에 저장된 데이터가 가장 먼저 삭제되는 후입선출(LIFO) 방식의 자료구조로, 함수 호출 관리(콜 스택)나 수식 계산에 활용됨"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">스택 (Stack)</span><span class="t-exp">삽입과 삭제가 한쪽 끝(top)에서만 이루어지며, 재귀 호출 처리·괄호 검사·후위 표기법 계산 등에 응용됩니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">18</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"가장 먼저 저장된 데이터가 가장 먼저 삭제되는 선입선출(FIFO) 방식의 자료구조로, 프로세스 스케줄링이나 대기열 처리에 활용됨"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">큐 (Queue)</span><span class="t-exp">삽입은 뒤(rear)에서, 삭제는 앞(front)에서 이루어지며, 나중에 넣은 것이 먼저 나오는 스택(LIFO)과 반대되는 삭제 순서를 가집니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">19</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"하나의 루트 노드에서 시작해 여러 자식 노드로 뻗어나가는 계층적 구조를 가지며, 노드 간 순환(사이클)이 없는 비선형 자료구조"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">트리 (Tree)</span><span class="t-exp">파일 시스템의 디렉터리 구조나 조직도처럼 상하 계층 관계를 표현하는 데 적합하며, 이진 트리·이진 탐색 트리 등으로 세분화됩니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">20</td>
+      <td class="t-desc"><span class="quiz-badge adv">심화</span>&nbsp;"정점(Vertex)과 이를 연결하는 간선(Edge)으로 구성되며, 트리와 달리 노드 간에 순환(사이클)이 존재할 수 있는 비선형 자료구조"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">그래프 (Graph)</span><span class="t-exp">네트워크 위상이나 지도의 도로망처럼 복잡한 다대다 관계를 표현하는 데 사용되며, 트리는 순환이 없는 그래프의 특수한 형태로 볼 수 있습니다.</span></span>
       </td>
     </tr>
   </tbody>
@@ -1729,6 +2057,110 @@ code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-fam
       <td class="t-ans-cell" onclick="toggleAns(this)">
         <span class="t-placeholder">👆 클릭해서 정답 보기</span>
         <span class="t-answer"><span class="t-term">순환대기 (Circular Wait)</span><span class="t-exp">프로세스 A가 B의 자원을, B는 C의 자원을, C는 다시 A의 자원을 기다리는 것처럼 원형으로 대기 관계가 형성되는 조건입니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">30</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"IPv4 주소 클래스 중, 첫 옥텟 범위가 1~126이며 기본 서브넷 마스크가 255.0.0.0(/8)인, 대규모 네트워크에 사용되는 클래스"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">A 클래스 (Class A)</span><span class="t-exp">네트워크 비트가 8비트뿐이라 호스트 비트가 24비트나 되어, 하나의 네트워크에 매우 많은 호스트를 수용할 수 있는 대규모 네트워크용 클래스입니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">31</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"IPv4 주소 클래스 중, 첫 옥텟 범위가 128~191이며 기본 서브넷 마스크가 255.255.0.0(/16)인, 중규모 네트워크에 사용되는 클래스"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">B 클래스 (Class B)</span><span class="t-exp">네트워크 비트와 호스트 비트가 각각 16비트씩으로, A클래스보다 작고 C클래스보다 큰 중규모 조직에 적합합니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">32</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"IPv4 주소 클래스 중, 첫 옥텟 범위가 192~223이며 기본 서브넷 마스크가 255.255.255.0(/24)인, 소규모 네트워크에 사용되는 클래스"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">C 클래스 (Class C)</span><span class="t-exp">호스트 비트가 8비트뿐이라 하나의 네트워크에 최대 254개의 호스트만 수용할 수 있는 소규모 네트워크용 클래스입니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">33</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"IP 주소를 네트워크 ID와 호스트 ID로 구분하기 위해 사용하는 값으로, 하나의 네트워크를 더 작은 단위로 분할(서브네팅)할 때 기준이 되는 값"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">서브넷 마스크 (Subnet Mask)</span><span class="t-exp">2진수로 1에 해당하는 부분이 네트워크 ID, 0에 해당하는 부분이 호스트 ID를 나타내며, IP 주소와 AND 연산하면 네트워크 주소를 구할 수 있습니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">34</td>
+      <td class="t-desc"><span class="quiz-badge adv">심화</span>&nbsp;"IP 주소 뒤에 '/숫자' 형태로 네트워크 비트 수를 표기하여, 클래스 단위의 고정된 크기 제약 없이 유연하게 네트워크를 나눌 수 있게 하는 표기법"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">CIDR (Classless Inter-Domain Routing)</span><span class="t-exp">예를 들어 /24는 255.255.255.0과 같은 의미이며, 클래스 기반 주소 할당 방식의 비효율(주소 낭비)을 개선하기 위해 도입되었습니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">35</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"사설 IP 주소를 공인 IP 주소로 변환하여, 사설 네트워크 내부의 여러 호스트가 하나(또는 소수)의 공인 IP를 공유해 인터넷에 접속할 수 있게 해주는 기술"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">NAT (Network Address Translation)</span><span class="t-exp">부족한 IPv4 공인 주소를 절약할 수 있고 내부 IP 체계를 외부에 숨겨 보안에도 도움이 되며, 포트까지 함께 변환하는 PAT(NAPT) 방식이 대표적으로 활용됩니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">36</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"IP 주소를 서브넷 마스크와 AND 연산하여 얻어지는, 해당 네트워크 자체를 식별하는 주소로 개별 호스트에는 할당할 수 없는 주소"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">네트워크 주소 (Network Address)</span><span class="t-exp">해당 네트워크의 첫 번째 주소로, 호스트 ID 비트가 모두 0인 값에 해당하며 실제 호스트에는 할당되지 않습니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">37</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"해당 네트워크에 속한 모든 호스트에게 동시에 데이터를 전송할 때 사용하는, 호스트 ID 비트가 모두 1인 특수한 IP 주소"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">브로드캐스트 주소 (Broadcast Address)</span><span class="t-exp">네트워크 주소 + (블록 크기 − 1)로 계산되며, 해당 네트워크의 마지막 주소에 해당하고 역시 개별 호스트에는 할당할 수 없습니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">38</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"교착상태 발생의 4가지 필요조건(상호배제·점유와 대기·비선점·순환대기) 중 하나 이상이 아예 성립하지 못하도록 미리 차단하는 교착상태 처리 기법"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">예방 (Prevention)</span><span class="t-exp">자원을 한꺼번에 모두 요청하게 하거나 점유 후 대기를 금지하는 등의 방식으로 필요조건 자체를 제거하지만, 자원 활용률이 낮아지는 단점이 있습니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">39</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"프로세스의 자원 요청을 받아들였을 때 시스템이 안전 상태(Safe State)를 유지할 수 있는 경우에만 자원을 할당하는 교착상태 처리 기법으로, 은행원 알고리즘이 대표적"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">회피 (Avoidance)</span><span class="t-exp">은행원 알고리즘(Banker's Algorithm)이 대표적이며, 프로세스의 최대 요구량을 미리 알고 있어야 한다는 전제가 필요합니다. 조건 자체를 차단하는 예방과 달리 상황을 판단해 자원을 할당합니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">40</td>
+      <td class="t-desc"><span class="quiz-badge adv">심화</span>&nbsp;"교착상태가 이미 발생했는지를 자원 할당 그래프의 순환(사이클) 여부 등을 통해 사후적으로 검사하는 교착상태 처리 기법"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">탐지 (Detection)</span><span class="t-exp">교착상태 발생을 막지는 않고, 주기적으로 시스템 상태를 검사하여 순환 대기가 존재하는지 확인합니다. 탐지 후에는 회복(Recovery) 기법으로 교착상태를 해소합니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">41</td>
+      <td class="t-desc"><span class="quiz-badge adv">심화</span>&nbsp;"탐지된 교착상태를 해소하기 위해 관련 프로세스(Victim) 중 하나 이상을 종료하거나 자원을 강제로 선점하는 교착상태 처리 기법"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">회복 (Recovery)</span><span class="t-exp">희생될 프로세스를 선정한 후 종료·재시작하거나 자원을 선점하여 순환 대기를 끊으며, 어떤 프로세스를 희생시킬지 결정하는 기준(우선순위, 수행 시간 등)이 중요합니다.</span></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="t-num">42</td>
+      <td class="t-desc"><span class="quiz-badge year">기출</span>&nbsp;"TCP 3-way handshake의 취약점을 악용하여 다량의 SYN 패킷만 보내고 마지막 ACK 응답은 보내지 않음으로써, 서버의 연결 대기 큐(백로그)를 가득 채워 정상적인 연결을 방해하는 공격"</td>
+      <td class="t-ans-cell" onclick="toggleAns(this)">
+        <span class="t-placeholder">👆 클릭해서 정답 보기</span>
+        <span class="t-answer"><span class="t-term">SYN 플러딩 (SYN Flooding)</span><span class="t-exp">서버가 SYN_RECEIVED 상태로 대기하다 자원이 고갈되는 대표적인 DoS 공격 기법으로, SYN 쿠키·연결 대기 큐 크기 조정 등으로 대응합니다.</span></span>
       </td>
     </tr>
   </tbody>
